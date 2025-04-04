@@ -1,0 +1,3 @@
+D:/He_dieu_hanh/TinyShell/build/CMakeFiles/TinyShell.dir
+D:/He_dieu_hanh/TinyShell/build/CMakeFiles/edit_cache.dir
+D:/He_dieu_hanh/TinyShell/build/CMakeFiles/rebuild_cache.dir
