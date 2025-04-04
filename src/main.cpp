@@ -11,9 +11,9 @@ int status; /*flag to determine when to exit program*/
 STARTUPINFO si;
 PROCESS_INFORMATION pi;
 string ROOT_DIRECTORY = "/root";  // Định nghĩa thư mục gốc
-string origin_real_path;
-string current_real_path;
-string current_fake_path;
+string origin_real_path; // đến trước root thôi (ví dụ C:/root thì thành C:)
+string current_real_path;  // là (C:/root)
+string current_fake_path; // là /root
 
 #include "system_commands.h"
 #include "constant.h"
@@ -25,9 +25,9 @@ vector<string> builtin_str = {
     // "list",
     "cls",
     "exit",
-	"pwd"
-	// "dir",
-	// "cd"
+	"pwd",
+	"dir",
+	"cd"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -35,9 +35,9 @@ int (*builtin_func[]) (vector<string>) = {
     // &shell_print_processes_info,
     &shell_cls,
     &shell_exit,
-	&shell_pwd
-	// &shell_dir,
-	// &shell_cd
+	&shell_pwd,
+	&shell_dir,
+	&shell_cd
 };
 
 
@@ -57,6 +57,12 @@ int main() {
 		if (args.size() > 0) {
 			shell_working(args);
 		}
+		char buffer[MAX_PATH];
+		GetCurrentDirectory(MAX_PATH, buffer);
+		printf("\n%s\n", buffer);
+		cout << origin_real_path << endl;
+		cout << current_real_path << endl;
+		cout << current_fake_path << endl << endl; 
 	}
 	return 0;
 }

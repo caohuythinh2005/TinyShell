@@ -192,6 +192,7 @@ CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: D:/He_dieu_hanh/TinyShel
   C:/msys64/ucrt64/include/profileapi.h \
   C:/msys64/ucrt64/include/propidl.h \
   C:/msys64/ucrt64/include/prsht.h \
+  C:/msys64/ucrt64/include/psapi.h \
   C:/msys64/ucrt64/include/psdk_inc/_fd_types.h \
   C:/msys64/ucrt64/include/psdk_inc/_ip_mreq1.h \
   C:/msys64/ucrt64/include/psdk_inc/_ip_types.h \
@@ -1701,6 +1702,8 @@ C:/msys64/ucrt64/include/objbase.h:
 C:/msys64/ucrt64/include/objidlbase.h:
 
 C:/msys64/ucrt64/include/oleauto.h:
+
+C:/msys64/ucrt64/include/psapi.h:
 
 C:/msys64/ucrt64/include/playsoundapi.h:
 

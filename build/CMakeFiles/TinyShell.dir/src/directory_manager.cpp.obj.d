@@ -233,33 +233,55 @@ CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: \
  C:/msys64/ucrt64/include/tlhelp32.h C:/msys64/ucrt64/include/sys/stat.h \
  C:/msys64/ucrt64/include/io.h C:/msys64/ucrt64/include/sys/types.h \
  C:/msys64/ucrt64/include/_mingw_stat64.h \
- D:/He_dieu_hanh/TinyShell/include/directory_manager.h \
- D:/He_dieu_hanh/TinyShell/include/globals.h \
- C:/msys64/ucrt64/include/c++/13.1.0/string \
+ C:/msys64/ucrt64/include/c++/13.1.0/iostream \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/requires_hosted.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/ostream \
+ C:/msys64/ucrt64/include/c++/13.1.0/ios \
+ C:/msys64/ucrt64/include/c++/13.1.0/iosfwd \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stringfwd.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/memoryfwd.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/char_traits.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/postypes.h \
  C:/msys64/ucrt64/include/c++/13.1.0/cwchar \
  C:/msys64/ucrt64/include/wchar.h \
  C:/msys64/ucrt64/include/sec_api/wchar_s.h \
- C:/msys64/ucrt64/include/c++/13.1.0/type_traits \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/allocator.h \
- C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/c++allocator.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/new_allocator.h \
- C:/msys64/ucrt64/include/c++/13.1.0/new \
+ C:/msys64/ucrt64/include/c++/13.1.0/exception \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/exception.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/functexcept.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/exception_ptr.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/exception_defines.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/cxxabi_init_exception.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/typeinfo \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/hash_bytes.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/new \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/move.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/cpp_type_traits.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/type_traits \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/nested_exception.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/char_traits.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/localefwd.h \
  C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/c++locale.h \
  C:/msys64/ucrt64/include/c++/13.1.0/clocale \
  C:/msys64/ucrt64/include/locale.h \
- C:/msys64/ucrt64/include/c++/13.1.0/iosfwd \
  C:/msys64/ucrt64/include/c++/13.1.0/cctype \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/ios_base.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/ext/atomicity.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/gthr.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/gthr-default.h \
+ C:/msys64/ucrt64/include/pthread.h C:/msys64/ucrt64/include/process.h \
+ C:/msys64/ucrt64/include/corecrt_startup.h \
+ C:/msys64/ucrt64/include/signal.h \
+ C:/msys64/ucrt64/include/pthread_signal.h \
+ C:/msys64/ucrt64/include/time.h C:/msys64/ucrt64/include/sys/timeb.h \
+ C:/msys64/ucrt64/include/sec_api/sys/timeb_s.h \
+ C:/msys64/ucrt64/include/pthread_time.h \
+ C:/msys64/ucrt64/include/pthread_compat.h \
+ C:/msys64/ucrt64/include/pthread_unistd.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/atomic_word.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/locale_classes.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/string \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/allocator.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/c++allocator.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/new_allocator.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/functexcept.h \
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/cpp_type_traits.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/ostream_insert.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/cxxabi_forced.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stl_iterator_base_funcs.h \
@@ -288,7 +310,6 @@ CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stl_construct.h \
  C:/msys64/ucrt64/include/c++/13.1.0/string_view \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/functional_hash.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/hash_bytes.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/string_view.tcc \
  C:/msys64/ucrt64/include/c++/13.1.0/ext/string_conversions.h \
  C:/msys64/ucrt64/include/c++/13.1.0/cstdio \
@@ -300,29 +321,6 @@ CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/uses_allocator.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/uses_allocator_args.h \
  C:/msys64/ucrt64/include/c++/13.1.0/tuple \
- C:/msys64/ucrt64/include/c++/13.1.0/iostream \
- C:/msys64/ucrt64/include/c++/13.1.0/ostream \
- C:/msys64/ucrt64/include/c++/13.1.0/ios \
- C:/msys64/ucrt64/include/c++/13.1.0/exception \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/exception_ptr.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/cxxabi_init_exception.h \
- C:/msys64/ucrt64/include/c++/13.1.0/typeinfo \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/nested_exception.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/ios_base.h \
- C:/msys64/ucrt64/include/c++/13.1.0/ext/atomicity.h \
- C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/gthr.h \
- C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/gthr-default.h \
- C:/msys64/ucrt64/include/pthread.h C:/msys64/ucrt64/include/process.h \
- C:/msys64/ucrt64/include/corecrt_startup.h \
- C:/msys64/ucrt64/include/signal.h \
- C:/msys64/ucrt64/include/pthread_signal.h \
- C:/msys64/ucrt64/include/time.h C:/msys64/ucrt64/include/sys/timeb.h \
- C:/msys64/ucrt64/include/sec_api/sys/timeb_s.h \
- C:/msys64/ucrt64/include/pthread_time.h \
- C:/msys64/ucrt64/include/pthread_compat.h \
- C:/msys64/ucrt64/include/pthread_unistd.h \
- C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/atomic_word.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/locale_classes.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/locale_classes.tcc \
  C:/msys64/ucrt64/include/c++/13.1.0/system_error \
  C:/msys64/ucrt64/include/c++/13.1.0/x86_64-w64-mingw32/bits/error_constants.h \
@@ -341,6 +339,9 @@ CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/ostream.tcc \
  C:/msys64/ucrt64/include/c++/13.1.0/istream \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/istream.tcc \
+ C:/msys64/ucrt64/include/psapi.h \
+ D:/He_dieu_hanh/TinyShell/include/directory_manager.h \
+ D:/He_dieu_hanh/TinyShell/include/globals.h \
  C:/msys64/ucrt64/include/c++/13.1.0/vector \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stl_uninitialized.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stl_vector.h \

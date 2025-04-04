@@ -4,8 +4,16 @@
 #include <tchar.h>
 #include <TlHelp32.h>
 #include <sys/stat.h>
+#include <iostream>
+#include <stdlib.h>
+#include <signal.h>
+#include <time.h>
+#include <sys/types.h>
+#include <psapi.h>
+
 #include "directory_manager.h"
 #include "constant.h"
+// #include "Shlwapi.h"
 
 
 
@@ -27,39 +35,43 @@ int init_directory() {
     return 0;
 }
 
-// int shell_dir(vector<string>) {
-// 	if (args[1] != NULL) {
-//         printf("\nBad command ... \n");
-//         return BAD_COMMAND;
-//     }
-//     WIN32_FIND_DATA findFileData;
-//     char searchPath[MAX_PATH];
+int shell_dir(vector<string> args) {
+	if (args.size() > 1) {
+        printf("\nBad command ... \n");
+        return BAD_COMMAND;
+    }
 
-//     // Tạo đường dẫn tìm kiếm trong thư mục hiện tại
-//     snprintf(searchPath, MAX_PATH, "%s\\*", current_real_path);
+    char current_real_path_cstr[MAX_PATH];
+    strncpy(current_real_path_cstr, current_real_path.c_str(), MAX_PATH);
 
-//     HANDLE hFind = FindFirstFile(searchPath, &findFileData);
-    
-//     if (hFind == INVALID_HANDLE_VALUE) {
-//         printf("Không thể đọc thư mục (%s).\n", current_real_path);
-//         return 1;  // Báo lỗi
-//     }
-    
-//     do {
-//         // Bỏ qua "." và ".." để làm cho shell dễ dùng hơn :))
-//         if (strcmp(findFileData.cFileName, ".") == 0 || strcmp(findFileData.cFileName, "..") == 0)
-//             continue;
+    WIN32_FIND_DATA findFileData;
+    char searchPath[MAX_PATH];
 
-//         if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-//             printf("[DIR]  %s\n", findFileData.cFileName);
-//         } else {
-//             printf("[FILE] %s\n", findFileData.cFileName);
-//         }
-//     } while (FindNextFile(hFind, &findFileData) != 0);
+    // Tạo đường dẫn tìm kiếm trong thư mục hiện tại
+    snprintf(searchPath, MAX_PATH, "%s\\*", current_real_path_cstr);
+
+    HANDLE hFind = FindFirstFile(searchPath, &findFileData);
     
-//     FindClose(hFind);
-//     return 0;
-// }
+    if (hFind == INVALID_HANDLE_VALUE) {
+        printf("Không thể đọc thư mục (%s).\n", current_real_path_cstr);
+        return 1;  // Báo lỗi
+    }
+    
+    do {
+        // Bỏ qua "." và ".." để làm cho shell dễ dùng hơn :))
+        if (strcmp(findFileData.cFileName, ".") == 0 || strcmp(findFileData.cFileName, "..") == 0)
+            continue;
+
+        if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            printf("[DIR]  %s\n", findFileData.cFileName);
+        } else {
+            printf("[FILE] %s\n", findFileData.cFileName);
+        }
+    } while (FindNextFile(hFind, &findFileData) != 0);
+    
+    FindClose(hFind);
+    return 0;
+}
 
 int shell_pwd(vector<string> args) {
 	if (args.size() > 1) {
@@ -70,88 +82,92 @@ int shell_pwd(vector<string> args) {
 	return 0;
 }
 
-// int pathFileExists(char* path) {
-//     // char new_path[1024];
+int pathFileExists(string path) {
+    char new_path[1024];
 
-//     // // **1. Xử lý đường dẫn tuyệt đối**
-//     // if (path[0] == '/') {
+    // **1. Xử lý đường dẫn tuyệt đối**
+    if (path[0] == '/') {
 
-// 	// 	char tmp[2048];
-// 	// 	strcpy(tmp, origin_real_path);
-// 	// 	strcat(tmp, path);
-//     //     int retval = PathFileExists(tmp);
-//     //     if (retval == 1) {
-//     //         return 0;
-//     //     }
-// 	// 	// check path
-//     // }
-//     // return FILE_NOT_EXITS;
-// }
+		char tmp[2048];
+		strcpy(tmp, origin_real_path.c_str());
+		strcat(tmp, path.c_str());
+        // int retval = PathFileExists(tmp);
+        // if (retval == 1) {
+        //     return 0;
+        // }
+		// check path
+    }
+    return FILE_NOT_EXITS;
+}
 
-// int shell_cd(char **args) {
-// 	// Hàm này khó vc
-//     if (args[1] == NULL) {
-//         printf("\nBad command ... \n");
-//         return BAD_COMMAND;
-//     }
+/*
+Để tránh rắc rối, ta luôn mặc định current_directory (đang làm việc) là toàn bộ TinyShell
+extern string origin_real_path; -> Lưu trữ cái trên
+extern string current_real_path; -> Lưu trữ đường dẫn đang giả lập
+extern string current_fake_path; -> Lưu trữ đường dẫn đang giả lập, với cây thư mục của bản thân
+Khi thực hiện cd chỉ thay đổi hai cái dưới
+khi tạo ta sẽ chỉ định trực tiếp xong lại thay về origin_real_path
+Làm thế này đỡ phải check đường dẫn tương đối vì hiển nhiên phải tiếp theo từ origin
+Chỉ cho phép đường dẫn tuyệt đối từ /root/...
+*/
 
-//     char *path = args[1];
-//     char new_path[1024];
+int shell_cd(vector<string> args) {
+    if (args.size() == 2) {
+        // Lệnh "cd" có tham số
+        string path_str = args[1];
+        if (path_str[0] == '/') {
+            char full_path[MAX_PATH];
+            strcpy(full_path, origin_real_path.c_str());
+            strcat(full_path, path_str.c_str());
+            if (SetCurrentDirectory(full_path) == FALSE) {
+                cout << "No such file or directory" << endl;
+                SetCurrentDirectory(origin_real_path.c_str());
+                return DIRECTORY_NOT_EXISTS;
+            }
+            SetCurrentDirectory(origin_real_path.c_str());
+            current_real_path = full_path;
+            current_fake_path = path_str;
+            return 0;
+        } else if (path_str == "..") {
+            if (current_fake_path == "/root") {
+                return 0;
+            }
+            // Ngược lại thì ok rồi :))
+            char current_real_path_c_str[MAX_PATH];
+            char current_fake_path_c_str[MAX_PATH];
+            strcpy(current_real_path_c_str, current_real_path.c_str());
+            strcpy(current_fake_path_c_str, current_fake_path.c_str());
+            char* last_real_slash = strrchr(current_real_path_c_str, '/');
+            char* last_fake_slash = strrchr(current_fake_path_c_str, '/');
+            *last_real_slash = '\0';
+            *last_fake_slash = '\0';
+            current_real_path = current_real_path_c_str;
+            current_fake_path = current_fake_path_c_str;
+            return 0;
+        } else {
+            // Di chuyển theo đường dẫn tương đối
+            char full_path[MAX_PATH];
+            strcpy(full_path, current_real_path.c_str());
+            strcat(full_path, "/");
+            strcat(full_path, path_str.c_str());
+            if(SetCurrentDirectory(full_path)==FALSE){
+                cout << "No such file or directory" << endl;
+                SetCurrentDirectory(origin_real_path.c_str());
+                return DIRECTORY_NOT_EXISTS;
+            }
+            SetCurrentDirectory(origin_real_path.c_str());
+            current_real_path = full_path;
+            char full_fake_path[MAX_PATH];
+            strcpy(full_fake_path, current_fake_path.c_str());
+            strcat(full_fake_path, "/");
+            strcat(full_fake_path, path_str.c_str());
+            current_fake_path = full_fake_path;
+            return 0;
+        }
 
-//     // **1. Xử lý đường dẫn tuyệt đối**
-//     if (path[0] == '/') {
-
-// 		char tmp[2048];
-// 		strcpy(tmp, origin_real_path);
-// 		strcat(tmp, args[1]);
-
-// 		// check path
-
-// 		//
-// 		strcpy(current_fake_path, args[1]);
-// 		strcpy(current_real_path, tmp);
-//     }
-//     // // **2. Xử lý thư mục cha `..`**
-//     // else if (strcmp(path, "..") == 0) {
-//     //     if (getcwd(new_path, sizeof(new_path)) == NULL) {
-//     //         perror("shell_cd: lỗi getcwd");
-//     //         return -1;
-//     //     }
-//     //     char *last_slash = strrchr(new_path, '/');
-//     //     if (last_slash != NULL) {
-//     //         *last_slash = '\0';  // Cắt bỏ phần cuối để về thư mục cha
-//     //     }
-//     // }
-//     // // **3. Xử lý thư mục hiện tại `.`**
-//     // else if (strcmp(path, ".") == 0) {
-//     //     if (getcwd(new_path, sizeof(new_path)) == NULL) {
-//     //         perror("shell_cd: lỗi getcwd");
-//     //         return -1;
-//     //     }
-//     // }
-//     // // **4. Xử lý đường dẫn tương đối**
-//     // else {
-//     //     if (getcwd(new_path, sizeof(new_path)) == NULL) {
-//     //         perror("shell_cd: lỗi getcwd");
-//     //         return -1;
-//     //     }
-//     //     strncat(new_path, "/", sizeof(new_path) - strlen(new_path) - 1);
-//     //     strncat(new_path, path, sizeof(new_path) - strlen(new_path) - 1);
-//     // }
-
-//     // // **Kiểm tra quyền truy cập (giới hạn trong ROOT_DIRECTORY)**
-//     // if (!isValidPath(new_path)) {
-//     //     fprintf(stderr, "shell_cd: Đường dẫn không hợp lệ, bạn chỉ có thể thao tác trong %s.\n", ROOT_DIRECTORY);
-//     //     return -1;
-//     // }
-
-//     // // **Chuyển thư mục**
-//     // if (chdir(new_path) != 0) {
-//     //     perror("shell_cd: không thể chuyển thư mục");
-//     //     return -1;
-//     // }
-
-//     // printf("Đã chuyển đến thư mục: %s\n", new_path);
-//     // return 0;
-// }
-
+    } else {
+        printf("Bad command ... \n");
+        return BAD_COMMAND;
+    }
+    return 0;
+}
