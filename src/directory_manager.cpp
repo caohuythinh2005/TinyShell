@@ -18,6 +18,7 @@
 
 
 
+
 int init_directory() {
     // Lấy đường dẫn thư mục hiện tại
     char buffer[MAX_PATH];
@@ -33,6 +34,74 @@ int init_directory() {
     current_real_path += "/root";
     current_fake_path = "/root";  // Gán đường dẫn giả
     return 0;
+}
+
+bool deleteRecursive(const string& path) {
+    WIN32_FIND_DATA fd;
+    string searchPath = path + "\\*";
+    HANDLE hFind = FindFirstFile(searchPath.c_str(), &fd);
+
+    if (hFind == INVALID_HANDLE_VALUE)
+        return false;
+
+    do {
+        string item = fd.cFileName;
+        if (item == "." || item == "..") continue;
+
+        string fullPath = path + "\\" + item;
+
+        if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            if (!deleteRecursive(fullPath)) {
+                FindClose(hFind);
+                return false;
+            }
+        } else {
+            if (!DeleteFile(fullPath.c_str())) {
+                FindClose(hFind);
+                return false;
+            }
+        }
+    } while (FindNextFile(hFind, &fd));
+
+    FindClose(hFind);
+    return RemoveDirectory(path.c_str());
+}
+/*
+Xóa foder và các file bên trong ngay tại đường dẫn của nó
+*/
+
+int shell_del(vector<string> args) {
+    if (args.size() != 2) {
+        cout << "ERROR: Command 'del' requires exactly one argument" << endl;
+        cout << "Usage: del [dir]" << endl;
+        return BAD_COMMAND;
+    }
+
+    SetCurrentDirectory(current_real_path.c_str());
+    string target = args[1];
+
+    DWORD attr = GetFileAttributes(target.c_str());
+    if (attr == INVALID_FILE_ATTRIBUTES) {
+        cout << "ERROR: Directory not found." << endl;
+        SetCurrentDirectory(origin_real_path.c_str());
+        return BAD_COMMAND;
+    }
+
+    bool success = false;
+    if (attr & FILE_ATTRIBUTE_DIRECTORY) {
+        success = deleteRecursive(target);
+        if (!success) {
+            cout << "ERROR: Unable to delete folder or its contents." << endl;
+        }
+    } else {
+        success = DeleteFile(target.c_str());
+        if (!success) {
+            cout << "ERROR: Unable to delete file." << endl;
+        }
+    }
+
+    SetCurrentDirectory(origin_real_path.c_str());
+    return success ? 0 : BAD_COMMAND;
 }
 
 int shell_dir(vector<string> args) {
@@ -82,23 +151,46 @@ int shell_pwd(vector<string> args) {
 	return 0;
 }
 
-int pathFileExists(string path) {
-    char new_path[1024];
-
-    // **1. Xử lý đường dẫn tuyệt đối**
-    if (path[0] == '/') {
-
-		char tmp[2048];
-		strcpy(tmp, origin_real_path.c_str());
-		strcat(tmp, path.c_str());
-        // int retval = PathFileExists(tmp);
-        // if (retval == 1) {
-        //     return 0;
-        // }
-		// check path
+/*
+Chỉ cho phép tạo folder trong directory hiện tại
+*/
+int shell_mkdir(vector<string> args) {
+    if (args.size() != 2) {
+        printf("Usage: mkdir <foldername>\n");
+        return BAD_COMMAND;
     }
-    return FILE_NOT_EXITS;
+
+    string full_path = current_real_path + "\\" + args[1];
+    
+    if (!CreateDirectory(full_path.c_str(), NULL)) {
+        if (GetLastError() == ERROR_ALREADY_EXISTS) {
+            printf("Directory already exists.\n");
+        } else {
+            printf("Failed to create directory.\n");
+        }
+    }
+
+    return 0;
 }
+
+// int pathFileExists(string path) {
+//     char new_path[1024];
+
+//     // **1. Xử lý đường dẫn tuyệt đối**
+//     if (path[0] == '/') {
+
+// 		char tmp[2048];
+// 		strcpy(tmp, origin_real_path.c_str());
+// 		strcat(tmp, path.c_str());
+//         // int retval = PathFileExists(tmp);
+//         // if (retval == 1) {
+//         //     return 0;
+//         // }
+// 		// check path
+//     }
+//     return FILE_NOT_EXITS;
+// }
+
 
 /*
 Để tránh rắc rối, ta luôn mặc định current_directory (đang làm việc) là toàn bộ TinyShell
@@ -112,22 +204,28 @@ Chỉ cho phép đường dẫn tuyệt đối từ /root/...
 */
 
 int shell_cd(vector<string> args) {
+    if (args.size() == 1) return 0;
     if (args.size() == 2) {
         // Lệnh "cd" có tham số
         string path_str = args[1];
         if (path_str[0] == '/') {
-            char full_path[MAX_PATH];
-            strcpy(full_path, origin_real_path.c_str());
-            strcat(full_path, path_str.c_str());
-            if (SetCurrentDirectory(full_path) == FALSE) {
-                cout << "No such file or directory" << endl;
+            if (path_str.size() >= 5 && path_str.substr(0, 5) == "/root") {
+                char full_path[MAX_PATH];
+                strcpy(full_path, origin_real_path.c_str());
+                strcat(full_path, path_str.c_str());
+                if (SetCurrentDirectory(full_path) == FALSE) {
+                    cout << "No such directory" << endl;
+                    SetCurrentDirectory(origin_real_path.c_str());
+                    return DIRECTORY_NOT_EXISTS;
+                }
                 SetCurrentDirectory(origin_real_path.c_str());
-                return DIRECTORY_NOT_EXISTS;
+                current_real_path = full_path;
+                current_fake_path = path_str;
+                return 0;
+            } else {
+                printf("Bad command ... \n");
+                return BAD_COMMAND;
             }
-            SetCurrentDirectory(origin_real_path.c_str());
-            current_real_path = full_path;
-            current_fake_path = path_str;
-            return 0;
         } else if (path_str == "..") {
             if (current_fake_path == "/root") {
                 return 0;
@@ -151,7 +249,7 @@ int shell_cd(vector<string> args) {
             strcat(full_path, "/");
             strcat(full_path, path_str.c_str());
             if(SetCurrentDirectory(full_path)==FALSE){
-                cout << "No such file or directory" << endl;
+                cout << "No such directory" << endl;
                 SetCurrentDirectory(origin_real_path.c_str());
                 return DIRECTORY_NOT_EXISTS;
             }

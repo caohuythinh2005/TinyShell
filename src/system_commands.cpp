@@ -14,19 +14,26 @@ void init_system_commands() {
     status = 1;
 }
 
-// int shell_help(vector<string> args) {
-//     if (args.size() == 1) {
-//         printf("\nhelp                      Print this help");
-//         printf("\nlist                      List all background processes");
-//         printf("\nexit                      Exit shell");
-//         printf("\ncls                       Clear the console screen\n\n");
-//     }
-//     else {
-//         printf("\nBad command...\n\n");
-//         return BAD_COMMAND;
-//     }
-//     return 0;
-// }
+int shell_help(vector<string> args) {
+    if (args.size() == 1) {
+        cout << "\nAVAILABLE COMMANDS:\n";
+        cout << "------------------------------------------\n";
+        cout << "cls              : Clear the console screen\n";
+        cout << "exit             : Exit the program\n";
+        cout << "pwd              : Print the current working directory\n";
+        cout << "dir              : List all files and directories in the current path\n";
+        cout << "cd [path]        : Change current directory or go back to parent\n";
+        cout << "mkdir [name]     : Create a new directory in the current path\n";
+        cout << "del [name]       : Delete a file or folder (recursively if it's a folder)\n";
+        cout << "help             : Show the list of supported commands with descriptions\n";
+        cout << "------------------------------------------\n";
+    } else {
+        cout << "\nBad command...\n\n";
+        return BAD_COMMAND;
+    }
+    return 0;
+}
+
 
 void shell_working(vector<string> args) {
     int shell_num_builtins = builtin_str.size();

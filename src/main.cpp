@@ -21,23 +21,27 @@ string current_fake_path; // là /root
 
 
 vector<string> builtin_str = {
-    // "help",
     // "list",
     "cls",
     "exit",
 	"pwd",
 	"dir",
-	"cd"
+	"cd",
+	"mkdir",
+	"del",
+	"help"
 };
 
 int (*builtin_func[]) (vector<string>) = {
-    // &shell_help,
     // &shell_print_processes_info,
     &shell_cls,
     &shell_exit,
 	&shell_pwd,
 	&shell_dir,
-	&shell_cd
+	&shell_cd,
+	&shell_mkdir,
+	&shell_del,
+	&shell_help
 };
 
 
@@ -50,19 +54,19 @@ int main() {
 		std::cout << "\033[32mmy_shell:\033[36m" << current_fake_path << "\033[0m$ \033[0m";
 		line = read_command_line();
 		args = parse_command(line);
-		for (string x : args) {
-			cout << "|" << x << "|" << endl;
-		}
-		int i = 0;
+		// for (string x : args) {
+		// 	cout << "|" << x << "|" << endl;
+		// }
+		// int i = 0;
 		if (args.size() > 0) {
 			shell_working(args);
 		}
-		char buffer[MAX_PATH];
-		GetCurrentDirectory(MAX_PATH, buffer);
-		printf("\n%s\n", buffer);
-		cout << origin_real_path << endl;
-		cout << current_real_path << endl;
-		cout << current_fake_path << endl << endl; 
+		// char buffer[MAX_PATH];
+		// GetCurrentDirectory(MAX_PATH, buffer);
+		// printf("\n%s\n", buffer);
+		// cout << origin_real_path << endl;
+		// cout << current_real_path << endl;
+		// cout << current_fake_path << endl << endl; 
 	}
 	return 0;
 }

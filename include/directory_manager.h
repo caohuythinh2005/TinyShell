@@ -3,12 +3,12 @@
 #include "globals.h"
 
 int init_directory();
-int pathFileExists(string path);
-
 
 // for shell
 int shell_pwd(vector<string> args);
 int shell_dir(vector<string> args);
 int shell_cd(vector<string> args);
+int shell_mkdir(vector<string> args);
+int shell_del(vector<string> args);
 
 #endif
