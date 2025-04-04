@@ -24,5 +24,4 @@ extern string current_fake_path;
 extern vector<string> builtin_str;
 extern int (*builtin_func[]) (vector<string>);
 
-
 #endif

@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "stdio.h": "c",
-        "directory_manager.h": "c",
-        "constant.h": "c",
-        "xstring": "cpp",
-        "vector": "cpp"
-    }
-}
