@@ -13,6 +13,7 @@
 
 #include "directory_manager.h"
 #include "constant.h"
+#include "utils.h"
 // #include "Shlwapi.h"
 
 
@@ -31,8 +32,9 @@ int init_directory() {
     }
 
     // Thêm "/root" vào cuối current_real_path
-    current_real_path += "/root";
-    current_fake_path = "/root";  // Gán đường dẫn giả
+    current_real_path += "\\root";
+    current_fake_path = "\\root";  // Gán đường dẫn giả
+    fixed_real_path = current_real_path;
     return 0;
 }
 
@@ -147,7 +149,7 @@ int shell_pwd(vector<string> args) {
         printf("Bad command ... \n");
         return BAD_COMMAND;
     }
-	cout << current_fake_path << endl;
+	cout << formatFakePathToUnixStyle(current_fake_path) << endl;
 	return 0;
 }
 
@@ -208,8 +210,8 @@ int shell_cd(vector<string> args) {
     if (args.size() == 2) {
         // Lệnh "cd" có tham số
         string path_str = args[1];
-        if (path_str[0] == '/') {
-            if (path_str.size() >= 5 && path_str.substr(0, 5) == "/root") {
+        if (path_str[0] == '/' || path_str[0] == '\\') {
+            if (path_str.size() >= 5 && (path_str.substr(0, 5) == "/root" || path_str.substr(0, 5) == "\\root")) {
                 char full_path[MAX_PATH];
                 strcpy(full_path, origin_real_path.c_str());
                 strcat(full_path, path_str.c_str());
@@ -218,16 +220,17 @@ int shell_cd(vector<string> args) {
                     SetCurrentDirectory(origin_real_path.c_str());
                     return DIRECTORY_NOT_EXISTS;
                 }
+                string fullPath = getNormalizedCurrentDirectory();
                 SetCurrentDirectory(origin_real_path.c_str());
-                current_real_path = full_path;
-                current_fake_path = path_str;
+                current_real_path = fullPath;
+                current_fake_path = removePrefix(current_real_path, origin_real_path);
                 return 0;
             } else {
                 printf("Bad command ... \n");
                 return BAD_COMMAND;
             }
         } else if (path_str == "..") {
-            if (current_fake_path == "/root") {
+            if (current_fake_path == "\\root") {
                 return 0;
             }
             // Ngược lại thì ok rồi :))
@@ -235,31 +238,37 @@ int shell_cd(vector<string> args) {
             char current_fake_path_c_str[MAX_PATH];
             strcpy(current_real_path_c_str, current_real_path.c_str());
             strcpy(current_fake_path_c_str, current_fake_path.c_str());
-            char* last_real_slash = strrchr(current_real_path_c_str, '/');
-            char* last_fake_slash = strrchr(current_fake_path_c_str, '/');
+            char* last_real_slash = strrchr(current_real_path_c_str, '\\');
+            char* last_fake_slash = strrchr(current_fake_path_c_str, '\\');
             *last_real_slash = '\0';
             *last_fake_slash = '\0';
             current_real_path = current_real_path_c_str;
             current_fake_path = current_fake_path_c_str;
             return 0;
+        }  if (path_str == ".") {
+            return 0;
         } else {
             // Di chuyển theo đường dẫn tương đối
             char full_path[MAX_PATH];
             strcpy(full_path, current_real_path.c_str());
-            strcat(full_path, "/");
+            strcat(full_path, "\\");
             strcat(full_path, path_str.c_str());
             if(SetCurrentDirectory(full_path)==FALSE){
                 cout << "No such directory" << endl;
                 SetCurrentDirectory(origin_real_path.c_str());
                 return DIRECTORY_NOT_EXISTS;
-            }
-            SetCurrentDirectory(origin_real_path.c_str());
-            current_real_path = full_path;
-            char full_fake_path[MAX_PATH];
-            strcpy(full_fake_path, current_fake_path.c_str());
-            strcat(full_fake_path, "/");
-            strcat(full_fake_path, path_str.c_str());
-            current_fake_path = full_fake_path;
+            } else {
+                string fullPath = getNormalizedCurrentDirectory();
+                if (isPrefix(fullPath, fixed_real_path)) {
+                    SetCurrentDirectory(origin_real_path.c_str());
+                    current_real_path = fullPath;
+                    current_fake_path = removePrefix(current_real_path, origin_real_path);
+                }
+                else {
+                    printf("Bad command ... \n");
+                    return BAD_COMMAND;
+                }
+            } 
             return 0;
         }
 

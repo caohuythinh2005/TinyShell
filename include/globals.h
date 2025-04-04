@@ -19,6 +19,7 @@ extern STARTUPINFO si;
 extern PROCESS_INFORMATION pi;
 extern string ROOT_DIRECTORY;  // Định nghĩa thư mục gốc
 extern string origin_real_path;
+extern string fixed_real_path;
 extern string current_real_path;
 extern string current_fake_path;
 extern vector<string> builtin_str;

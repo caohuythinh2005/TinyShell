@@ -10,14 +10,16 @@
 int status; /*flag to determine when to exit program*/
 STARTUPINFO si;
 PROCESS_INFORMATION pi;
-string ROOT_DIRECTORY = "/root";  // Định nghĩa thư mục gốc
+string ROOT_DIRECTORY = "\\root";  // Định nghĩa thư mục gốc
 string origin_real_path; // đến trước root thôi (ví dụ C:/root thì thành C:)
+string fixed_real_path; // có thêm /root so với cái trên
 string current_real_path;  // là (C:/root)
 string current_fake_path; // là /root
 
 #include "system_commands.h"
 #include "constant.h"
 #include "directory_manager.h"
+#include "utils.h"
 
 
 vector<string> builtin_str = {
@@ -51,7 +53,7 @@ int main() {
 	string line;  /*command line*/ 
 	vector<string> args; /*command line arguments*/
 	while (status) {
-		std::cout << "\033[32mmy_shell:\033[36m" << current_fake_path << "\033[0m$ \033[0m";
+		std::cout << "\033[32mmy_shell:\033[36m" << formatFakePathToUnixStyle(current_fake_path) << "\033[0m$ \033[0m";
 		line = read_command_line();
 		args = parse_command(line);
 		// for (string x : args) {

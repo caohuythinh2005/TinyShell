@@ -9,4 +9,5 @@ include_directories(include)
 add_executable(TinyShell
 src/main.cpp
 src/directory_manager.cpp
-src/system_commands.cpp)
+src/system_commands.cpp
+src/utils.cpp)

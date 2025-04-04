@@ -1,5 +1,8 @@
-CMakeFiles/TinyShell.dir/src/main.cpp.obj: \
- D:\He_dieu_hanh\TinyShell\src\main.cpp C:/msys64/ucrt64/include/stdio.h \
+CMakeFiles/TinyShell.dir/src/utils.cpp.obj: \
+ D:\He_dieu_hanh\TinyShell\src\utils.cpp \
+ D:/He_dieu_hanh/TinyShell/include/utils.h \
+ D:/He_dieu_hanh/TinyShell/include/globals.h \
+ C:/msys64/ucrt64/include/stdio.h \
  C:/msys64/ucrt64/include/corecrt_stdio_config.h \
  C:/msys64/ucrt64/include/corecrt.h C:/msys64/ucrt64/include/_mingw.h \
  C:/msys64/ucrt64/include/_mingw_mac.h \
@@ -232,7 +235,6 @@ CMakeFiles/TinyShell.dir/src/main.cpp.obj: \
  C:/msys64/ucrt64/include/tlhelp32.h C:/msys64/ucrt64/include/sys/stat.h \
  C:/msys64/ucrt64/include/io.h C:/msys64/ucrt64/include/sys/types.h \
  C:/msys64/ucrt64/include/_mingw_stat64.h \
- D:/He_dieu_hanh/TinyShell/include/globals.h \
  C:/msys64/ucrt64/include/c++/13.1.0/string \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/requires_hosted.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stringfwd.h \
@@ -343,9 +345,4 @@ CMakeFiles/TinyShell.dir/src/main.cpp.obj: \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stl_uninitialized.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stl_vector.h \
  C:/msys64/ucrt64/include/c++/13.1.0/bits/stl_bvector.h \
- C:/msys64/ucrt64/include/c++/13.1.0/bits/vector.tcc \
- D:/He_dieu_hanh/TinyShell/include/system_commands.h \
- D:/He_dieu_hanh/TinyShell/include/constant.h \
- D:/He_dieu_hanh/TinyShell/include/directory_manager.h \
- D:/He_dieu_hanh/TinyShell/include/globals.h \
- D:/He_dieu_hanh/TinyShell/include/utils.h
+ C:/msys64/ucrt64/include/c++/13.1.0/bits/vector.tcc

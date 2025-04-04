@@ -200,6 +200,30 @@ src/system_commands.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TinyShell.dir\build.make CMakeFiles/TinyShell.dir/src/system_commands.cpp.s
 .PHONY : src/system_commands.cpp.s
 
+src/utils.obj: src/utils.cpp.obj
+.PHONY : src/utils.obj
+
+# target to build an object file
+src/utils.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TinyShell.dir\build.make CMakeFiles/TinyShell.dir/src/utils.cpp.obj
+.PHONY : src/utils.cpp.obj
+
+src/utils.i: src/utils.cpp.i
+.PHONY : src/utils.i
+
+# target to preprocess a source file
+src/utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TinyShell.dir\build.make CMakeFiles/TinyShell.dir/src/utils.cpp.i
+.PHONY : src/utils.cpp.i
+
+src/utils.s: src/utils.cpp.s
+.PHONY : src/utils.s
+
+# target to generate assembly for a file
+src/utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TinyShell.dir\build.make CMakeFiles/TinyShell.dir/src/utils.cpp.s
+.PHONY : src/utils.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -218,6 +242,9 @@ help:
 	@echo ... src/system_commands.obj
 	@echo ... src/system_commands.i
 	@echo ... src/system_commands.s
+	@echo ... src/utils.obj
+	@echo ... src/utils.i
+	@echo ... src/utils.s
 .PHONY : help
 
 

@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TinyShell.dir/src/main.cpp.obj.d"
   "CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj"
   "CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj.d"
+  "CMakeFiles/TinyShell.dir/src/utils.cpp.obj"
+  "CMakeFiles/TinyShell.dir/src/utils.cpp.obj.d"
   "TinyShell.exe"
   "TinyShell.exe.manifest"
   "TinyShell.pdb"
