@@ -14,10 +14,6 @@ void init_system_commands() {
     status = 1;
 }
 
-// extern vector<string> builtin_str;
-// extern int (*builtin_func[]) (vector<string>);
-
-
 // int shell_help(vector<string> args) {
 //     if (args.size() == 1) {
 //         printf("\nhelp                      Print this help");
