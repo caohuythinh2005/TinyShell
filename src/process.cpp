@@ -130,11 +130,6 @@ void addProcesses(DWORD parentPID, vector<ProcessInfor>& result) {
                 info.pid = pe.th32ProcessID;
                 info.processName = pe.szExeFile;
                 info.status = "running";  // Cần phải tìm cách lấy status thực tế
-
-                // Mở tiến trình để có thể thao tác với nó
-                info.hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pe.th32ProcessID);
-
-
                 // Thêm vào danh sách kết quả
                 result.push_back(info);
 
@@ -143,6 +138,7 @@ void addProcesses(DWORD parentPID, vector<ProcessInfor>& result) {
             }
         } while (Process32Next(hSnapShot, &pe));
     }
+    CloseHandle(hSnapShot);
 }
 
 vector<ProcessInfor> getShellProcesses() {
@@ -203,47 +199,138 @@ int resume(DWORD processId) {
 // }
 
 int shell_killProcessById(vector<string> args) {
-    // if (args.size() != 2) {
-    //     cerr << "Usage: kill <ProcessID>\n";
-    //     return -1;
-    // }
+    if (args.size() != 2) {
+        printf("Bad command ... \n");
+        return BAD_COMMAND;
+    }
 
-    // DWORD pidToKill = stoul(args[1]);
+    DWORD pidToKill = stoul(args[1]);
     
-    // // Tìm kiếm ProcessInfo có pid trùng
-    // bool found = false;
-    // for (auto& process : processList) {
-    //     if (process.pid == pidToKill) {
-    //         found = true;
+    vector<ProcessInfor> processList = getShellProcesses();
+    // Tìm kiếm ProcessInfo có pid trùng
+    // Làm thế này để đảm bảo sandbox
+    bool found = false;
+    for (auto& process : processList) {
+        if (process.pid == pidToKill) {
+            found = true;
+            HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, 0, (DWORD) process.pid);
+            // Tiến hành kill process
+            if (TerminateProcess(hProcess, 1)) {
+                cout << "Process " << pidToKill << " terminated.\n";
+                CloseHandle(hProcess);
+                process.status = "terminated";
+            } else {
+                cerr << "Failed to terminate process.\n";
+            }
+            break; // Dừng vòng lặp nếu tìm thấy PID
+        }
+    }
 
-    //         // Tiến hành kill process
-    //         if (TerminateProcess(process.hProcess, 1)) {
-    //             cout << "Process " << pidToKill << " terminated.\n";
-    //             CloseHandle(process.hProcess);
-    //             process.status = "terminated";
-    //             // Hoặc remove khỏi danh sách nếu cần:
-    //             // processList.erase(std::remove(processList.begin(), processList.end(), process), processList.end());
-    //         } else {
-    //             cerr << "Failed to terminate process.\n";
-    //         }
-    //         break; // Dừng vòng lặp nếu tìm thấy PID
-    //     }
-    // }
+    if (!found) {
+        cout << "Bad PID" << endl;
+        return -1;
+    }
 
-    // if (!found) {
-    //     std::cerr << "PID " << pidToKill << " is not managed by TinyShell.\n";
-    //     return -1;
-    // }
-
-    // return 0;
     return 0;
 }
 
 int shell_suspendById(vector<string> args) {
+    if (args.size() != 2) {
+        printf("Bad command ... \n");
+        return BAD_COMMAND;
+    }
+
+    DWORD pidToSuspend = stoul(args[1]);
+
+    vector<ProcessInfor> processes = getShellProcesses();
+
+    // Tìm tiến trình cần suspend bằng vòng lặp thông thường
+    bool found = false;
+    ProcessInfor targetProcess;
+    for (const auto& process : processes) {
+        if (process.pid == pidToSuspend) {
+            targetProcess = process;
+            found = true;
+            break;
+        }
+    }
+    if (found) {
+        /*
+        Lấy ThreadId của tất cả các thread thuộc tiến trình cần suspend.
+        Mở từng thread với OpenThread(THREAD_SUSPEND_RESUME, ...).
+        Gọi SuspendThread(hThread) đúng cách trên thread handle, không phải process handle.
+        */
+        HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+        THREADENTRY32 te;
+        te.dwSize = sizeof(THREADENTRY32);
+        do
+        {
+            if (te.th32OwnerProcessID == pidToSuspend)
+            {
+                HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, te.th32ThreadID);
+                if (hThread != NULL)
+                {
+                    SuspendThread(hThread);
+                    CloseHandle(hThread);
+                }
+            }
+        } while (Thread32Next(hSnapshot, &te));
+        cout << "Process " << pidToSuspend << " suspended" << endl;
+        CloseHandle(hSnapshot);
+    } else {
+        cout << "Bad PID" << endl;
+        return -1;
+    }
     return 0;
 }
 
 int shell_resumeById(vector<string> args) {
+    if (args.size() != 2) {
+        printf("Bad command ... \n");
+        return BAD_COMMAND;
+    }
+
+    DWORD pidToSuspend = stoul(args[1]);
+
+    vector<ProcessInfor> processes = getShellProcesses();
+
+    // Tìm tiến trình cần suspend bằng vòng lặp thông thường
+    bool found = false;
+    ProcessInfor targetProcess;
+    for (const auto& process : processes) {
+        if (process.pid == pidToSuspend) {
+            targetProcess = process;
+            found = true;
+            break;
+        }
+    }
+    if (found) {
+        /*
+        Lấy ThreadId của tất cả các thread thuộc tiến trình cần suspend.
+        Mở từng thread với OpenThread(THREAD_SUSPEND_RESUME, ...).
+        Gọi ResumeThread(hThread) đúng cách trên thread handle, không phải process handle.
+        */
+        HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+        THREADENTRY32 te;
+        te.dwSize = sizeof(THREADENTRY32);
+        do
+        {
+            if (te.th32OwnerProcessID == pidToSuspend)
+            {
+                HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, te.th32ThreadID);
+                if (hThread != NULL)
+                {
+                    ResumeThread(hThread);
+                    CloseHandle(hThread);
+                }
+            }
+        } while (Thread32Next(hSnapshot, &te));
+        cout << "Process " << pidToSuspend << " resumed" << endl;
+        CloseHandle(hSnapshot);
+    } else {
+        cout << "Bad PID" << endl;
+        return -1;
+    }
     return 0;
 }
 

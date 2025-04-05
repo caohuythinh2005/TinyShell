@@ -48,7 +48,9 @@ vector<string> builtin_str = {
 	"time",
 	"date",
 	"runExe",
-	"kill_id"
+	"kill_id",
+	"pause_id",
+	"resume_id"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -66,7 +68,9 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_time,
 	&shell_date,
 	&shell_runExe,
-	&shell_killProcessById
+	&shell_killProcessById,
+	&shell_suspendById,
+	&shell_resumeById
 };
 
 

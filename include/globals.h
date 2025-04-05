@@ -17,7 +17,6 @@ using namespace std;
 
 struct ProcessInfor{
     DWORD pid;
-    HANDLE hProcess;
     string processName;
     string status;
 };

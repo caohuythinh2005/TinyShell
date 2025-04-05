@@ -18,16 +18,27 @@ void init_system_commands() {
 int shell_help(vector<string> args) {
     if (args.size() == 1) {
         cout << "\nAVAILABLE COMMANDS:\n";
-        cout << "------------------------------------------\n";
-        cout << "cls              : Clear the console screen\n";
-        cout << "exit             : Exit the program\n";
-        cout << "pwd              : Print the current working directory\n";
-        cout << "dir              : List all files and directories in the current path\n";
-        cout << "cd [path]        : Change current directory or go back to parent\n";
-        cout << "mkdir [name]     : Create a new directory in the current path\n";
-        cout << "del [name]       : Delete a file or folder (recursively if it's a folder)\n";
-        cout << "help             : Show the list of supported commands with descriptions\n";
-        cout << "------------------------------------------\n";
+        cout << "-------------------------------------------------------------\n";
+        cout << "cls                 : Clear the console screen\n";
+        cout << "exit                : Exit the shell\n";
+        cout << "pwd                 : Show the current working directory\n";
+        cout << "dir                 : List all files and folders in the current directory\n";
+        cout << "cd [path]           : Change current directory to [path]\n";
+        cout << "cd ..               : Move to the parent directory\n";
+        cout << "mkdir [name]        : Create a new directory with given name\n";
+        cout << "del [name]          : Delete a file or folder (recursively if it's a folder)\n";
+        cout << "help                : Show this help message\n";
+        cout << "test [-f/-d] [path] : Check if the file or directory exists\n";
+        cout << "exec [path]         : Execute a bat file \n";
+        cout << "time                : Display current system time\n";
+        cout << "date                : Display current system date\n";
+        cout << "runExe [path]       : Run executable at given path in foreground\n";
+        cout << "runExe [path] -b    : Run executable in background (non-blocking)\n";
+        cout << "kill_id [pid]       : Kill a process with the given PID (must be managed)\n";
+        cout << "pause_id [pid]      : Suspend a managed process by PID\n";
+        cout << "resume_id [pid]     : Resume a suspended managed process by PID\n";
+        cout << "list                : List all processes managed by TinyShell\n";
+        cout << "-------------------------------------------------------------\n";
     } else {
         cout << "Bad command...\n";
         return BAD_COMMAND;
