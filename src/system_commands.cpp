@@ -32,7 +32,7 @@ int shell_help(vector<string> args) {
         cout << "exec [path]         : Execute a bat file \n";
         cout << "time                : Display current system time\n";
         cout << "date                : Display current system date\n";
-        cout << "runExe [path]       : Run executable at given path in foreground\n";
+        cout << "runExe [path]       : Run executable at given path in foreground (press Ctrl+C to terminate)\n";
         cout << "runExe [path] -b    : Run executable in background (non-blocking)\n";
         cout << "kill_id [pid]       : Kill a process with the given PID (must be managed)\n";
         cout << "pause_id [pid]      : Suspend a managed process by PID\n";

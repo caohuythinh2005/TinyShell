@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <csignal>
 
 using namespace std;
 
@@ -38,4 +39,6 @@ extern vector<string> builtin_str;
 extern int (*builtin_func[]) (vector<string>);
 extern HANDLE hJob;
 extern JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
+extern HANDLE fore;
+extern vector<DWORD> lstProcessSuspended;
 #endif

@@ -20,9 +20,17 @@ string fixed_real_path; // có thêm /root so với cái trên
 string current_real_path;  // là (C:/root)
 string current_fake_path; // là /root
 
+
+
 // Xử lý hàng đợi
 HANDLE hJob;
 JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
+
+// foreground mode
+HANDLE fore = NULL;
+
+// Lưu lại thông tin tiến trình bị suspend
+vector<DWORD> lstProcessSuspended;
 
 
 #include "process.h"
@@ -80,43 +88,6 @@ int main() {
 	init_directory();
 	string line;  /*command line*/ 
 	vector<string> args; /*command line arguments*/
-	// if (!CreateProcess(
-	// 	NULL,
-	// 	(LPSTR)"notepad.exe",
-	// 	NULL,
-	// 	NULL,
-	// 	FALSE,
-	// 	CREATE_SUSPENDED, // Đảm bảo gán trước khi đưa vào tiến trình
-	// 	NULL,
-	// 	NULL,
-	// 	&si,
-	// 	&pi
-	// )) {
-	// 	cerr << "Failed to create process\n";
-    //     CloseHandle(hJob);
-    //     return 1;
-	// }
-	// /*
-	// 	AssignProcessToJobObject(hJob, pi.hProcess)
-	// 	Gán tiến trình con (được biểu thị bằng pi.hProcess) vào một Job Object 
-	// 	đã được tạo trước đó (biểu thị bởi hJob).
-	// */
-
-	// if (!AssignProcessToJobObject(hJob, pi.hProcess)) {
-	// 	cerr << "Failed to assign process to job\n";
-	// 	TerminateProcess(pi.hProcess, 1);
-	// 	CloseHandle(pi.hProcess);
-	// 	CloseHandle(pi.hThread);
-	// 	CloseHandle(hJob);
-	// 	return 1;
-	// }
-
-	// ResumeThread(pi.hThread);
-    // std::cout << "Press Enter to exit shell (notepad will also close)...\n";
-    // std::cin.get(); // chờ người dùng nhấn Enter
-	// CloseHandle(pi.hProcess);
-	// CloseHandle(pi.hThread);
-	// CloseHandle(hJob);
 	while (status) {
 		std::cout << "\033[32mmy_shell:\033[36m" << formatFakePathToUnixStyle(current_fake_path) << "\033[0m$ \033[0m";
 		line = read_command_line();

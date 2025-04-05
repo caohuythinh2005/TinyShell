@@ -5,6 +5,15 @@
 #include "directory_manager.h"
 #include "utils.h"
 
+/*
+Hai trạng thái mà mình quan tâm
+
+Running: Khi tiến trình đang thực thi bình thường.
+
+Suspended: Khi tiến trình bị tạm dừng (suspend), không thực thi cho đến khi được tiếp tục.
+
+*/
+
 
 int init_process() {
     hJob = CreateJobObject(
@@ -72,6 +81,16 @@ int shell_runScript(vector<string> args)
     return 0;
 }
 
+void sigintHandler(int sig_num) {
+    // Nếu có tiến trình foreground đang chạy, terminate nó
+    if (fore != NULL) {
+        std::cout << "\nInterrupt received. Terminating foreground process...\n";
+        TerminateProcess(fore, 1); // Dừng tiến trình
+        fore = NULL;  // Xóa handle
+    }
+    std::cin.clear(); // Đảm bảo không bị lỗi khi đọc từ stdin
+}
+
 int shell_runExe(vector<string> args) {
     // -b : background mode
     si.cb = sizeof(si);
@@ -103,6 +122,7 @@ int shell_runExe(vector<string> args) {
         printf("Cannot create process\n");
         return 0;
     } else {
+        std::signal(SIGINT, sigintHandler);
         AssignProcessToJobObject(hJob, pi.hProcess);
         ResumeThread(pi.hThread);
         if (args.size() == 2) {
@@ -160,6 +180,18 @@ vector<ProcessInfor> getShellProcesses() {
     return result;
 }
 
+vector<ProcessInfor> getShellProcessesWithStatus() {
+    vector<ProcessInfor> processes = getShellProcesses();
+    for (int i = 0; i < processes.size(); i++) {
+        for (int j = 0; j < lstProcessSuspended.size(); j++) {
+            if (processes[i].pid == lstProcessSuspended[j]) {
+                processes[i].status = "suspended";
+            }
+        }
+    }
+    return processes;
+}
+
 void printProcesses(const vector<ProcessInfor>& processes) {
     cout << "-----------------------------------------\n";
     cout << "PID\t\tName\t\tStatus\n";
@@ -206,11 +238,11 @@ int shell_killProcessById(vector<string> args) {
 
     DWORD pidToKill = stoul(args[1]);
     
-    vector<ProcessInfor> processList = getShellProcesses();
+    vector<ProcessInfor> processes = getShellProcesses();
     // Tìm kiếm ProcessInfo có pid trùng
     // Làm thế này để đảm bảo sandbox
     bool found = false;
-    for (auto& process : processList) {
+    for (auto& process : processes) {
         if (process.pid == pidToKill) {
             found = true;
             HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, 0, (DWORD) process.pid);
@@ -230,7 +262,7 @@ int shell_killProcessById(vector<string> args) {
         cout << "Bad PID" << endl;
         return -1;
     }
-
+    checkAndRemoveClosedSuspendedProcesses();
     return 0;
 }
 
@@ -241,9 +273,10 @@ int shell_suspendById(vector<string> args) {
     }
 
     DWORD pidToSuspend = stoul(args[1]);
-
+    for (DWORD x : lstProcessSuspended) {
+        if (x == pidToSuspend) return 0;
+    }
     vector<ProcessInfor> processes = getShellProcesses();
-
     // Tìm tiến trình cần suspend bằng vòng lặp thông thường
     bool found = false;
     ProcessInfor targetProcess;
@@ -276,6 +309,7 @@ int shell_suspendById(vector<string> args) {
             }
         } while (Thread32Next(hSnapshot, &te));
         cout << "Process " << pidToSuspend << " suspended" << endl;
+        lstProcessSuspended.push_back(pidToSuspend);
         CloseHandle(hSnapshot);
     } else {
         cout << "Bad PID" << endl;
@@ -291,15 +325,10 @@ int shell_resumeById(vector<string> args) {
     }
 
     DWORD pidToSuspend = stoul(args[1]);
-
-    vector<ProcessInfor> processes = getShellProcesses();
-
     // Tìm tiến trình cần suspend bằng vòng lặp thông thường
     bool found = false;
-    ProcessInfor targetProcess;
-    for (const auto& process : processes) {
-        if (process.pid == pidToSuspend) {
-            targetProcess = process;
+    for (DWORD process : lstProcessSuspended) {
+        if (process == pidToSuspend) {
             found = true;
             break;
         }
@@ -326,6 +355,14 @@ int shell_resumeById(vector<string> args) {
             }
         } while (Thread32Next(hSnapshot, &te));
         cout << "Process " << pidToSuspend << " resumed" << endl;
+        for (auto it = lstProcessSuspended.begin(); it != lstProcessSuspended.end(); ) {
+            DWORD pid = *it;
+            if (pid == pidToSuspend) {
+                lstProcessSuspended.erase(it);
+                break;
+            }
+            ++it;
+        }
         CloseHandle(hSnapshot);
     } else {
         cout << "Bad PID" << endl;
@@ -334,6 +371,27 @@ int shell_resumeById(vector<string> args) {
     return 0;
 }
 
+void checkAndRemoveClosedSuspendedProcesses() {
+    vector<ProcessInfor> processes = getShellProcesses();
+    auto it = lstProcessSuspended.begin();
+    while (it != lstProcessSuspended.end()) {
+        DWORD pid = *it;
+        bool check = false;
+        for (ProcessInfor process: processes) {
+            if (process.pid == pid) {
+                check = true;
+                break;
+            }
+        }
+        if (check == false) {
+            lstProcessSuspended.erase(it);
+            ++it;
+        }
+    }
+}
+
+
+
 int shell_list(vector<string> args) {
-    printProcesses(getShellProcesses());
+    printProcesses(getShellProcessesWithStatus());
 }

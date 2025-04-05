@@ -21,6 +21,9 @@ void printProcesses(const vector<ProcessInfor>& processes);
 // int shell_killProcessByName(vector<string> args);
 // int shell_suspendByName(vector<string> args);
 // int shell_resumeByName(vector<string> args);
+vector<ProcessInfor> getShellProcesses();
+vector<ProcessInfor> getShellProcessesWithStatus();
+void checkAndRemoveClosedSuspendedProcesses();
 
 int shell_killProcessById(vector<string> args);
 int shell_suspendById(vector<string> args);
