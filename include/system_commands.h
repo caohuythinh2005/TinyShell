@@ -12,5 +12,6 @@ int shell_help(vector<string> args);
 // int shell_print_processes_info(vector<string> args);
 int shell_cls(vector<string> args);
 int shell_exit(vector<string> args);
+int shell_runScript(vector<string> args);
 
 #endif

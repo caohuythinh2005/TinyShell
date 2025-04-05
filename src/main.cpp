@@ -31,7 +31,9 @@ vector<string> builtin_str = {
 	"cd",
 	"mkdir",
 	"del",
-	"help"
+	"help",
+	"test",
+	"exec"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -43,7 +45,9 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_cd,
 	&shell_mkdir,
 	&shell_del,
-	&shell_help
+	&shell_help,
+	&shell_test,
+	&shell_runScript
 };
 
 

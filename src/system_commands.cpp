@@ -28,12 +28,11 @@ int shell_help(vector<string> args) {
         cout << "help             : Show the list of supported commands with descriptions\n";
         cout << "------------------------------------------\n";
     } else {
-        cout << "\nBad command...\n\n";
+        cout << "Bad command...\n";
         return BAD_COMMAND;
     }
     return 0;
 }
-
 
 void shell_working(vector<string> args) {
     int shell_num_builtins = builtin_str.size();
@@ -171,3 +170,44 @@ int shell_cls(vector<string> args) {
     return 0;
 }
 
+
+// Tạm thời hai tham số đã
+// đầu tiên là exec, thứ hai là đường dẫn
+// Về sau hỗ trợ các mode sau
+int shell_runScript(vector<string> args)
+{
+    if (args.size() != 2)
+    {
+        cout << "Bad command...\n";
+        return BAD_COMMAND;
+    }
+    // Hỗ trợ env sau
+    string scriptPath = convertFakeToRealPath(args[1]);
+    // Kiểm tra xem file script có tồn tại không
+
+    int check = fileExists(args[1]);
+    if (check == ERROR_PATH) {
+        printf("ERROR_PATH\n");
+        return ERROR_PATH;
+    } else if (check == FILE_NOT_EXIST) {
+        printf("FILE_NOT_EXIST\n");
+        return FILE_NOT_EXIST;
+    };
+    ifstream scriptFile(scriptPath);
+    if (!scriptFile)
+    {
+        cout << "UNABLE TO OPEN SCRIPT FILE: " << scriptPath << endl;
+        return UNABLE_TO_OPEN_SCRIPT_FILE;
+    }
+    string line;
+    while (getline(scriptFile, line))
+    {
+		args = parse_command(line);
+		if (args.size() > 0) {
+			shell_working(args);
+		}
+    }
+
+    scriptFile.close();
+    return 0;
+}

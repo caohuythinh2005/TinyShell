@@ -1,13 +1,10 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 #include "globals.h"
+#include <filesystem>
 
-extern string removePrefix(const string& full, const string& prefix);
+string removePrefix(const string& full, const string& prefix);
 
-extern boolean isPrefix(const string& full, const string& prefix);
-
-extern string formatFakePathToUnixStyle(const string& fake_path);
-
-extern string getNormalizedCurrentDirectory();
+boolean isPrefix(const string& full, const string& prefix);
 
 #endif

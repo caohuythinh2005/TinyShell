@@ -10,14 +10,14 @@
 #include <time.h>
 #include <sys/types.h>
 #include <psapi.h>
+#include <filesystem>
 
 #include "directory_manager.h"
 #include "constant.h"
 #include "utils.h"
 // #include "Shlwapi.h"
 
-
-
+using namespace std;
 
 
 int init_directory() {
@@ -175,25 +175,6 @@ int shell_mkdir(vector<string> args) {
     return 0;
 }
 
-// int pathFileExists(string path) {
-//     char new_path[1024];
-
-//     // **1. Xử lý đường dẫn tuyệt đối**
-//     if (path[0] == '/') {
-
-// 		char tmp[2048];
-// 		strcpy(tmp, origin_real_path.c_str());
-// 		strcat(tmp, path.c_str());
-//         // int retval = PathFileExists(tmp);
-//         // if (retval == 1) {
-//         //     return 0;
-//         // }
-// 		// check path
-//     }
-//     return FILE_NOT_EXITS;
-// }
-
-
 /*
 Để tránh rắc rối, ta luôn mặc định current_directory (đang làm việc) là toàn bộ TinyShell
 extern string origin_real_path; -> Lưu trữ cái trên
@@ -218,7 +199,7 @@ int shell_cd(vector<string> args) {
                 if (SetCurrentDirectory(full_path) == FALSE) {
                     cout << "No such directory" << endl;
                     SetCurrentDirectory(origin_real_path.c_str());
-                    return DIRECTORY_NOT_EXISTS;
+                    return DIRECTORY_NOT_EXIST;
                 }
                 string fullPath = getNormalizedCurrentDirectory();
                 SetCurrentDirectory(origin_real_path.c_str());
@@ -256,7 +237,7 @@ int shell_cd(vector<string> args) {
             if(SetCurrentDirectory(full_path)==FALSE){
                 cout << "No such directory" << endl;
                 SetCurrentDirectory(origin_real_path.c_str());
-                return DIRECTORY_NOT_EXISTS;
+                return DIRECTORY_NOT_EXIST;
             } else {
                 string fullPath = getNormalizedCurrentDirectory();
                 if (isPrefix(fullPath, fixed_real_path)) {
@@ -277,4 +258,101 @@ int shell_cd(vector<string> args) {
         return BAD_COMMAND;
     }
     return 0;
+}
+
+
+// string resolvePath(const string &path)
+// {
+//     filesystem::path input(path);
+
+
+//     // Đường dẫn tuyệt đối
+//     if (input)
+// }
+
+int shell_test(vector<string> args) {
+    if (args.size() != 3) {
+        printf("Bad command ... \n");
+        return BAD_COMMAND;
+    }
+    if (args[1] == "-f") {
+        int check = fileExists(args[2]);
+        if (check == ERROR_PATH) {
+            printf("ERROR_PATH\n");
+        } else if (check == FILE_NOT_EXIST) {
+            printf("FILE_NOT_EXIST\n");
+        } else {
+            printf("TRUE\n");
+        }
+    } else if (args[1] == "-d") {
+        int check = folderExists(args[2]);
+        if (check == ERROR_PATH) {
+            printf("ERROR_PATH\n");
+        } else if (check == DIRECTORY_NOT_EXIST) {
+            printf("DIRECTORY_NOT_EXIST\n");
+        } else {
+            printf("TRUE\n");
+        }
+    } else {
+        printf("Bad command ... \n");
+        return BAD_COMMAND;
+    }
+    return 0;
+}
+
+string formatFakePathToUnixStyle(const string& fake_path) {
+    string unix_path = fake_path;
+    for (char& c : unix_path) {
+        if (c == '\\') c = '/';
+    }
+    return unix_path;
+}
+
+string getNormalizedCurrentDirectory() {
+    char tempPath[MAX_PATH];
+    // Lấy đường dẫn hiện tại (user nhập sao cũng được)
+    DWORD len = GetCurrentDirectoryA(MAX_PATH, tempPath);
+    if (len == 0 || len > MAX_PATH) {
+        return "";  // Error
+    }
+
+    char normalizedPath[MAX_PATH];
+    DWORD result = GetLongPathNameA(tempPath, normalizedPath, MAX_PATH);
+    if (result == 0 || result > MAX_PATH) {
+        // Nếu GetLongPathName fail, trả về như GetCurrentDirectory
+        return string(tempPath);
+    }
+
+    return string(normalizedPath);
+}
+
+int fileExists(const string &path) {
+    string absPath = convertFakeToRealPath(path);
+    if (!filesystem::exists(absPath)) {
+        return ERROR_PATH;
+    }
+    if (!filesystem::is_regular_file(absPath)) {
+        return FILE_NOT_EXIST;
+    }
+    return EXIST_FILE_OR_DIRECTORY;
+}
+
+/*
+https://stackoverflow.com/questions/70924991/check-if-directory-exists-using-filesystem
+*/
+
+int folderExists(const string &path) {
+    string absPath = convertFakeToRealPath(path);
+    if (!filesystem::exists(absPath)) {
+        return ERROR_PATH;
+    }
+    if (!filesystem::is_directory(absPath)) {
+        return DIRECTORY_NOT_EXIST;
+    }
+    return EXIST_FILE_OR_DIRECTORY;
+}
+
+string convertFakeToRealPath(const string &currentFakePath)
+{
+    return origin_real_path + currentFakePath;
 }
