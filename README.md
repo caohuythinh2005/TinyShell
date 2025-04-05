@@ -9,3 +9,7 @@
 - run.bat : chạy
 
 # Khi thêm thì thêm vào CMakeLists.txt (vào add_executable)
+
+# Lưu ý
+- Muốn test (đệ quy) liệt kê process thì phải copy từ build\\Releas\\TinyShell.exe
+sang root\\exe (đối với /root/bat/test3.bat)

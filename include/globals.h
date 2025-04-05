@@ -15,8 +15,18 @@
 
 using namespace std;
 
+struct ProcessInfor{
+    DWORD pid;
+    HANDLE hProcess;
+    string processName;
+    string status;
+};
+
+typedef struct ProcessInfor ProcessInfor;
+
 
 // global var
+extern vector<ProcessInfor> processList;
 extern int status; /*flag to determine when to exit program*/
 extern STARTUPINFO si;
 extern PROCESS_INFORMATION pi;
@@ -27,5 +37,6 @@ extern string current_real_path;
 extern string current_fake_path;
 extern vector<string> builtin_str;
 extern int (*builtin_func[]) (vector<string>);
-
+extern HANDLE hJob;
+extern JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
 #endif

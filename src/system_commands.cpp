@@ -9,6 +9,7 @@
 #include "directory_manager.h"
 #include "constant.h"
 #include "system_commands.h"
+#include "process.h"
 
 void init_system_commands() {
     status = 1;
@@ -90,38 +91,6 @@ int shell_exit(vector<string> args) {
     return 0;
 }
 
-// int shell_print_processes_info(char** args) {
-//     // chỉ duy nhất 1 tham số là list
-//     if (args[1] != NULL) {
-//         printf("Bad comment...\n");
-//     }
-//     printf("-----------------------PROCESS LISTING-----------------------\n");
-//     HANDLE hSnapShot = INVALID_HANDLE_VALUE;
-//     PROCESSENTRY32 pe32;
-//     pe32.dwSize = sizeof(PROCESSENTRY32);
-//     hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-//     int count = 1;
-//     if (hSnapShot == INVALID_HANDLE_VALUE) {
-//         _tprintf(TEXT("Error\n"));
-//         return -1;
-//     }
-
-//     while (Process32Next(hSnapShot, &pe32)) {
-//         if (pe32.th32ParentProcessID == GetCurrentProcessId() || pe32.th32ProcessID == GetCurrentProcessId()) {
-//             printf("\n\t PROCESS NO:         %d", count++);
-//             printf("\n\t PROCESS NAME:       %s", pe32.szExeFile);
-//             printf("\n\t PARENT PROCESS ID:  %d", pe32.th32ParentProcessID);
-//             printf("\n\t PROCESS ID:         %d", pe32.th32ProcessID);
-//             printf("\n\t PROCESS STATUS:     %s");
-//             printf("\n-----------------------------------------------------------\n");
-//         }
-//     }
-
-//     printf("\n\n");
-//     CloseHandle(hSnapShot);
-//     return 0;
-// }
-
 int shell_cls(vector<string> args) {
     if (args.size() > 1){
         printf("\nBad command ....\n\n");
@@ -170,44 +139,32 @@ int shell_cls(vector<string> args) {
     return 0;
 }
 
-
-// Tạm thời hai tham số đã
-// đầu tiên là exec, thứ hai là đường dẫn
-// Về sau hỗ trợ các mode sau
-int shell_runScript(vector<string> args)
-{
-    if (args.size() != 2)
-    {
-        cout << "Bad command...\n";
-        return BAD_COMMAND;
+int shell_time(vector<string> args) {
+    if (args.size() != 1){
+        printf("Bad command....\n");
+        return 0;
     }
-    // Hỗ trợ env sau
-    string scriptPath = convertFakeToRealPath(args[1]);
-    // Kiểm tra xem file script có tồn tại không
+    SYSTEMTIME lt = {0};
+  
+    GetLocalTime(&lt);
+  
+    wprintf(L"\nThe local time is: %02d:%02d:%02d\n\n", 
+        lt.wHour, lt.wMinute, lt.wSecond);
 
-    int check = fileExists(args[1]);
-    if (check == ERROR_PATH) {
-        printf("ERROR_PATH\n");
-        return ERROR_PATH;
-    } else if (check == FILE_NOT_EXIST) {
-        printf("FILE_NOT_EXIST\n");
-        return FILE_NOT_EXIST;
-    };
-    ifstream scriptFile(scriptPath);
-    if (!scriptFile)
-    {
-        cout << "UNABLE TO OPEN SCRIPT FILE: " << scriptPath << endl;
-        return UNABLE_TO_OPEN_SCRIPT_FILE;
-    }
-    string line;
-    while (getline(scriptFile, line))
-    {
-		args = parse_command(line);
-		if (args.size() > 0) {
-			shell_working(args);
-		}
-    }
-
-    scriptFile.close();
     return 0;
 }
+
+int shell_date(vector<string> args) {
+    if (args.size() != 1){
+        printf("Bad command....\n");
+        return 0;
+    }
+    SYSTEMTIME st = {0};
+  
+    GetLocalTime(&st);
+  
+    wprintf(L"\nToday is: %d-%02d-%02d\n\n", st.wYear, st.wMonth, st.wDay);
+
+    return 0;
+}
+

@@ -16,4 +16,3 @@ boolean isPrefix(const string& full, const string& prefix) {
     return false;
 }
 
-
