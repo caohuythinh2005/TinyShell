@@ -24,8 +24,6 @@ string current_fake_path; // là /root
 HANDLE hJob;
 JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
 
-// Quản lý tiến trình
-vector<ProcessInfor> processList;
 
 #include "process.h"
 #include "system_commands.h"
@@ -36,7 +34,7 @@ vector<ProcessInfor> processList;
 
 
 vector<string> builtin_str = {
-    // "list",
+    "list",
     "cls",
     "exit",
 	"pwd",
@@ -54,7 +52,7 @@ vector<string> builtin_str = {
 };
 
 int (*builtin_func[]) (vector<string>) = {
-    // &shell_print_processes_info,
+    &shell_list,
     &shell_cls,
     &shell_exit,
 	&shell_pwd,
@@ -116,7 +114,6 @@ int main() {
 	// CloseHandle(pi.hThread);
 	// CloseHandle(hJob);
 	while (status) {
-		printProcesses(getShellProcesses());
 		std::cout << "\033[32mmy_shell:\033[36m" << formatFakePathToUnixStyle(current_fake_path) << "\033[0m$ \033[0m";
 		line = read_command_line();
 		args = parse_command(line);

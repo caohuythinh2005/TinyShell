@@ -26,7 +26,7 @@ typedef struct ProcessInfor ProcessInfor;
 
 
 // global var
-extern vector<ProcessInfor> processList;
+// extern vector<ProcessInfor> processList;
 extern int status; /*flag to determine when to exit program*/
 extern STARTUPINFO si;
 extern PROCESS_INFORMATION pi;

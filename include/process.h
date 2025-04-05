@@ -30,6 +30,7 @@ int shell_resumeById(vector<string> args);
 int shell_runExe(vector<string> args);
 int shell_runScript(vector<string> args);
 
+int shell_list(vector<string> args);
 
 
 

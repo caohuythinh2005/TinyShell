@@ -105,15 +105,6 @@ int shell_runExe(vector<string> args) {
     } else {
         AssignProcessToJobObject(hJob, pi.hProcess);
         ResumeThread(pi.hThread);
-
-        // Thêm vào danh sách process quản lý bởi TinyShell
-        ProcessInfor info;
-        info.pid = pi.dwProcessId;
-        info.hProcess = pi.hProcess;
-        info.processName = args[1];
-        info.status = "running";
-        processList.push_back(info);
-
         if (args.size() == 2) {
             WaitForSingleObject(pi.hProcess, INFINITE);
             printf("Child Complete\n");
@@ -191,43 +182,6 @@ void printProcesses(const vector<ProcessInfor>& processes) {
     cout << "-----------------------------------------\n";
 }
 
-// console -> tinyshell
-
-// vector<ProcessInfor> getShellProcesses() {
-//     vector<ProcessInfor> result;
-//     HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-//     if (hSnapShot == INVALID_HANDLE_VALUE) {
-//         cout << "Failed to create snapshot.\n";
-//         return result;
-//     }
-//     PROCESSENTRY32 pe;
-//     pe.dwSize = sizeof(PROCESSENTRY32);
-//     DWORD shellPID = GetCurrentProcessId();
-//     if (Process32First(hSnapShot, &pe)) {
-//         do {
-//             // pe.th32ParentProcessID == shellPID
-//             //  || pe.th32ProcessID == shellPID
-//             if (pe.th32ProcessID == shellPID) {
-//                 ProcessInfor info;
-//                 info.pid = pe.th32ProcessID;
-//                 info.processName = pe.szExeFile;
-//                 // Cái lấy status khá khó, để sau
-//                 info.status = "running";
-//                 info.hProcess = OpenProcess(PROCESS_ALL_ACCESS, // Quyền truy cập (ALL_ACCESS là cao nhất)
-//                                             FALSE,              // Không cho phép kế thừa handle này từ tiến trình con
-//                                             pe.th32ProcessID);  // ProcessId của tiến trình
-
-//                 result.push_back(info);
-//             }
-//         } while (Process32Next(hSnapShot, &pe));
-//     } else {
-//         cout << "Failed to read snapshot.\n";
-//     }
-
-//     CloseHandle(hSnapShot);
-//     return result;
-// }
-
 int suspend(DWORD processId) {
     return 0;
 }
@@ -249,38 +203,39 @@ int resume(DWORD processId) {
 // }
 
 int shell_killProcessById(vector<string> args) {
-    if (args.size() != 2) {
-        cerr << "Usage: kill <ProcessID>\n";
-        return -1;
-    }
+    // if (args.size() != 2) {
+    //     cerr << "Usage: kill <ProcessID>\n";
+    //     return -1;
+    // }
 
-    DWORD pidToKill = stoul(args[1]);
+    // DWORD pidToKill = stoul(args[1]);
     
-    // Tìm kiếm ProcessInfo có pid trùng
-    bool found = false;
-    for (auto& process : processList) {
-        if (process.pid == pidToKill) {
-            found = true;
+    // // Tìm kiếm ProcessInfo có pid trùng
+    // bool found = false;
+    // for (auto& process : processList) {
+    //     if (process.pid == pidToKill) {
+    //         found = true;
 
-            // Tiến hành kill process
-            if (TerminateProcess(process.hProcess, 1)) {
-                cout << "Process " << pidToKill << " terminated.\n";
-                CloseHandle(process.hProcess);
-                process.status = "terminated";
-                // Hoặc remove khỏi danh sách nếu cần:
-                // processList.erase(std::remove(processList.begin(), processList.end(), process), processList.end());
-            } else {
-                cerr << "Failed to terminate process.\n";
-            }
-            break; // Dừng vòng lặp nếu tìm thấy PID
-        }
-    }
+    //         // Tiến hành kill process
+    //         if (TerminateProcess(process.hProcess, 1)) {
+    //             cout << "Process " << pidToKill << " terminated.\n";
+    //             CloseHandle(process.hProcess);
+    //             process.status = "terminated";
+    //             // Hoặc remove khỏi danh sách nếu cần:
+    //             // processList.erase(std::remove(processList.begin(), processList.end(), process), processList.end());
+    //         } else {
+    //             cerr << "Failed to terminate process.\n";
+    //         }
+    //         break; // Dừng vòng lặp nếu tìm thấy PID
+    //     }
+    // }
 
-    if (!found) {
-        std::cerr << "PID " << pidToKill << " is not managed by TinyShell.\n";
-        return -1;
-    }
+    // if (!found) {
+    //     std::cerr << "PID " << pidToKill << " is not managed by TinyShell.\n";
+    //     return -1;
+    // }
 
+    // return 0;
     return 0;
 }
 
@@ -290,4 +245,8 @@ int shell_suspendById(vector<string> args) {
 
 int shell_resumeById(vector<string> args) {
     return 0;
+}
+
+int shell_list(vector<string> args) {
+    printProcesses(getShellProcesses());
 }
