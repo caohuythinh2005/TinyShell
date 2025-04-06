@@ -14,8 +14,6 @@ Yêu cầu :
 int init_process();
 
 vector<ProcessInfor> getShellProcesses();
-int suspend(DWORD processId);
-int resume(DWORD processId);
 void printProcesses(const vector<ProcessInfor>& processes);
 
 // int shell_killProcessByName(vector<string> args);
@@ -23,7 +21,7 @@ void printProcesses(const vector<ProcessInfor>& processes);
 // int shell_resumeByName(vector<string> args);
 vector<ProcessInfor> getShellProcesses();
 vector<ProcessInfor> getShellProcessesWithStatus();
-void checkAndRemoveClosedSuspendedProcesses();
+bool isProcessSuspended(DWORD pid);
 
 int shell_killProcessById(vector<string> args);
 int shell_suspendById(vector<string> args);

@@ -29,8 +29,6 @@ JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
 // foreground mode
 HANDLE fore = NULL;
 
-// Lưu lại thông tin tiến trình bị suspend
-vector<DWORD> lstProcessSuspended;
 
 
 #include "process.h"

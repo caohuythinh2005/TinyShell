@@ -40,5 +40,4 @@ extern int (*builtin_func[]) (vector<string>);
 extern HANDLE hJob;
 extern JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
 extern HANDLE fore;
-extern vector<DWORD> lstProcessSuspended;
 #endif

@@ -180,13 +180,65 @@ vector<ProcessInfor> getShellProcesses() {
     return result;
 }
 
+/*
+Lưu ý : bool isProcessSuspended(DWORD pid)
+- Trả về true nếu tất cả các thread của tiến trình đã bị suspend.
+- Trả về false nếu:
+  + Bất kỳ thread nào vẫn đang chạy (suspendCount == 0)
+  + Không thể mở handle tới thread (OpenThread fail)
+  + Không thể gọi SuspendThread
+*/
+
+bool isProcessSuspended(DWORD pid) {
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+    if (hSnapshot == INVALID_HANDLE_VALUE) return false;
+
+    THREADENTRY32 te;
+    te.dwSize = sizeof(te);
+
+    bool hasThreads = false;
+    bool allSuspended = true;
+
+    if (Thread32First(hSnapshot, &te)) {
+        do {
+            if (te.th32OwnerProcessID == pid) {
+                hasThreads = true;
+                HANDLE hThread = OpenThread(THREAD_QUERY_INFORMATION | THREAD_SUSPEND_RESUME, FALSE, te.th32ThreadID);
+                if (hThread) {
+                    // thử resume rồi suspend lại để ước lượng trạng thái
+                    DWORD suspendCount = SuspendThread(hThread);
+                    ResumeThread(hThread); // Trả lại trạng thái ban đầu
+
+                    if (suspendCount == (DWORD)-1 || suspendCount == 0) {
+                        allSuspended = false;
+                    }
+
+                    CloseHandle(hThread);
+                } else {
+                    allSuspended = false;
+                }
+            }
+        } while (Thread32Next(hSnapshot, &te));
+    }
+
+    CloseHandle(hSnapshot);
+    return hasThreads && allSuspended;
+}
+
+
+
 vector<ProcessInfor> getShellProcessesWithStatus() {
     vector<ProcessInfor> processes = getShellProcesses();
     for (int i = 0; i < processes.size(); i++) {
-        for (int j = 0; j < lstProcessSuspended.size(); j++) {
-            if (processes[i].pid == lstProcessSuspended[j]) {
-                processes[i].status = "suspended";
-            }
+        // for (int j = 0; j < lstProcessSuspended.size(); j++) {
+        //     if (processes[i].pid == lstProcessSuspended[j]) {
+        //         processes[i].status = "suspended";
+        //     }
+        // }
+        if (isProcessSuspended(processes[i].pid)) {
+            processes[i].status = "suspended";
+        } else {
+            processes[i].status = "running";
         }
     }
     return processes;
@@ -209,26 +261,6 @@ void printProcesses(const vector<ProcessInfor>& processes) {
 
     cout << "-----------------------------------------\n";
 }
-
-int suspend(DWORD processId) {
-    return 0;
-}
-
-int resume(DWORD processId) {
-    return 0;
-}
-
-// int shell_killProcessByName(vector<string> args) {
-//     return 0;
-// }
-
-// int shell_suspendByName(vector<string> args) {
-//     return 0;
-// }
-
-// int shell_resumeByName(vector<string> args) {
-//     return 0;
-// }
 
 int shell_killProcessById(vector<string> args) {
     if (args.size() != 2) {
@@ -262,7 +294,6 @@ int shell_killProcessById(vector<string> args) {
         cout << "Bad PID" << endl;
         return -1;
     }
-    checkAndRemoveClosedSuspendedProcesses();
     return 0;
 }
 
@@ -271,17 +302,18 @@ int shell_suspendById(vector<string> args) {
         printf("Bad command ... \n");
         return BAD_COMMAND;
     }
-
+    vector<ProcessInfor> processes = getShellProcessesWithStatus();
     DWORD pidToSuspend = stoul(args[1]);
-    for (DWORD x : lstProcessSuspended) {
-        if (x == pidToSuspend) return 0;
-    }
-    vector<ProcessInfor> processes = getShellProcesses();
     // Tìm tiến trình cần suspend bằng vòng lặp thông thường
+    // Neeys đã suspended thì bỏ qua
+    // Thực tế windows có thể suspended chồng nhau -> tăng lên thôi
     bool found = false;
     ProcessInfor targetProcess;
     for (const auto& process : processes) {
         if (process.pid == pidToSuspend) {
+            if (process.status == "suspended") {
+                return 0;
+            }
             targetProcess = process;
             found = true;
             break;
@@ -309,7 +341,6 @@ int shell_suspendById(vector<string> args) {
             }
         } while (Thread32Next(hSnapshot, &te));
         cout << "Process " << pidToSuspend << " suspended" << endl;
-        lstProcessSuspended.push_back(pidToSuspend);
         CloseHandle(hSnapshot);
     } else {
         cout << "Bad PID" << endl;
@@ -327,10 +358,13 @@ int shell_resumeById(vector<string> args) {
     DWORD pidToSuspend = stoul(args[1]);
     // Tìm tiến trình cần suspend bằng vòng lặp thông thường
     bool found = false;
-    for (DWORD process : lstProcessSuspended) {
-        if (process == pidToSuspend) {
-            found = true;
-            break;
+    vector<ProcessInfor> processes = getShellProcessesWithStatus();
+    for (const auto& process : processes) {
+        if (process.pid == pidToSuspend) {
+            if (process.status == "suspended") {
+                found = true;
+                break;
+            } else return 0;
         }
     }
     if (found) {
@@ -355,14 +389,6 @@ int shell_resumeById(vector<string> args) {
             }
         } while (Thread32Next(hSnapshot, &te));
         cout << "Process " << pidToSuspend << " resumed" << endl;
-        for (auto it = lstProcessSuspended.begin(); it != lstProcessSuspended.end(); ) {
-            DWORD pid = *it;
-            if (pid == pidToSuspend) {
-                lstProcessSuspended.erase(it);
-                break;
-            }
-            ++it;
-        }
         CloseHandle(hSnapshot);
     } else {
         cout << "Bad PID" << endl;
@@ -371,27 +397,8 @@ int shell_resumeById(vector<string> args) {
     return 0;
 }
 
-void checkAndRemoveClosedSuspendedProcesses() {
-    vector<ProcessInfor> processes = getShellProcesses();
-    auto it = lstProcessSuspended.begin();
-    while (it != lstProcessSuspended.end()) {
-        DWORD pid = *it;
-        bool check = false;
-        for (ProcessInfor process: processes) {
-            if (process.pid == pid) {
-                check = true;
-                break;
-            }
-        }
-        if (check == false) {
-            lstProcessSuspended.erase(it);
-            ++it;
-        }
-    }
-}
-
-
 
 int shell_list(vector<string> args) {
     printProcesses(getShellProcessesWithStatus());
+    return 0;
 }
