@@ -1,3 +1,6 @@
+# Xử lý
+- Cần xử lý nhiều TinyShell.exe con lồng nhau ?
+- Ông để ý cái này nhé :)
 # Thông tin
 - constant.h : chứa các hằng cần thiết
 - globals.h : khai báo các biến cục bộ xuất hiện trong chương trình
