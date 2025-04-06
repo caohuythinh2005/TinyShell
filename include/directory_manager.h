@@ -17,4 +17,12 @@ int fileExists(const string &path);
 int folderExists(const string &path);
 string convertFakeToRealPath(const string &currentFakePath);
 
+int shell_touch(vector<string> args);
+int shell_cat(vector<string> args);
+int shell_write(vector<string> args);
+
+int shell_rename(vector<string> args);
+int shell_file_infor(vector<string> args);
+
+
 #endif

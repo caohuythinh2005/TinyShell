@@ -40,7 +40,6 @@ HANDLE fore = NULL;
 
 
 vector<string> builtin_str = {
-    "list",
     "cls",
     "exit",
 	"pwd",
@@ -56,11 +55,15 @@ vector<string> builtin_str = {
 	"runExe",
 	"kill_id",
 	"pause_id",
-	"resume_id"
+	"resume_id",
+	"list",
+	"touch",
+	"cat",
+	"write",
+	"rename"
 };
 
 int (*builtin_func[]) (vector<string>) = {
-    &shell_list,
     &shell_cls,
     &shell_exit,
 	&shell_pwd,
@@ -76,7 +79,12 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_runExe,
 	&shell_killProcessById,
 	&shell_suspendById,
-	&shell_resumeById
+	&shell_resumeById,
+	&shell_list,
+	&shell_touch,
+	&shell_cat,
+	&shell_write,
+	&shell_rename
 };
 
 

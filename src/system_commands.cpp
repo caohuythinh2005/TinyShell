@@ -38,6 +38,11 @@ int shell_help(vector<string> args) {
         cout << "pause_id [pid]      : Suspend a managed process by PID\n";
         cout << "resume_id [pid]     : Resume a suspended managed process by PID\n";
         cout << "list                : List all processes managed by TinyShell\n";
+        cout << "touch [-f] [name]   : Create an empty file, overwrite if exists with -f\n";
+        cout << "cat [name]          : Display contents of a file\n";
+        cout << "write [-f|-a] [name]: Write to a file; -f to overwrite, -a to append\n";
+        cout << "                      (default: overwrite if file exists, else create new)\n";
+        cout << "rename [old_name] [new_name] : Rename file or folder\n";
         cout << "-------------------------------------------------------------\n";
     } else {
         cout << "Bad command...\n";

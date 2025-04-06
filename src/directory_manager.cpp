@@ -260,16 +260,6 @@ int shell_cd(vector<string> args) {
     return 0;
 }
 
-
-// string resolvePath(const string &path)
-// {
-//     filesystem::path input(path);
-
-
-//     // Đường dẫn tuyệt đối
-//     if (input)
-// }
-
 int shell_test(vector<string> args) {
     if (args.size() != 3) {
         printf("Bad command ... \n");
@@ -355,4 +345,144 @@ int folderExists(const string &path) {
 string convertFakeToRealPath(const string &currentFakePath)
 {
     return origin_real_path + currentFakePath;
+}
+
+int shell_touch(vector<string> args) {
+    if (args.size() >= 4 || args.size() == 1) {
+        cout << "Usage: touch [-f] <filename>" << endl;
+        return -1;
+    }
+
+    bool forceOverwrite = false;
+    string filename;
+
+    // Kiểm tra tham số -f
+    if (args[1] == "-f") {
+        if (args.size() < 3) {
+            cout << "Usage: touch [-f] <filename>" << endl;
+            return -1;
+        }
+        forceOverwrite = true;
+        filename = args[2];
+    } else {
+        filename = args[1];
+    }
+
+    int isfileExists = fileExists(current_fake_path + '\\' + filename);
+    // Nếu không có -f và file đã tồn tại
+    if (!forceOverwrite && (isfileExists == EXIST_FILE_OR_DIRECTORY)) {
+        cout << "File " << filename << " already exists" << endl;
+        return 0;
+    }
+
+
+
+    // Nếu file không tồn tại hoặc có tham số -f, ta tạo file mới
+    ofstream outFile(current_real_path + "\\" + filename, ios::out | ios::trunc);
+    if (!outFile) {
+        cerr << "Failed to create or overwrite the file: " << filename << endl;
+        return -1;
+    }
+
+    cout << "File " << filename << " created or overwritten successfully." << endl;
+    outFile.close();
+    return 0;
+}
+
+int shell_cat(vector<string> args) {
+    if (args.size() != 2) {
+        cout << "Bad command: cat requires a filename as an argument.\n";
+        return -1;
+    }
+
+    string filename = args[1];
+
+    // Kiểm tra xem file có tồn tại không
+    int isfileExists = fileExists(current_fake_path + '\\' + filename);
+
+    if (isfileExists != EXIST_FILE_OR_DIRECTORY) {
+        cout << "File does not exist: " << filename << endl;
+        return -1;
+    }
+
+    // Mở file để đọc
+    ifstream file(current_real_path + "\\" + filename);
+    if (!file.is_open()) {
+        cout << "Unable to open file: " << filename << endl;
+        return -1;
+    }
+
+    // Đọc và in nội dung file ra màn hình
+    string line;
+    while (getline(file, line)) {
+        cout << line << endl;
+    }
+
+    file.close();  // Đóng file sau khi hoàn thành
+
+    return 0;
+}
+
+/*
+- write [filename]: mở chế độ mặc định ghi đè (ios::trunc)
+- write -a [filename]: ghi thêm vào cuối file (ios::app)
+- write -f [filename]: ghi đè file nếu đã có (mặc định nếu không có flag nào)
+*/
+
+int shell_write(vector<string> args) {
+    if (args.size() < 2 || args.size() > 3) {
+        cout << "Usage: write [-a|-f] [filename]\n";
+        return BAD_COMMAND;
+    }
+
+    string filename;
+    ios_base::openmode mode = ios::out | ios::trunc; // default: overwrite
+    if (args.size() == 2) {
+        filename = args[1];
+    } else {
+        string flag = args[1];
+        if (flag == "-a") mode = ios::out | ios::app;
+        else if (flag == "-f") mode = ios::out | ios::trunc;
+        else {
+            cout << "Unknown flag: " << flag << "\n";
+            return BAD_COMMAND;
+        }
+        filename = args[2];
+    }
+
+    ofstream outFile(current_real_path + "\\" + filename, mode);
+    if (!outFile.is_open()) {
+        cout << "Cannot open file: " << filename << "\n";
+        return 1;
+    }
+
+    cout << "Enter text (type 'EOF' on a new line to finish):\n";
+    string line;
+    while (true) {
+        getline(cin, line);
+        if (line == "EOF") break;
+        outFile << line << endl;
+    }
+
+    outFile.close();
+    cout << "Write complete to " << filename << "\n";
+    return 0;
+}
+
+int shell_rename(vector<string> args) {
+    if (args.size() != 3) {
+        cout << "Usage: rename [old_name] [new_name]\n";
+        return BAD_COMMAND;
+    }
+
+    string oldName = args[1];
+    string newName = args[2];
+
+    if (rename((current_real_path + '\\' + oldName).c_str(), (current_real_path + '\\' + newName).c_str()) != 0) {
+        cout << "Failed to rename file or directory" << endl;
+        return SYSTEM_ERROR;
+    }
+
+    cout << "Renamed '" << oldName << "' to '" << newName << "' successfully.\n";
+    return 0;
 }
