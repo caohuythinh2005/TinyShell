@@ -1,3 +1,6 @@
 Hello, World!
 This is a test file.
 It contains some lines.
+hello
+hello
+dump

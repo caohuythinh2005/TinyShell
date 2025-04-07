@@ -10,11 +10,20 @@
 - process.h : chứa các lệnh chuyên để quản lý process
 
 # Các file .bat
-- build.bat : cmake
-- run.bat : chạy
+- build_cpp_tool.bat : build lại các chương trình con trong cpp
+- move.bat : chuyển các file thực thi đã build bên trên vào /root/exe
+- build.bat : build lại hệ thống
+- run.bat : chạy lại hệ thống
+
+# Thứ tự chạy (theo thứ tự):
+- build_cpp_tool.bat
+- move.bat
+- build.bat
+- run.bat
 
 
 # Khi thêm thì thêm vào CMakeLists.txt (vào add_executable)
+- Có cả ở thư mục gốc (TinyShell) và các chương trình con ở cpp
 
 # Lưu ý
 - Muốn test (đệ quy) liệt kê process thì phải copy từ build\\Releas\\TinyShell.exe

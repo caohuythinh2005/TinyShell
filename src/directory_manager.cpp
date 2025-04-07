@@ -68,6 +68,7 @@ bool deleteRecursive(const string& path) {
     FindClose(hFind);
     return RemoveDirectory(path.c_str());
 }
+
 /*
 Xóa foder và các file bên trong ngay tại đường dẫn của nó
 */
@@ -486,3 +487,4 @@ int shell_rename(vector<string> args) {
     cout << "Renamed '" << oldName << "' to '" << newName << "' successfully.\n";
     return 0;
 }
+

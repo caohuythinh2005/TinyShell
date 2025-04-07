@@ -91,49 +91,125 @@ void sigintHandler(int sig_num) {
     std::cin.clear(); // Đảm bảo không bị lỗi khi đọc từ stdin
 }
 
+
 int shell_runExe(vector<string> args) {
-    // -b : background mode
-    si.cb = sizeof(si);
-    if (args.size() == 1) {
-        printf("Bad command ... \n");
-        return BAD_COMMAND;
-    }
-    if (args.size() == 4) {
-        printf("Bad command ... \n");
-        return BAD_COMMAND;
-    }
-    if (args.size() == 3 && args[2] != "-b") {
-        printf("Bad command ... \n");
+    if (args.size() < 2 || args.size() > 4) {
+        printf("Usage: runExe [path] [-b] [-c]\n");
         return BAD_COMMAND;
     }
 
-    if (!CreateProcess(
+    string realPath = convertFakeToRealPath(args[1]);
+    string cmdLine = realPath;
+    STARTUPINFOA si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+    DWORD creationFlags = CREATE_UNICODE_ENVIRONMENT;
+    bool isBackground = false;
+    bool createConsole = false;
+
+    // Kiểm tra flag
+    for (int i = 2; i < args.size(); ++i) {
+        if (args[i] == "-b") isBackground = true;
+        else if (args[i] == "-c") createConsole = true;
+        else {
+            printf("Unknown flag: %s\n", args[i].c_str());
+            return BAD_COMMAND;
+        }
+    }
+
+    HANDLE hNull = NULL;
+    if (isBackground && !createConsole) {
+        // Chặn stdout/stderr khi chạy nền không có console mới
+        // "NUL" là một thiết bị out
+        // Mục đích chính là sẽ nuốt dữ liệu in ra
+        hNull = CreateFileA("NUL", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (hNull != INVALID_HANDLE_VALUE) {
+            si.dwFlags |= STARTF_USESTDHANDLES;
+            si.hStdOutput = hNull;
+            si.hStdError  = hNull;
+        }
+    }
+
+    if (createConsole) {
+        creationFlags |= CREATE_NEW_CONSOLE;
+    }
+
+    BOOL success = CreateProcessA(
         NULL,
-        (LPSTR)(convertFakeToRealPath(args[1])).data(),
+        cmdLine.data(),
         NULL,
         NULL,
-        FALSE,
-        CREATE_NEW_CONSOLE | CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT,
+        TRUE,  // Kế thừa handle nếu cần
+        creationFlags,
         NULL,
         NULL,
         &si,
         &pi
-    )) {
-        printf("Cannot create process\n");
-        return 0;
-    } else {
-        std::signal(SIGINT, sigintHandler);
-        AssignProcessToJobObject(hJob, pi.hProcess);
-        ResumeThread(pi.hThread);
-        if (args.size() == 2) {
-            WaitForSingleObject(pi.hProcess, INFINITE);
-            printf("Child Complete\n");
-            CloseHandle(pi.hProcess);
-            CloseHandle(pi.hThread);
-        } else return 0;
+    );
+
+    if (hNull) CloseHandle(hNull);  // đóng sau khi CreateProcess dùng xong
+
+    if (!success) {
+        cerr << "Failed to create process. Error code: " << GetLastError() << "\n";
+        return 1;
     }
+
+    std::signal(SIGINT, sigintHandler);
+    AssignProcessToJobObject(hJob, pi.hProcess);
+
+    if (!isBackground) {
+        WaitForSingleObject(pi.hProcess, INFINITE);
+        printf("Child Complete\n");
+    }
+
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+
     return 0;
 }
+
+// int shell_runExe(vector<string> args) {
+//     // -b : background mode
+//     si.cb = sizeof(si);
+//     if (args.size() == 1) {
+//         printf("Bad command ... \n");
+//         return BAD_COMMAND;
+//     }
+//     if (args.size() == 4) {
+//         printf("Bad command ... \n");
+//         return BAD_COMMAND;
+//     }
+//     if (args.size() == 3 && args[2] != "-b") {
+//         printf("Bad command ... \n");
+//         return BAD_COMMAND;
+//     }
+
+//     if (!CreateProcess(
+//         NULL,
+//         (LPSTR)(convertFakeToRealPath(args[1])).data(),
+//         NULL,
+//         NULL,
+//         FALSE,
+//         CREATE_NEW_CONSOLE | CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT,
+//         NULL,
+//         NULL,
+//         &si,
+//         &pi
+//     )) {
+//         printf("Cannot create process\n");
+//         return 0;
+//     } else {
+//         std::signal(SIGINT, sigintHandler);
+//         AssignProcessToJobObject(hJob, pi.hProcess);
+//         ResumeThread(pi.hThread);
+//         if (args.size() == 2) {
+//             WaitForSingleObject(pi.hProcess, INFINITE);
+//             printf("Child Complete\n");
+//             CloseHandle(pi.hProcess);
+//             CloseHandle(pi.hThread);
+//         } else return 0;
+//     }
+//     return 0;
+// }
 
 // Cài đệ quy phục vụ sandbox
  
@@ -224,8 +300,6 @@ bool isProcessSuspended(DWORD pid) {
     CloseHandle(hSnapshot);
     return hasThreads && allSuspended;
 }
-
-
 
 vector<ProcessInfor> getShellProcessesWithStatus() {
     vector<ProcessInfor> processes = getShellProcesses();
