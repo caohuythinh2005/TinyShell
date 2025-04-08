@@ -91,6 +91,7 @@ void sigintHandler(int sig_num) {
     std::cin.clear(); // Đảm bảo không bị lỗi khi đọc từ stdin
 }
 
+// Chạy trực tiếp tại thư mục hoặc là đường dẫn
 
 int shell_runExe(vector<string> args) {
     if (args.size() < 2 || args.size() > 4) {
@@ -98,7 +99,26 @@ int shell_runExe(vector<string> args) {
         return BAD_COMMAND;
     }
 
-    string realPath = convertFakeToRealPath(args[1]);
+    string realPath = "";
+
+    string inputPath = args[1];
+    
+    if ((inputPath[0] == '\\' || inputPath[0] == '/') && 
+             (inputPath.substr(0, 5) == "\\root" || inputPath.substr(0, 5) == "/root")) {
+        if (fileExists(inputPath) != EXIST_FILE_OR_DIRECTORY) {
+            std::cerr << "The specified file path does not exist. Please check the path and try again.\n";
+            return -1;
+        }
+        realPath = convertFakeToRealPath(inputPath);
+    }
+    else {
+        inputPath = current_fake_path + "\\"  + args[1];
+        if (fileExists(inputPath) != EXIST_FILE_OR_DIRECTORY) {
+            std::cerr << "The specified file path does not exist. Please check the path and try again.\n";
+            return -1;
+        }
+        realPath = convertFakeToRealPath(inputPath);
+    }
     string cmdLine = realPath;
     STARTUPINFOA si = { sizeof(si) };
     PROCESS_INFORMATION pi;
@@ -158,7 +178,7 @@ int shell_runExe(vector<string> args) {
 
     if (!isBackground) {
         WaitForSingleObject(pi.hProcess, INFINITE);
-        printf("Child Complete\n");
+        // printf("Child Complete\n");
     }
 
     CloseHandle(pi.hProcess);
@@ -166,50 +186,6 @@ int shell_runExe(vector<string> args) {
 
     return 0;
 }
-
-// int shell_runExe(vector<string> args) {
-//     // -b : background mode
-//     si.cb = sizeof(si);
-//     if (args.size() == 1) {
-//         printf("Bad command ... \n");
-//         return BAD_COMMAND;
-//     }
-//     if (args.size() == 4) {
-//         printf("Bad command ... \n");
-//         return BAD_COMMAND;
-//     }
-//     if (args.size() == 3 && args[2] != "-b") {
-//         printf("Bad command ... \n");
-//         return BAD_COMMAND;
-//     }
-
-//     if (!CreateProcess(
-//         NULL,
-//         (LPSTR)(convertFakeToRealPath(args[1])).data(),
-//         NULL,
-//         NULL,
-//         FALSE,
-//         CREATE_NEW_CONSOLE | CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT,
-//         NULL,
-//         NULL,
-//         &si,
-//         &pi
-//     )) {
-//         printf("Cannot create process\n");
-//         return 0;
-//     } else {
-//         std::signal(SIGINT, sigintHandler);
-//         AssignProcessToJobObject(hJob, pi.hProcess);
-//         ResumeThread(pi.hThread);
-//         if (args.size() == 2) {
-//             WaitForSingleObject(pi.hProcess, INFINITE);
-//             printf("Child Complete\n");
-//             CloseHandle(pi.hProcess);
-//             CloseHandle(pi.hThread);
-//         } else return 0;
-//     }
-//     return 0;
-// }
 
 // Cài đệ quy phục vụ sandbox
  

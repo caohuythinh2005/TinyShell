@@ -60,7 +60,9 @@ vector<string> builtin_str = {
 	"touch",
 	"cat",
 	"write",
-	"rename"
+	"rename",
+	"move",
+	"copy"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -84,7 +86,9 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_touch,
 	&shell_cat,
 	&shell_write,
-	&shell_rename
+	&shell_rename,
+	&shell_move,
+	&shell_copy
 };
 
 
