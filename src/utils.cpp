@@ -1,4 +1,6 @@
 #include "utils.h"
+#include "constant.h"
+
 
 string removePrefix(const string& full, const string& prefix) {
     if (full.find(prefix) == 0) {

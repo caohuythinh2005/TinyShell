@@ -10,14 +10,14 @@
 #include <time.h>
 #include <sys/types.h>
 #include <psapi.h>
+#include <filesystem>
 
 #include "directory_manager.h"
 #include "constant.h"
 #include "utils.h"
 // #include "Shlwapi.h"
 
-
-
+using namespace std;
 
 
 int init_directory() {
@@ -68,6 +68,7 @@ bool deleteRecursive(const string& path) {
     FindClose(hFind);
     return RemoveDirectory(path.c_str());
 }
+
 /*
 Xóa foder và các file bên trong ngay tại đường dẫn của nó
 */
@@ -175,25 +176,6 @@ int shell_mkdir(vector<string> args) {
     return 0;
 }
 
-// int pathFileExists(string path) {
-//     char new_path[1024];
-
-//     // **1. Xử lý đường dẫn tuyệt đối**
-//     if (path[0] == '/') {
-
-// 		char tmp[2048];
-// 		strcpy(tmp, origin_real_path.c_str());
-// 		strcat(tmp, path.c_str());
-//         // int retval = PathFileExists(tmp);
-//         // if (retval == 1) {
-//         //     return 0;
-//         // }
-// 		// check path
-//     }
-//     return FILE_NOT_EXITS;
-// }
-
-
 /*
 Để tránh rắc rối, ta luôn mặc định current_directory (đang làm việc) là toàn bộ TinyShell
 extern string origin_real_path; -> Lưu trữ cái trên
@@ -217,7 +199,7 @@ int shell_cd(vector<string> args) {
                 if (SetCurrentDirectory(full_path) == FALSE) {
                     cout << "No such directory" << endl;
                     SetCurrentDirectory(origin_real_path.c_str());
-                    return DIRECTORY_NOT_EXISTS;
+                    return DIRECTORY_NOT_EXIST;
                 }
                 string fullPath = getNormalizedCurrentDirectory();
                 SetCurrentDirectory(origin_real_path.c_str());
@@ -255,7 +237,7 @@ int shell_cd(vector<string> args) {
             if(SetCurrentDirectory(full_path)==FALSE){
                 cout << "No such directory" << endl;
                 SetCurrentDirectory(origin_real_path.c_str());
-                return DIRECTORY_NOT_EXISTS;
+                return DIRECTORY_NOT_EXIST;
             } else {
                 string fullPath = getNormalizedCurrentDirectory();
                 if (isPrefix(fullPath, fixed_real_path)) {
@@ -278,7 +260,420 @@ int shell_cd(vector<string> args) {
     return 0;
 }
 
+int shell_test(vector<string> args) {
+    if (args.size() != 3) {
+        printf("Bad command ... \n");
+        return BAD_COMMAND;
+    }
+    if (args[1] == "-f") {
+        int check = fileExists(args[2]);
+        if (check == ERROR_PATH) {
+            printf("ERROR_PATH\n");
+        } else if (check == FILE_NOT_EXIST) {
+            printf("FILE_NOT_EXIST\n");
+        } else {
+            printf("TRUE\n");
+        }
+    } else if (args[1] == "-d") {
+        int check = folderExists(args[2]);
+        if (check == ERROR_PATH) {
+            printf("ERROR_PATH\n");
+        } else if (check == DIRECTORY_NOT_EXIST) {
+            printf("DIRECTORY_NOT_EXIST\n");
+        } else {
+            printf("TRUE\n");
+        }
+    } else {
+        printf("Bad command ... \n");
+        return BAD_COMMAND;
+    }
+    return 0;
+}
+
+// string formatFakePathToUnixStyle(const string& fake_path) {
+//     string unix_path = fake_path;
+//     for (char& c : unix_path) {
+//         if (c == '\\') c = '/';
+//     }
+//     return unix_path;
+// }
+
+// string getNormalizedCurrentDirectory() {
+//     char tempPath[MAX_PATH];
+//     // Lấy đường dẫn hiện tại (user nhập sao cũng được)
+//     DWORD len = GetCurrentDirectoryA(MAX_PATH, tempPath);
+//     if (len == 0 || len > MAX_PATH) {
+//         return "";  // Error
+//     }
+
+//     char normalizedPath[MAX_PATH];
+//     DWORD result = GetLongPathNameA(tempPath, normalizedPath, MAX_PATH);
+//     if (result == 0 || result > MAX_PATH) {
+//         // Nếu GetLongPathName fail, trả về như GetCurrentDirectory
+//         return string(tempPath);
+//     }
+
+//     return string(normalizedPath);
+// }
+
+string getNormalizedDirectory(const string& fakePath) {
+    // Lưu lại current directory ban đầu để phục hồi sau
+    char originalPath[MAX_PATH];
+    // DWORD origLen = GetCurrentDirectoryA(MAX_PATH, originalPath);
+    // if (origLen == 0 || origLen > MAX_PATH) {
+    //     return ""; // Không thể lấy current dir
+    // }
+
+    string realPath = convertFakeToRealPath(fakePath);
+    // Đặt current directory tạm thời sang real path
+    if (!SetCurrentDirectoryA(realPath.c_str())) {
+        return ""; // Nếu không đặt được thì trả về chuỗi rỗng
+    }
+    // Lấy current directory (tức là realPath đã chuẩn hóa)
+    char tempPath[MAX_PATH];
+    DWORD len = GetCurrentDirectoryA(MAX_PATH, tempPath);
+
+    // Phục hồi lại current directory gốc
+    SetCurrentDirectoryA(origin_real_path.c_str());
+
+    if (len == 0 || len > MAX_PATH) {
+        return "";
+    }
+
+    // Chuẩn hóa đường dẫn
+    char normalizedPath[MAX_PATH];
+    DWORD result = GetLongPathNameA(tempPath, normalizedPath, MAX_PATH);
+    if (result == 0 || result > MAX_PATH) {
+        return string(tempPath);
+    }
+
+    return string(normalizedPath);
+}
+
+
+int fileExists(const string &path) {
+    string absPath = convertFakeToRealPath(path);
+    if (!filesystem::exists(absPath)) {
+        return ERROR_PATH;
+    }
+    if (!filesystem::is_regular_file(absPath)) {
+        return FILE_NOT_EXIST;
+    }
+    return EXIST_FILE_OR_DIRECTORY;
+}
+
+
+int folderExists(const string &path) {
+    string absPath = convertFakeToRealPath(path);
+    if (!filesystem::exists(absPath)) {
+        return ERROR_PATH;
+    }
+    if (!isPrefix(getNormalizedDirectory(path), fixed_real_path)) {
+        return DIRECTORY_NOT_EXIST;
+    }
+    if (!filesystem::is_directory(absPath)) {
+        return DIRECTORY_NOT_EXIST;
+    }
+    return EXIST_FILE_OR_DIRECTORY;
+}
+
 string convertFakeToRealPath(const string &currentFakePath)
 {
     return origin_real_path + currentFakePath;
 }
+
+int shell_touch(vector<string> args) {
+    if (args.size() >= 4 || args.size() == 1) {
+        cout << "Usage: touch [-f] <filename>" << endl;
+        return -1;
+    }
+
+    bool forceOverwrite = false;
+    string filename;
+
+    // Kiểm tra tham số -f
+    if (args[1] == "-f") {
+        if (args.size() < 3) {
+            cout << "Usage: touch [-f] <filename>" << endl;
+            return -1;
+        }
+        forceOverwrite = true;
+        filename = args[2];
+    } else {
+        filename = args[1];
+    }
+
+    int isfileExists = fileExists(current_fake_path + '\\' + filename);
+    // Nếu không có -f và file đã tồn tại
+    if (!forceOverwrite && (isfileExists == EXIST_FILE_OR_DIRECTORY)) {
+        cout << "File " << filename << " already exists" << endl;
+        return 0;
+    }
+
+
+
+    // Nếu file không tồn tại hoặc có tham số -f, ta tạo file mới
+    ofstream outFile(current_real_path + "\\" + filename, ios::out | ios::trunc);
+    if (!outFile) {
+        cerr << "Failed to create or overwrite the file: " << filename << endl;
+        return -1;
+    }
+
+    cout << "File " << filename << " created or overwritten successfully." << endl;
+    outFile.close();
+    return 0;
+}
+
+int shell_cat(vector<string> args) {
+    if (args.size() != 2) {
+        cout << "Bad command: cat requires a filename as an argument.\n";
+        return -1;
+    }
+
+    string filename = args[1];
+
+    // Kiểm tra xem file có tồn tại không
+    int isfileExists = fileExists(current_fake_path + '\\' + filename);
+
+    if (isfileExists != EXIST_FILE_OR_DIRECTORY) {
+        cout << "File does not exist: " << filename << endl;
+        return -1;
+    }
+
+    // Mở file để đọc
+    ifstream file(current_real_path + "\\" + filename);
+    if (!file.is_open()) {
+        cout << "Unable to open file: " << filename << endl;
+        return -1;
+    }
+
+    // Đọc và in nội dung file ra màn hình
+    string line;
+    while (getline(file, line)) {
+        cout << line << endl;
+    }
+
+    file.close();  // Đóng file sau khi hoàn thành
+
+    return 0;
+}
+
+/*
+- write [filename]: mở chế độ mặc định ghi đè (ios::trunc)
+- write -a [filename]: ghi thêm vào cuối file (ios::app)
+- write -f [filename]: ghi đè file nếu đã có (mặc định nếu không có flag nào)
+*/
+
+int shell_write(vector<string> args) {
+    if (args.size() < 2 || args.size() > 3) {
+        cout << "Usage: write [-a|-f] [filename]\n";
+        return BAD_COMMAND;
+    }
+
+    string filename;
+    ios_base::openmode mode = ios::out | ios::trunc; // default: overwrite
+    if (args.size() == 2) {
+        filename = args[1];
+    } else {
+        string flag = args[1];
+        if (flag == "-a") mode = ios::out | ios::app;
+        else if (flag == "-f") mode = ios::out | ios::trunc;
+        else {
+            cout << "Unknown flag: " << flag << "\n";
+            return BAD_COMMAND;
+        }
+        filename = args[2];
+    }
+
+    ofstream outFile(current_real_path + "\\" + filename, mode);
+    if (!outFile.is_open()) {
+        cout << "Cannot open file: " << filename << "\n";
+        return 1;
+    }
+
+    cout << "Enter text (type 'EOF' on a new line to finish):\n";
+    string line;
+    while (true) {
+        getline(cin, line);
+        if (line == "EOF") break;
+        outFile << line << endl;
+    }
+
+    outFile.close();
+    cout << "Write complete to " << filename << "\n";
+    return 0;
+}
+
+int shell_rename(vector<string> args) {
+    if (args.size() != 3) {
+        cout << "Usage: rename [old_name] [new_name]\n";
+        return BAD_COMMAND;
+    }
+
+    string oldName = args[1];
+    string newName = args[2];
+
+    if (rename((current_real_path + '\\' + oldName).c_str(), (current_real_path + '\\' + newName).c_str()) != 0) {
+        cout << "Failed to rename file or directory" << endl;
+        return SYSTEM_ERROR;
+    }
+
+    cout << "Renamed '" << oldName << "' to '" << newName << "' successfully.\n";
+    return 0;
+}
+
+int shell_move(vector<string> args) {
+    if (args.size() != 3) {
+        cerr << "Usage: move [source] [destination_folder]\n";
+        return BAD_COMMAND;
+    }
+
+    string inputSrc = args[1];
+    string inputDst = args[2];
+    string realSrc, realDst;
+
+    // Xử lý source path
+    if ((inputSrc[0] == '\\' || inputSrc[0] == '/') &&
+        (inputSrc.substr(0, 5) == "\\root" || inputSrc.substr(0, 5) == "/root")) {
+        if (fileExists(inputSrc) != EXIST_FILE_OR_DIRECTORY && folderExists(inputSrc) != EXIST_FILE_OR_DIRECTORY) {
+            cerr << "The source path does not exist.\n";
+            return -1;
+        }
+        realSrc = convertFakeToRealPath(inputSrc);
+    } else {
+        inputSrc = current_fake_path + "\\" + inputSrc;
+        if (fileExists(inputSrc) != EXIST_FILE_OR_DIRECTORY && folderExists(inputSrc) != EXIST_FILE_OR_DIRECTORY) {
+            cerr << "The source path does not exist.\n";
+            return -1;
+        }
+        realSrc = convertFakeToRealPath(inputSrc);
+    }
+
+    // Xử lý destination path
+    if ((inputDst[0] == '\\' || inputDst[0] == '/') &&
+        (inputDst.substr(0, 5) == "\\root" || inputDst.substr(0, 5) == "/root")) {
+        if (folderExists(inputDst) != EXIST_FILE_OR_DIRECTORY) {
+            cerr << "Destination must be an existing folder.\n";
+            return -1;
+        }
+        realDst = convertFakeToRealPath(inputDst);
+    } else {
+        inputDst = current_fake_path + "\\" + inputDst;
+            // Đích phải là folder
+        if (folderExists(inputDst) != EXIST_FILE_OR_DIRECTORY) {
+            cerr << "Destination must be an existing folder.\n";
+            return -1;
+        }
+        realDst = convertFakeToRealPath(inputDst);
+    }
+
+
+
+    // Ghép tên source vào đích
+    size_t lastSlash = realSrc.find_last_of("\\/");
+    string srcName = realSrc.substr(lastSlash + 1);
+    string finalDst = realDst + "\\" + srcName;
+
+    // Di chuyển
+    if (!MoveFileA(realSrc.c_str(), finalDst.c_str())) {
+        cerr << "Failed to move file/folder. Error code: " << GetLastError() << "\n";
+        return -1;
+    }
+
+    cout << "Moved successfully.\n";
+    return 0;
+}
+
+// Hàm đệ quy copy folder
+// Lý do : Window ko cho copy thư mục mà file với hàm fs::copy_file -> dùng đệ quy
+bool CopyDirectory(const string& source, const string& destination) {
+    namespace fs = filesystem;
+
+    try {
+        fs::create_directories(destination); // tạo folder đích nếu chưa có
+
+        for (const auto& entry : fs::directory_iterator(source)) {
+            const auto& path = entry.path();
+            auto relativePath = fs::relative(path, source);
+            auto destPath = fs::path(destination) / relativePath;
+
+            if (entry.is_directory()) {
+                if (!CopyDirectory(path.string(), destPath.string())) return false;
+            } else if (entry.is_regular_file()) {
+                fs::copy_file(path, destPath, fs::copy_options::overwrite_existing);
+            }
+        }
+    } catch (const fs::filesystem_error& e) {
+        cerr << "Error copying folder: " << e.what() << endl;
+        return false;
+    }
+
+    return true;
+}
+
+int shell_copy(vector<string> args) {
+    if (args.size() != 3) {
+        cerr << "Usage: copy [source] [destination_folder]\n";
+        return BAD_COMMAND;
+    }
+
+    string inputSrc = args[1];
+    string inputDst = args[2];
+    string realSrc, realDst;
+
+    // Xử lý source path
+    if ((inputSrc[0] == '\\' || inputSrc[0] == '/') &&
+        (inputSrc.substr(0, 5) == "\\root" || inputSrc.substr(0, 5) == "/root")) {
+        if (fileExists(inputSrc) != EXIST_FILE_OR_DIRECTORY && folderExists(inputSrc) != EXIST_FILE_OR_DIRECTORY) {
+            cerr << "The source path does not exist.\n";
+            return -1;
+        }
+        realSrc = convertFakeToRealPath(inputSrc);
+    } else {
+        inputSrc = current_fake_path + "\\" + inputSrc;
+        if (fileExists(inputSrc) != EXIST_FILE_OR_DIRECTORY && folderExists(inputSrc) != EXIST_FILE_OR_DIRECTORY) {
+            cerr << "The source path does not exist.\n";
+            return -1;
+        }
+        realSrc = convertFakeToRealPath(inputSrc);
+    }
+
+    // Xử lý destination path
+    if ((inputDst[0] == '\\' || inputDst[0] == '/') &&
+        (inputDst.substr(0, 5) == "\\root" || inputDst.substr(0, 5) == "/root")) {
+        if (folderExists(inputDst) != EXIST_FILE_OR_DIRECTORY) {
+            cerr << "Destination must be an existing folder.\n";
+            return -1;
+        }
+        realDst = convertFakeToRealPath(inputDst);
+    } else {
+        inputDst = current_fake_path + "\\" + inputDst;
+        if (folderExists(inputDst) != EXIST_FILE_OR_DIRECTORY) {
+            cerr << "Destination must be an existing folder.\n";
+            return -1;
+        }
+        realDst = convertFakeToRealPath(inputDst);
+    }
+
+    // Ghép tên source vào đích
+    size_t lastSlash = realSrc.find_last_of("\\/");
+    string srcName = realSrc.substr(lastSlash + 1);
+    string finalDst = realDst + "\\" + srcName;
+
+    // Copy
+    if (fileExists(inputSrc) == EXIST_FILE_OR_DIRECTORY) {
+        if (!CopyFileA(realSrc.c_str(), finalDst.c_str(), FALSE)) {
+            cerr << "Failed to copy file. Error code: " << GetLastError() << "\n";
+            return -1;
+        }
+    } else {
+        if (!CopyDirectory(realSrc, finalDst)) {
+            cerr << "Failed to copy folder.\n";
+            return -1;
+        }
+    }
+
+    cout << "Copied successfully.\n";
+    return 0;
+}
+

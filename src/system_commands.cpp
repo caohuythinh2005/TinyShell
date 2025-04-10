@@ -10,6 +10,8 @@
 #include "constant.h"
 #include "system_commands.h"
 #include "path_manager.h"
+#include "process.h"
+
 void init_system_commands() {
     status = 1;
 }
@@ -17,28 +19,46 @@ void init_system_commands() {
 int shell_help(vector<string> args) {
     if (args.size() == 1) {
         cout << "\nAVAILABLE COMMANDS:\n";
-        cout << "------------------------------------------------------------------------------------\n";
-        cout << "cls                   : Clear the console screen\n";
-        cout << "exit                  : Exit the program\n";
-        cout << "pwd                   : Print the current working directory\n";
-        cout << "dir                   : List all files and directories in the current path\n";
-        cout << "cd [path]             : Change current directory or go back to parent\n";
-        cout << "mkdir [name]          : Create a new directory in the current path\n";
-        cout << "del [name]            : Delete a file or folder (recursively if it's a folder)\n";
-        cout << "help                  : Show the list of supported commands with descriptions\n";
-        cout << "path                  : Display the system PATH environment variable\n";
-        cout << "set [var] [var=value] : Display, set, or delete environment variables\n";
-        cout << "addpath <path>   : Add a new path to PATH \n";
-        cout << "delpath <path> : Removing a directory from PATH\n";
+        cout << "-------------------------------------------------------------\n";
+        cout << "cls                          : Clear the console screen\n";
+        cout << "exit                         : Exit the shell\n";
+        cout << "pwd                          : Show the current working directory\n";
+        cout << "dir                          : List all files and folders in the current directory\n";
+        cout << "cd [path]                    : Change current directory to [path]\n";
+        cout << "cd ..                        : Move to the parent directory\n";
+        cout << "mkdir [name]                 : Create a new directory with given name\n";
+        cout << "del [name]                   : Delete a file or folder (recursively if it's a folder)\n";
+        cout << "help                         : Show this help message\n";
+        cout << "test [-f|-d] [path]          : Check if the file or directory exists\n";
+        cout << "exec [path]                  : Execute a bat file \n";
+        cout << "time                         : Display current system time\n";
+        cout << "date                         : Display current system date\n";
+        cout << "runExe [path] [-b] [-c]      : Run an executable with optional background and console options.\n";
+        cout << "                               -b : Run in background (non-blocking).\n";
+        cout << "                               -c : Open in a new console window.\n";
+        cout << "kill_id [pid]                : Kill a process with the given PID (must be managed)\n";
+        cout << "pause_id [pid]               : Suspend a managed process by PID\n";
+        cout << "resume_id [pid]              : Resume a suspended managed process by PID\n";
+        cout << "list                         : List all processes managed by TinyShell\n";
+        cout << "touch [-f] [name]            : Create an empty file, overwrite if exists with -f\n";
+        cout << "cat [name]                   : Display contents of a file\n";
+        cout << "write [-f|-a] [name]         : Write to a file; -f to overwrite, -a to append\n";
+        cout << "                               (default: overwrite if file exists, else create new)\n";
+        cout << "rename [old_name] [new_name] : Rename file or folder\n";
+        cout << "move [source] [dest_folder]  : Move a file or folder to the destination folder.\n";
+        cout << "copy [source] [dest_folder]  : Copy a file or folder to the destination folder.\n";
+        cout << "path                         : Display the system PATH environment variable\n";
+        cout << "set [var] [var=value]        : Display, set, or delete environment variables\n";
+        cout << "addpath <path>               : Add a new path to PATH \n";
+        cout << "delpath <path>               : Removing a directory from PATH\n";
         cout << "runExe <name/path> [-b] [-c] : run file/path\n";
-        cout << "------------------------------------------------------------------------------------\n";
+        cout << "-------------------------------------------------------------\n";
     } else {
-        cout << "\nBad command...\n\n";
+        cout << "Bad command...\n";
         return BAD_COMMAND;
     }
     return 0;
 }
-
 
 void shell_working(vector<string> args) {
     int shell_num_builtins = builtin_str.size();
@@ -96,38 +116,6 @@ int shell_exit(vector<string> args) {
     return 0;
 }
 
-// int shell_print_processes_info(char** args) {
-//     // chỉ duy nhất 1 tham số là list
-//     if (args[1] != NULL) {
-//         printf("Bad comment...\n");
-//     }
-//     printf("-----------------------PROCESS LISTING-----------------------\n");
-//     HANDLE hSnapShot = INVALID_HANDLE_VALUE;
-//     PROCESSENTRY32 pe32;
-//     pe32.dwSize = sizeof(PROCESSENTRY32);
-//     hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-//     int count = 1;
-//     if (hSnapShot == INVALID_HANDLE_VALUE) {
-//         _tprintf(TEXT("Error\n"));
-//         return -1;
-//     }
-
-//     while (Process32Next(hSnapShot, &pe32)) {
-//         if (pe32.th32ParentProcessID == GetCurrentProcessId() || pe32.th32ProcessID == GetCurrentProcessId()) {
-//             printf("\n\t PROCESS NO:         %d", count++);
-//             printf("\n\t PROCESS NAME:       %s", pe32.szExeFile);
-//             printf("\n\t PARENT PROCESS ID:  %d", pe32.th32ParentProcessID);
-//             printf("\n\t PROCESS ID:         %d", pe32.th32ProcessID);
-//             printf("\n\t PROCESS STATUS:     %s");
-//             printf("\n-----------------------------------------------------------\n");
-//         }
-//     }
-
-//     printf("\n\n");
-//     CloseHandle(hSnapShot);
-//     return 0;
-// }
-
 int shell_cls(vector<string> args) {
     if (args.size() > 1){
         printf("\nBad command ....\n\n");
@@ -173,6 +161,35 @@ int shell_cls(vector<string> args) {
 
     // Đặt lại vị trí
     SetConsoleCursorPosition(hConsole, coordScreen);
+    return 0;
+}
+
+int shell_time(vector<string> args) {
+    if (args.size() != 1){
+        printf("Bad command....\n");
+        return 0;
+    }
+    SYSTEMTIME lt = {0};
+  
+    GetLocalTime(&lt);
+  
+    wprintf(L"\nThe local time is: %02d:%02d:%02d\n\n", 
+        lt.wHour, lt.wMinute, lt.wSecond);
+
+    return 0;
+}
+
+int shell_date(vector<string> args) {
+    if (args.size() != 1){
+        printf("Bad command....\n");
+        return 0;
+    }
+    SYSTEMTIME st = {0};
+  
+    GetLocalTime(&st);
+  
+    wprintf(L"\nToday is: %d-%02d-%02d\n\n", st.wYear, st.wMonth, st.wDay);
+
     return 0;
 }
 

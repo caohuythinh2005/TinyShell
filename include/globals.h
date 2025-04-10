@@ -1,5 +1,5 @@
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#ifndef _GLOBALS_H_
+#define _GLOBALS_H_
 #include <stdio.h>
 #include <string.h>
 #include <Windows.h>
@@ -9,11 +9,24 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <filesystem>
 #include <csignal>
+
 using namespace std;
+
+struct ProcessInfor{
+    DWORD pid;
+    string processName;
+    string status;
+};
+
+typedef struct ProcessInfor ProcessInfor;
 
 
 // global var
+// extern vector<ProcessInfor> processList;
 extern int status; /*flag to determine when to exit program*/
 extern STARTUPINFO si;
 extern PROCESS_INFORMATION pi;

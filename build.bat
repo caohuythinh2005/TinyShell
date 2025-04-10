@@ -9,7 +9,7 @@ if not exist "build" (
 cd build
 
 :: Chạy cmake để cấu hình dự án
-cmake -G "MinGW Makefiles" ..
+cmake -G "Visual Studio 17 2022" -A x64 ..
 
 :: Xây dựng dự án với cấu hình Release
 cmake --build . --config Release

@@ -1,10 +1,20 @@
 {
     "files.associations": {
         "xstring": "cpp",
+<<<<<<< HEAD
+=======
+        "vector": "cpp",
+        "sstream": "cpp",
+        "algorithm": "cpp",
+>>>>>>> ea6c42fcafde10adde77e24f0f9761c1006a2efc
         "atomic": "cpp",
         "bit": "cpp",
         "cctype": "cpp",
         "charconv": "cpp",
+<<<<<<< HEAD
+=======
+        "chrono": "cpp",
+>>>>>>> ea6c42fcafde10adde77e24f0f9761c1006a2efc
         "clocale": "cpp",
         "cmath": "cpp",
         "compare": "cpp",
@@ -17,8 +27,17 @@
         "ctime": "cpp",
         "cwchar": "cpp",
         "exception": "cpp",
+<<<<<<< HEAD
         "format": "cpp",
         "initializer_list": "cpp",
+=======
+        "filesystem": "cpp",
+        "format": "cpp",
+        "forward_list": "cpp",
+        "fstream": "cpp",
+        "initializer_list": "cpp",
+        "iomanip": "cpp",
+>>>>>>> ea6c42fcafde10adde77e24f0f9761c1006a2efc
         "ios": "cpp",
         "iosfwd": "cpp",
         "iostream": "cpp",
@@ -28,8 +47,14 @@
         "locale": "cpp",
         "memory": "cpp",
         "new": "cpp",
+<<<<<<< HEAD
         "ostream": "cpp",
         "sstream": "cpp",
+=======
+        "optional": "cpp",
+        "ostream": "cpp",
+        "ratio": "cpp",
+>>>>>>> ea6c42fcafde10adde77e24f0f9761c1006a2efc
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "string": "cpp",
@@ -38,7 +63,10 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "utility": "cpp",
+<<<<<<< HEAD
         "vector": "cpp",
+=======
+>>>>>>> ea6c42fcafde10adde77e24f0f9761c1006a2efc
         "xfacet": "cpp",
         "xiosbase": "cpp",
         "xlocale": "cpp",
@@ -50,6 +78,7 @@
         "xloctime": "cpp",
         "xmemory": "cpp",
         "xtr1common": "cpp",
+<<<<<<< HEAD
         "xutility": "cpp",
         "filesystem": "cpp",
         "chrono": "cpp",
@@ -61,5 +90,8 @@
         "list": "cpp",
         "ratio": "cpp",
         "csignal": "cpp"
+=======
+        "xutility": "cpp"
+>>>>>>> ea6c42fcafde10adde77e24f0f9761c1006a2efc
     }
 }
