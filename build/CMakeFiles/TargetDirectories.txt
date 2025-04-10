@@ -1,0 +1,3 @@
+D:/TinyShell-minh/TinyShell-minh/build/CMakeFiles/TinyShell.dir
+D:/TinyShell-minh/TinyShell-minh/build/CMakeFiles/ALL_BUILD.dir
+D:/TinyShell-minh/TinyShell-minh/build/CMakeFiles/ZERO_CHECK.dir
