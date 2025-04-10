@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj.d"
   "CMakeFiles/TinyShell.dir/src/main.cpp.obj"
   "CMakeFiles/TinyShell.dir/src/main.cpp.obj.d"
+  "CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj"
+  "CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj.d"
   "CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj"
   "CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj.d"
   "CMakeFiles/TinyShell.dir/src/utils.cpp.obj"

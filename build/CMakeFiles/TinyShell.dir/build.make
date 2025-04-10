@@ -52,10 +52,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\He_dieu_hanh\TinyShell
+CMAKE_SOURCE_DIR = E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\He_dieu_hanh\TinyShell\build
+CMAKE_BINARY_DIR = E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/TinyShell.dir/depend.make
@@ -73,70 +73,86 @@ CMakeFiles/TinyShell.dir/codegen:
 
 CMakeFiles/TinyShell.dir/src/main.cpp.obj: CMakeFiles/TinyShell.dir/flags.make
 CMakeFiles/TinyShell.dir/src/main.cpp.obj: CMakeFiles/TinyShell.dir/includes_CXX.rsp
-CMakeFiles/TinyShell.dir/src/main.cpp.obj: D:/He_dieu_hanh/TinyShell/src/main.cpp
+CMakeFiles/TinyShell.dir/src/main.cpp.obj: E:/Dai_Hoc_nam_2/HDH/tiny_shell/TinyShell/src/main.cpp
 CMakeFiles/TinyShell.dir/src/main.cpp.obj: CMakeFiles/TinyShell.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\He_dieu_hanh\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TinyShell.dir/src/main.cpp.obj"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/main.cpp.obj -MF CMakeFiles\TinyShell.dir\src\main.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\main.cpp.obj -c D:\He_dieu_hanh\TinyShell\src\main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TinyShell.dir/src/main.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/main.cpp.obj -MF CMakeFiles\TinyShell.dir\src\main.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\main.cpp.obj -c E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\main.cpp
 
 CMakeFiles/TinyShell.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TinyShell.dir/src/main.cpp.i"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\He_dieu_hanh\TinyShell\src\main.cpp > CMakeFiles\TinyShell.dir\src\main.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\main.cpp > CMakeFiles\TinyShell.dir\src\main.cpp.i
 
 CMakeFiles/TinyShell.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TinyShell.dir/src/main.cpp.s"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\He_dieu_hanh\TinyShell\src\main.cpp -o CMakeFiles\TinyShell.dir\src\main.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\main.cpp -o CMakeFiles\TinyShell.dir\src\main.cpp.s
 
 CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: CMakeFiles/TinyShell.dir/flags.make
 CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: CMakeFiles/TinyShell.dir/includes_CXX.rsp
-CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: D:/He_dieu_hanh/TinyShell/src/directory_manager.cpp
+CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: E:/Dai_Hoc_nam_2/HDH/tiny_shell/TinyShell/src/directory_manager.cpp
 CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj: CMakeFiles/TinyShell.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\He_dieu_hanh\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj -MF CMakeFiles\TinyShell.dir\src\directory_manager.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\directory_manager.cpp.obj -c D:\He_dieu_hanh\TinyShell\src\directory_manager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj -MF CMakeFiles\TinyShell.dir\src\directory_manager.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\directory_manager.cpp.obj -c E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\directory_manager.cpp
 
 CMakeFiles/TinyShell.dir/src/directory_manager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TinyShell.dir/src/directory_manager.cpp.i"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\He_dieu_hanh\TinyShell\src\directory_manager.cpp > CMakeFiles\TinyShell.dir\src\directory_manager.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\directory_manager.cpp > CMakeFiles\TinyShell.dir\src\directory_manager.cpp.i
 
 CMakeFiles/TinyShell.dir/src/directory_manager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TinyShell.dir/src/directory_manager.cpp.s"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\He_dieu_hanh\TinyShell\src\directory_manager.cpp -o CMakeFiles\TinyShell.dir\src\directory_manager.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\directory_manager.cpp -o CMakeFiles\TinyShell.dir\src\directory_manager.cpp.s
 
 CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj: CMakeFiles/TinyShell.dir/flags.make
 CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj: CMakeFiles/TinyShell.dir/includes_CXX.rsp
-CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj: D:/He_dieu_hanh/TinyShell/src/system_commands.cpp
+CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj: E:/Dai_Hoc_nam_2/HDH/tiny_shell/TinyShell/src/system_commands.cpp
 CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj: CMakeFiles/TinyShell.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\He_dieu_hanh\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj -MF CMakeFiles\TinyShell.dir\src\system_commands.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\system_commands.cpp.obj -c D:\He_dieu_hanh\TinyShell\src\system_commands.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj -MF CMakeFiles\TinyShell.dir\src\system_commands.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\system_commands.cpp.obj -c E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\system_commands.cpp
 
 CMakeFiles/TinyShell.dir/src/system_commands.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TinyShell.dir/src/system_commands.cpp.i"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\He_dieu_hanh\TinyShell\src\system_commands.cpp > CMakeFiles\TinyShell.dir\src\system_commands.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\system_commands.cpp > CMakeFiles\TinyShell.dir\src\system_commands.cpp.i
 
 CMakeFiles/TinyShell.dir/src/system_commands.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TinyShell.dir/src/system_commands.cpp.s"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\He_dieu_hanh\TinyShell\src\system_commands.cpp -o CMakeFiles\TinyShell.dir\src\system_commands.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\system_commands.cpp -o CMakeFiles\TinyShell.dir\src\system_commands.cpp.s
 
 CMakeFiles/TinyShell.dir/src/utils.cpp.obj: CMakeFiles/TinyShell.dir/flags.make
 CMakeFiles/TinyShell.dir/src/utils.cpp.obj: CMakeFiles/TinyShell.dir/includes_CXX.rsp
-CMakeFiles/TinyShell.dir/src/utils.cpp.obj: D:/He_dieu_hanh/TinyShell/src/utils.cpp
+CMakeFiles/TinyShell.dir/src/utils.cpp.obj: E:/Dai_Hoc_nam_2/HDH/tiny_shell/TinyShell/src/utils.cpp
 CMakeFiles/TinyShell.dir/src/utils.cpp.obj: CMakeFiles/TinyShell.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\He_dieu_hanh\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/TinyShell.dir/src/utils.cpp.obj"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/utils.cpp.obj -MF CMakeFiles\TinyShell.dir\src\utils.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\utils.cpp.obj -c D:\He_dieu_hanh\TinyShell\src\utils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/TinyShell.dir/src/utils.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/utils.cpp.obj -MF CMakeFiles\TinyShell.dir\src\utils.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\utils.cpp.obj -c E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\utils.cpp
 
 CMakeFiles/TinyShell.dir/src/utils.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TinyShell.dir/src/utils.cpp.i"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\He_dieu_hanh\TinyShell\src\utils.cpp > CMakeFiles\TinyShell.dir\src\utils.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\utils.cpp > CMakeFiles\TinyShell.dir\src\utils.cpp.i
 
 CMakeFiles/TinyShell.dir/src/utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TinyShell.dir/src/utils.cpp.s"
-	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\He_dieu_hanh\TinyShell\src\utils.cpp -o CMakeFiles\TinyShell.dir\src\utils.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\utils.cpp -o CMakeFiles\TinyShell.dir\src\utils.cpp.s
+
+CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj: CMakeFiles/TinyShell.dir/flags.make
+CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj: CMakeFiles/TinyShell.dir/includes_CXX.rsp
+CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj: E:/Dai_Hoc_nam_2/HDH/tiny_shell/TinyShell/src/path_manager.cpp
+CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj: CMakeFiles/TinyShell.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj -MF CMakeFiles\TinyShell.dir\src\path_manager.cpp.obj.d -o CMakeFiles\TinyShell.dir\src\path_manager.cpp.obj -c E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\path_manager.cpp
+
+CMakeFiles/TinyShell.dir/src/path_manager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TinyShell.dir/src/path_manager.cpp.i"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\path_manager.cpp > CMakeFiles\TinyShell.dir\src\path_manager.cpp.i
+
+CMakeFiles/TinyShell.dir/src/path_manager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TinyShell.dir/src/path_manager.cpp.s"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\path_manager.cpp -o CMakeFiles\TinyShell.dir\src\path_manager.cpp.s
 
 # Object files for target TinyShell
 TinyShell_OBJECTS = \
 "CMakeFiles/TinyShell.dir/src/main.cpp.obj" \
 "CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj" \
 "CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj" \
-"CMakeFiles/TinyShell.dir/src/utils.cpp.obj"
+"CMakeFiles/TinyShell.dir/src/utils.cpp.obj" \
+"CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj"
 
 # External object files for target TinyShell
 TinyShell_EXTERNAL_OBJECTS =
@@ -145,11 +161,12 @@ TinyShell.exe: CMakeFiles/TinyShell.dir/src/main.cpp.obj
 TinyShell.exe: CMakeFiles/TinyShell.dir/src/directory_manager.cpp.obj
 TinyShell.exe: CMakeFiles/TinyShell.dir/src/system_commands.cpp.obj
 TinyShell.exe: CMakeFiles/TinyShell.dir/src/utils.cpp.obj
+TinyShell.exe: CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj
 TinyShell.exe: CMakeFiles/TinyShell.dir/build.make
 TinyShell.exe: CMakeFiles/TinyShell.dir/linkLibs.rsp
 TinyShell.exe: CMakeFiles/TinyShell.dir/objects1.rsp
 TinyShell.exe: CMakeFiles/TinyShell.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\He_dieu_hanh\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable TinyShell.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable TinyShell.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\TinyShell.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -161,6 +178,6 @@ CMakeFiles/TinyShell.dir/clean:
 .PHONY : CMakeFiles/TinyShell.dir/clean
 
 CMakeFiles/TinyShell.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" D:\He_dieu_hanh\TinyShell D:\He_dieu_hanh\TinyShell D:\He_dieu_hanh\TinyShell\build D:\He_dieu_hanh\TinyShell\build D:\He_dieu_hanh\TinyShell\build\CMakeFiles\TinyShell.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles\TinyShell.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/TinyShell.dir/depend
 

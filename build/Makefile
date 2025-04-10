@@ -56,10 +56,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\He_dieu_hanh\TinyShell
+CMAKE_SOURCE_DIR = E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\He_dieu_hanh\TinyShell\build
+CMAKE_BINARY_DIR = E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -86,9 +86,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\He_dieu_hanh\TinyShell\build\CMakeFiles D:\He_dieu_hanh\TinyShell\build\\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\\CMakeFiles\progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\He_dieu_hanh\TinyShell\build\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -176,6 +176,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\TinyShell.dir\build.make CMakeFiles/TinyShell.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/path_manager.obj: src/path_manager.cpp.obj
+.PHONY : src/path_manager.obj
+
+# target to build an object file
+src/path_manager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TinyShell.dir\build.make CMakeFiles/TinyShell.dir/src/path_manager.cpp.obj
+.PHONY : src/path_manager.cpp.obj
+
+src/path_manager.i: src/path_manager.cpp.i
+.PHONY : src/path_manager.i
+
+# target to preprocess a source file
+src/path_manager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TinyShell.dir\build.make CMakeFiles/TinyShell.dir/src/path_manager.cpp.i
+.PHONY : src/path_manager.cpp.i
+
+src/path_manager.s: src/path_manager.cpp.s
+.PHONY : src/path_manager.s
+
+# target to generate assembly for a file
+src/path_manager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\TinyShell.dir\build.make CMakeFiles/TinyShell.dir/src/path_manager.cpp.s
+.PHONY : src/path_manager.cpp.s
+
 src/system_commands.obj: src/system_commands.cpp.obj
 .PHONY : src/system_commands.obj
 
@@ -239,6 +263,9 @@ help:
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
+	@echo ... src/path_manager.obj
+	@echo ... src/path_manager.i
+	@echo ... src/path_manager.s
 	@echo ... src/system_commands.obj
 	@echo ... src/system_commands.i
 	@echo ... src/system_commands.s

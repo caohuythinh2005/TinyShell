@@ -9,7 +9,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-
+#include <csignal>
 using namespace std;
 
 
@@ -24,5 +24,7 @@ extern string current_real_path;
 extern string current_fake_path;
 extern vector<string> builtin_str;
 extern int (*builtin_func[]) (vector<string>);
-
+extern HANDLE hJob;
+extern JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
+extern HANDLE fore;
 #endif

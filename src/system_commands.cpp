@@ -9,7 +9,7 @@
 #include "directory_manager.h"
 #include "constant.h"
 #include "system_commands.h"
-
+#include "path_manager.h"
 void init_system_commands() {
     status = 1;
 }
@@ -17,16 +17,21 @@ void init_system_commands() {
 int shell_help(vector<string> args) {
     if (args.size() == 1) {
         cout << "\nAVAILABLE COMMANDS:\n";
-        cout << "------------------------------------------\n";
-        cout << "cls              : Clear the console screen\n";
-        cout << "exit             : Exit the program\n";
-        cout << "pwd              : Print the current working directory\n";
-        cout << "dir              : List all files and directories in the current path\n";
-        cout << "cd [path]        : Change current directory or go back to parent\n";
-        cout << "mkdir [name]     : Create a new directory in the current path\n";
-        cout << "del [name]       : Delete a file or folder (recursively if it's a folder)\n";
-        cout << "help             : Show the list of supported commands with descriptions\n";
-        cout << "------------------------------------------\n";
+        cout << "------------------------------------------------------------------------------------\n";
+        cout << "cls                   : Clear the console screen\n";
+        cout << "exit                  : Exit the program\n";
+        cout << "pwd                   : Print the current working directory\n";
+        cout << "dir                   : List all files and directories in the current path\n";
+        cout << "cd [path]             : Change current directory or go back to parent\n";
+        cout << "mkdir [name]          : Create a new directory in the current path\n";
+        cout << "del [name]            : Delete a file or folder (recursively if it's a folder)\n";
+        cout << "help                  : Show the list of supported commands with descriptions\n";
+        cout << "path                  : Display the system PATH environment variable\n";
+        cout << "set [var] [var=value] : Display, set, or delete environment variables\n";
+        cout << "addpath <path>   : Add a new path to PATH \n";
+        cout << "delpath <path> : Removing a directory from PATH\n";
+        cout << "runExe <name/path> [-b] [-c] : run file/path\n";
+        cout << "------------------------------------------------------------------------------------\n";
     } else {
         cout << "\nBad command...\n\n";
         return BAD_COMMAND;

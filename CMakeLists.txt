@@ -10,4 +10,5 @@ add_executable(TinyShell
 src/main.cpp
 src/directory_manager.cpp
 src/system_commands.cpp
-src/utils.cpp)
+src/utils.cpp
+src/path_manager.cpp)

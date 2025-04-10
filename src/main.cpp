@@ -16,11 +16,19 @@ string fixed_real_path; // có thêm /root so với cái trên
 string current_real_path;  // là (C:/root)
 string current_fake_path; // là /root
 
+// Xử lý hàng đợi
+HANDLE hJob;
+JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
+
+// foreground mode
+HANDLE fore = NULL;
+
+
 #include "system_commands.h"
 #include "constant.h"
 #include "directory_manager.h"
 #include "utils.h"
-
+#include "path_manager.h"
 
 vector<string> builtin_str = {
     // "list",
@@ -31,7 +39,13 @@ vector<string> builtin_str = {
 	"cd",
 	"mkdir",
 	"del",
-	"help"
+	"help",
+	"path",
+	"addpath",
+	"set",
+	"runExe",
+	"delpath",
+	"where"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -43,7 +57,13 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_cd,
 	&shell_mkdir,
 	&shell_del,
-	&shell_help
+	&shell_help,
+	&shell_path,
+	&shell_addpath,
+	&shell_set,
+	&shell_runExe,
+	&shell_delpath,
+	&shell_where
 };
 
 

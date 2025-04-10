@@ -204,7 +204,6 @@ khi tạo ta sẽ chỉ định trực tiếp xong lại thay về origin_real_p
 Làm thế này đỡ phải check đường dẫn tương đối vì hiển nhiên phải tiếp theo từ origin
 Chỉ cho phép đường dẫn tuyệt đối từ /root/...
 */
-
 int shell_cd(vector<string> args) {
     if (args.size() == 1) return 0;
     if (args.size() == 2) {
@@ -277,4 +276,9 @@ int shell_cd(vector<string> args) {
         return BAD_COMMAND;
     }
     return 0;
+}
+
+string convertFakeToRealPath(const string &currentFakePath)
+{
+    return origin_real_path + currentFakePath;
 }

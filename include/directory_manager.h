@@ -10,5 +10,5 @@ int shell_dir(vector<string> args);
 int shell_cd(vector<string> args);
 int shell_mkdir(vector<string> args);
 int shell_del(vector<string> args);
-
+string convertFakeToRealPath(const string &currentFakePath);
 #endif
