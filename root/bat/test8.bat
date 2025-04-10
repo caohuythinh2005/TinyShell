@@ -1,2 +1,1 @@
-@echo off
-TinyShell.exe "runExe hello"
+runExe /root/exe/snake.exe -b

@@ -17,6 +17,7 @@
 #include "directory_manager.h"
 #include <algorithm>
 #include "globals.h"
+#include "system_commands.h"
 vector<string> split_path(const string& path) {
     vector<string> directories;
     stringstream ss(path);
@@ -38,66 +39,11 @@ string replaceRoot(const string& value, const string& root_path) {
     return result;
 }
 
-// int shell_path(vector<string> args){
-//     if(args.size() > 1){
-//         cout << "Bad Command ... \n";
-//         return BAD_COMMAND;
-//     }
-//     // const DWORD BUFFER_SIZE = 2048;
-//     // vector<WCHAR> buffer(BUFFER_SIZE);
-//     // DWORD dwRet = GetEnvironmentVariableW(L"Path", buffer.data(), BUFFER_SIZE);
-//     // if(dwRet == 0){
-//     //     DWORD dwErr = GetLastError();
-//     //     if(dwErr == ERROR_ENVVAR_NOT_FOUND){
-//     //         cout << "Environment variable does not exit. \n";
-//     //         return BAD_COMMAND;
-//     //     }
-//     //     cout << "Get environment variable failed (" << dwErr << ") \n";
-//     //     return BAD_COMMAND;
-//     // }
-//     // if(dwRet > BUFFER_SIZE){
-//     //     buffer.resize(dwRet);
-//     //     dwRet = GetEnvironmentVariableW(L"Path", buffer.data(), BUFFER_SIZE);
-//     //     if(dwRet == 0){
-//     //         cout << "Get environment variable failed (" << GetLastError() << ") \n";
-//     //         return BAD_COMMAND;
-//     //     }
-//     // }
-//     // // int size_needed = WideCharToMultiByte(CP_UTF8, 0, buffer.data(), -1, NULL, 0, NULL, NULL);
-//     // // vector<char> utf8_buffer(size_needed);
-//     // // WideCharToMultiByte(CP_UTF8, 0, buffer.data(), -1, utf8_buffer.data(), size_needed, NULL, NULL);
-
-//     // wcout << L"PATH= " << buffer.data() << "\n";
-
-//     const char* path_env = getenv("PATH");
-//     if (path_env == nullptr) {
-//         cout << "Failed to retrieve PATH environment variable.\n";
-//         return BAD_COMMAND;
-//     }
-
-//     // Tách PATH thành danh sách các thư mục
-//     vector<string> directories = split_path(path_env);
-
-//     // Lọc và hiển thị các đường dẫn bắt đầu bằng /root
-//     bool found = false;
-//     for (const string& dir : directories) {
-//         if (dir.length() >= 5 && dir.substr(0, 5) == "/root") {
-//             cout << dir << "\n";
-//             found = true;
-//         }
-//     }
-
-//     if (!found) {
-//         cout << "No PATH entries start with /root.\n";
-//     }
-//     return 0;
-// }
-
 int shell_path(vector<string> args) {
-    cout << "fix_real_path is " << fixed_real_path << endl;
-    cout << "current_real_path" << current_real_path << endl;
-    cout << "origin_real_path" << origin_real_path<< endl;
-    cout << "fake_path " << current_fake_path << endl;
+    // cout << "fix_real_path is " << fixed_real_path << endl;
+    // cout << "current_real_path" << current_real_path << endl;
+    // cout << "origin_real_path" << origin_real_path<< endl;
+    // cout << "fake_path " << current_fake_path << endl;
     if (args.size() > 1) {
         cout << "Bad Command ... \n";
         return BAD_COMMAND;
@@ -214,24 +160,6 @@ int shell_set(vector<string> args) {
             }
             string val_str = value;
             if (arg == "path") {
-                // vector<string> directories = split_path(val_str);
-                // string filtered_path;
-                // bool has_root_related = false;
-
-                // for (const string& dir : directories) {
-                //     string real_dir = dir;
-                //     if (isPrefix(real_dir, fixed_real_path)) {
-                //         string virtual_path = replaceRoot(real_dir, fixed_real_path);
-                //         if (!filtered_path.empty()) filtered_path += ";";
-                //         filtered_path += virtual_path;
-                //         has_root_related = true;
-                //     }
-                // }
-                // if (has_root_related) {
-                //     cout << "Path=" << filtered_path << "\n";
-                // } else {
-                //     cout << "No PATH entries related to \\root.\n";
-                // }
                 shell_path({"path"});
             } else {
                 string real_value = val_str;
@@ -543,7 +471,9 @@ int shell_runExe(vector<string> args) {
         return BAD_COMMAND;
     }
 
-    bool isExecutable = (realPath.find(".exe") != string::npos || realPath.find(".bat") != string::npos);
+    bool isExecutable = (realPath.find(".exe") != string::npos);
+    // bool isfile = (realPath.find(".bat") != string::npos);
+    int isfile = fileExists(input);
     bool isBackground = false;
     bool createConsole = false;
 
@@ -618,7 +548,26 @@ int shell_runExe(vector<string> args) {
             childProcesses.erase(childProcesses.end() - 1);
         }
         // Không đóng handle ngay nếu chạy nền, để quản lý sau
-    } else {
+    } else if (isfile != ERROR_PATH && isfile != FILE_NOT_EXIST) {
+        ifstream scriptFile(realPath);
+        if (!scriptFile)
+        {
+            cout << "UNABLE TO OPEN SCRIPT FILE: " << realPath << endl;
+            return UNABLE_TO_OPEN_SCRIPT_FILE;
+        }
+        string line;
+        while (getline(scriptFile, line))
+        {
+            args = parse_command(line);
+            if (args.size() > 0) {
+                shell_working(args);
+            }
+        }
+
+        scriptFile.close();
+        return 0;
+    }
+     else {
         HINSTANCE result = ShellExecuteA(NULL, "open", realPath.c_str(), NULL, NULL, SW_SHOWNORMAL);
         if ((intptr_t)result <= 32) {
             cerr << "Failed to open file. Error code: " << (intptr_t)result << "\n";
