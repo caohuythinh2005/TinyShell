@@ -85,7 +85,7 @@ string read_command_line()
 vector<string> parse_command(string line) {
     vector<string> args;
     string arg;
-
+    
     for (char ch : line) {
         if (isspace(ch)) {
             if (!arg.empty()) {
