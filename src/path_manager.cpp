@@ -18,6 +18,9 @@
 #include <algorithm>
 #include "globals.h"
 #include "system_commands.h"
+
+
+
 vector<string> split_path(const string& path) {
     vector<string> directories;
     stringstream ss(path);
@@ -227,9 +230,9 @@ int shell_addpath(vector<string> args) {
     }
 
     string new_path = args[1];
-    cout << "new path is " << new_path << endl;
+    // cout << "new path is " << new_path << endl;
     string real_new_path = convertFakeToRealPath(new_path);
-    cout << "real_new_path is " << real_new_path << endl;
+    // cout << "real_new_path is " << real_new_path << endl;
     // Kiểm tra xem đường dẫn có tồn tại và là thư mục không
     if (!path_exists_and_is_directory(real_new_path)) {
         cout << "Invalid or non-existent path: " << new_path << "\n";
@@ -581,29 +584,7 @@ int shell_runExe(vector<string> args) {
     return 0;
 }
 
-// // Hàm mới để tạm dừng tiến trình con theo PID
-// int shell_pause(vector<string> args) {
-//     if (args.size() != 2) {
-//         printf("Usage: pause <pid>\n");
-//         return BAD_COMMAND;
-//     }
 
-//     DWORD pid = atoi(args[1].c_str());
-//     pauseChild(pid);
-//     return 0;
-// }
-
-// // Hàm mới để tiếp tục tiến trình con theo PID
-// int shell_resume(vector<string> args) {
-//     if (args.size() != 2) {
-//         printf("Usage: resume <pid>\n");
-//         return BAD_COMMAND;
-//     }
-
-//     DWORD pid = atoi(args[1].c_str());
-//     resumeChild(pid);
-//     return 0;
-// }
 
 int shell_where(vector<string> args){
     if(args.size() != 2){
