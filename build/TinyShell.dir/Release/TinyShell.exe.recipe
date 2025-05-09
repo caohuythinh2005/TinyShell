@@ -2,10 +2,10 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>D:\He_dieu_hanh\TinyShell\build\x64\Release\ZERO_CHECK</FullPath>
+      <FullPath>E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\x64\Release\ZERO_CHECK</FullPath>
     </ProjectOutput>
     <ProjectOutput>
-      <FullPath>D:\He_dieu_hanh\TinyShell\build\Release\TinyShell.exe</FullPath>
+      <FullPath>E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\Release\TinyShell.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

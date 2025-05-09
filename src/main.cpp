@@ -7,7 +7,12 @@
 
 
 #include "globals.h"
-
+#include "process.h"
+#include "system_commands.h"
+#include "constant.h"
+#include "directory_manager.h"
+#include "utils.h"
+#include "path_manager.h"
 
 
 // global var
@@ -31,11 +36,6 @@ HANDLE fore = NULL;
 
 
 
-#include "process.h"
-#include "system_commands.h"
-#include "constant.h"
-#include "directory_manager.h"
-#include "utils.h"
 
 
 
@@ -62,7 +62,12 @@ vector<string> builtin_str = {
 	"write",
 	"rename",
 	"move",
-	"copy"
+	"copy",
+	"path",
+	"addpath",
+	"set",
+	"delpath",
+	"where"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -88,7 +93,12 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_write,
 	&shell_rename,
 	&shell_move,
-	&shell_copy
+	&shell_copy,
+	&shell_path,
+	&shell_addpath,
+	&shell_set,
+	&shell_delpath,
+	&shell_where
 };
 
 

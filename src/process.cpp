@@ -81,111 +81,111 @@ int shell_runScript(vector<string> args)
     return 0;
 }
 
-void sigintHandler(int sig_num) {
-    // Nếu có tiến trình foreground đang chạy, terminate nó
-    if (fore != NULL) {
-        std::cout << "\nInterrupt received. Terminating foreground process...\n";
-        TerminateProcess(fore, 1); // Dừng tiến trình
-        fore = NULL;  // Xóa handle
-    }
-    std::cin.clear(); // Đảm bảo không bị lỗi khi đọc từ stdin
-}
+// void sigintHandler(int sig_num) {
+//     // Nếu có tiến trình foreground đang chạy, terminate nó
+//     if (fore != NULL) {
+//         std::cout << "\nInterrupt received. Terminating foreground process...\n";
+//         TerminateProcess(fore, 1); // Dừng tiến trình
+//         fore = NULL;  // Xóa handle
+//     }
+//     std::cin.clear(); // Đảm bảo không bị lỗi khi đọc từ stdin
+// }
 
 // Chạy trực tiếp tại thư mục hoặc là đường dẫn
 
-int shell_runExe(vector<string> args) {
-    if (args.size() < 2 || args.size() > 4) {
-        printf("Usage: runExe [path] [-b] [-c]\n");
-        return BAD_COMMAND;
-    }
+// int shell_runExe(vector<string> args) {
+//     if (args.size() < 2 || args.size() > 4) {
+//         printf("Usage: runExe [path] [-b] [-c]\n");
+//         return BAD_COMMAND;
+//     }
 
-    string realPath = "";
+//     string realPath = "";
 
-    string inputPath = args[1];
+//     string inputPath = args[1];
     
-    if ((inputPath[0] == '\\' || inputPath[0] == '/') && 
-             (inputPath.substr(0, 5) == "\\root" || inputPath.substr(0, 5) == "/root")) {
-        if (fileExists(inputPath) != EXIST_FILE_OR_DIRECTORY) {
-            std::cerr << "The specified file path does not exist. Please check the path and try again.\n";
-            return -1;
-        }
-        realPath = convertFakeToRealPath(inputPath);
-    }
-    else {
-        inputPath = current_fake_path + "\\"  + args[1];
-        if (fileExists(inputPath) != EXIST_FILE_OR_DIRECTORY) {
-            std::cerr << "The specified file path does not exist. Please check the path and try again.\n";
-            return -1;
-        }
-        realPath = convertFakeToRealPath(inputPath);
-    }
-    string cmdLine = realPath;
-    STARTUPINFOA si = { sizeof(si) };
-    PROCESS_INFORMATION pi;
-    DWORD creationFlags = CREATE_UNICODE_ENVIRONMENT;
-    bool isBackground = false;
-    bool createConsole = false;
+//     if ((inputPath[0] == '\\' || inputPath[0] == '/') && 
+//              (inputPath.substr(0, 5) == "\\root" || inputPath.substr(0, 5) == "/root")) {
+//         if (fileExists(inputPath) != EXIST_FILE_OR_DIRECTORY) {
+//             std::cerr << "The specified file path does not exist. Please check the path and try again.\n";
+//             return -1;
+//         }
+//         realPath = convertFakeToRealPath(inputPath);
+//     }
+//     else {
+//         inputPath = current_fake_path + "\\"  + args[1];
+//         if (fileExists(inputPath) != EXIST_FILE_OR_DIRECTORY) {
+//             std::cerr << "The specified file path does not exist. Please check the path and try again.\n";
+//             return -1;
+//         }
+//         realPath = convertFakeToRealPath(inputPath);
+//     }
+//     string cmdLine = realPath;
+//     STARTUPINFOA si = { sizeof(si) };
+//     PROCESS_INFORMATION pi;
+//     DWORD creationFlags = CREATE_UNICODE_ENVIRONMENT;
+//     bool isBackground = false;
+//     bool createConsole = false;
 
-    // Kiểm tra flag
-    for (int i = 2; i < args.size(); ++i) {
-        if (args[i] == "-b") isBackground = true;
-        else if (args[i] == "-c") createConsole = true;
-        else {
-            printf("Unknown flag: %s\n", args[i].c_str());
-            return BAD_COMMAND;
-        }
-    }
+//     // Kiểm tra flag
+//     for (int i = 2; i < args.size(); ++i) {
+//         if (args[i] == "-b") isBackground = true;
+//         else if (args[i] == "-c") createConsole = true;
+//         else {
+//             printf("Unknown flag: %s\n", args[i].c_str());
+//             return BAD_COMMAND;
+//         }
+//     }
 
-    HANDLE hNull = NULL;
-    if (isBackground && !createConsole) {
-        // Chặn stdout/stderr khi chạy nền không có console mới
-        // "NUL" là một thiết bị out
-        // Mục đích chính là sẽ nuốt dữ liệu in ra
-        hNull = CreateFileA("NUL", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (hNull != INVALID_HANDLE_VALUE) {
-            si.dwFlags |= STARTF_USESTDHANDLES;
-            si.hStdOutput = hNull;
-            si.hStdError  = hNull;
-        }
-    }
+//     HANDLE hNull = NULL;
+//     if (isBackground && !createConsole) {
+//         // Chặn stdout/stderr khi chạy nền không có console mới
+//         // "NUL" là một thiết bị out
+//         // Mục đích chính là sẽ nuốt dữ liệu in ra
+//         hNull = CreateFileA("NUL", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+//         if (hNull != INVALID_HANDLE_VALUE) {
+//             si.dwFlags |= STARTF_USESTDHANDLES;
+//             si.hStdOutput = hNull;
+//             si.hStdError  = hNull;
+//         }
+//     }
 
-    if (createConsole) {
-        creationFlags |= CREATE_NEW_CONSOLE;
-    }
+//     if (createConsole) {
+//         creationFlags |= CREATE_NEW_CONSOLE;
+//     }
 
-    BOOL success = CreateProcessA(
-        NULL,
-        cmdLine.data(),
-        NULL,
-        NULL,
-        TRUE,  // Kế thừa handle nếu cần
-        creationFlags,
-        NULL,
-        NULL,
-        &si,
-        &pi
-    );
+//     BOOL success = CreateProcessA(
+//         NULL,
+//         cmdLine.data(),
+//         NULL,
+//         NULL,
+//         TRUE,  // Kế thừa handle nếu cần
+//         creationFlags,
+//         NULL,
+//         NULL,
+//         &si,
+//         &pi
+//     );
 
-    if (hNull) CloseHandle(hNull);  // đóng sau khi CreateProcess dùng xong
+//     if (hNull) CloseHandle(hNull);  // đóng sau khi CreateProcess dùng xong
 
-    if (!success) {
-        cerr << "Failed to create process. Error code: " << GetLastError() << "\n";
-        return 1;
-    }
+//     if (!success) {
+//         cerr << "Failed to create process. Error code: " << GetLastError() << "\n";
+//         return 1;
+//     }
 
-    std::signal(SIGINT, sigintHandler);
-    AssignProcessToJobObject(hJob, pi.hProcess);
+//     std::signal(SIGINT, sigintHandler);
+//     AssignProcessToJobObject(hJob, pi.hProcess);
 
-    if (!isBackground) {
-        WaitForSingleObject(pi.hProcess, INFINITE);
-        // printf("Child Complete\n");
-    }
+//     if (!isBackground) {
+//         WaitForSingleObject(pi.hProcess, INFINITE);
+//         // printf("Child Complete\n");
+//     }
 
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
+//     CloseHandle(pi.hProcess);
+//     CloseHandle(pi.hThread);
 
-    return 0;
-}
+//     return 0;
+// }
 
 // Cài đệ quy phục vụ sandbox
  

@@ -186,7 +186,6 @@ khi tạo ta sẽ chỉ định trực tiếp xong lại thay về origin_real_p
 Làm thế này đỡ phải check đường dẫn tương đối vì hiển nhiên phải tiếp theo từ origin
 Chỉ cho phép đường dẫn tuyệt đối từ /root/...
 */
-
 int shell_cd(vector<string> args) {
     if (args.size() == 1) return 0;
     if (args.size() == 2) {
@@ -203,6 +202,10 @@ int shell_cd(vector<string> args) {
                     return DIRECTORY_NOT_EXIST;
                 }
                 string fullPath = getNormalizedCurrentDirectory();
+                if (folderExists(path_str) != EXIST_FILE_OR_DIRECTORY) {
+                    cerr << "Destination must be an existing folder.\n";
+                    return -1;
+                }
                 SetCurrentDirectory(origin_real_path.c_str());
                 current_real_path = fullPath;
                 current_fake_path = removePrefix(current_real_path, origin_real_path);
@@ -241,6 +244,11 @@ int shell_cd(vector<string> args) {
                 return DIRECTORY_NOT_EXIST;
             } else {
                 string fullPath = getNormalizedCurrentDirectory();
+                if (folderExists(string(current_fake_path) + '\\' + path_str) != EXIST_FILE_OR_DIRECTORY) {
+                    cout << string(full_path) << endl;
+                    cerr << "Destination must be an existing folder.\n";
+                    return -1;
+                }
                 if (isPrefix(fullPath, fixed_real_path)) {
                     SetCurrentDirectory(origin_real_path.c_str());
                     current_real_path = fullPath;
@@ -291,31 +299,31 @@ int shell_test(vector<string> args) {
     return 0;
 }
 
-string formatFakePathToUnixStyle(const string& fake_path) {
-    string unix_path = fake_path;
-    for (char& c : unix_path) {
-        if (c == '\\') c = '/';
-    }
-    return unix_path;
-}
+// string formatFakePathToUnixStyle(const string& fake_path) {
+//     string unix_path = fake_path;
+//     for (char& c : unix_path) {
+//         if (c == '\\') c = '/';
+//     }
+//     return unix_path;
+// }
 
-string getNormalizedCurrentDirectory() {
-    char tempPath[MAX_PATH];
-    // Lấy đường dẫn hiện tại (user nhập sao cũng được)
-    DWORD len = GetCurrentDirectoryA(MAX_PATH, tempPath);
-    if (len == 0 || len > MAX_PATH) {
-        return "";  // Error
-    }
+// string getNormalizedCurrentDirectory() {
+//     char tempPath[MAX_PATH];
+//     // Lấy đường dẫn hiện tại (user nhập sao cũng được)
+//     DWORD len = GetCurrentDirectoryA(MAX_PATH, tempPath);
+//     if (len == 0 || len > MAX_PATH) {
+//         return "";  // Error
+//     }
 
-    char normalizedPath[MAX_PATH];
-    DWORD result = GetLongPathNameA(tempPath, normalizedPath, MAX_PATH);
-    if (result == 0 || result > MAX_PATH) {
-        // Nếu GetLongPathName fail, trả về như GetCurrentDirectory
-        return string(tempPath);
-    }
+//     char normalizedPath[MAX_PATH];
+//     DWORD result = GetLongPathNameA(tempPath, normalizedPath, MAX_PATH);
+//     if (result == 0 || result > MAX_PATH) {
+//         // Nếu GetLongPathName fail, trả về như GetCurrentDirectory
+//         return string(tempPath);
+//     }
 
-    return string(normalizedPath);
-}
+//     return string(normalizedPath);
+// }
 
 string getNormalizedDirectory(const string& fakePath) {
     // Lưu lại current directory ban đầu để phục hồi sau

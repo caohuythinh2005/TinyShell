@@ -1,28 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="D:\He_dieu_hanh\TinyShell\src\main.cpp">
+    <ClCompile Include="E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\He_dieu_hanh\TinyShell\src\directory_manager.cpp">
+    <ClCompile Include="E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\directory_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\He_dieu_hanh\TinyShell\src\system_commands.cpp">
+    <ClCompile Include="E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\system_commands.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\He_dieu_hanh\TinyShell\src\utils.cpp">
+    <ClCompile Include="E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\He_dieu_hanh\TinyShell\src\process.cpp">
+    <ClCompile Include="E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\path_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="D:\He_dieu_hanh\TinyShell\CMakeLists.txt" />
+    <CustomBuild Include="E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{B780D7AF-F129-307B-BC15-F947753B4F91}</UniqueIdentifier>
+      <UniqueIdentifier>{50308F6A-BB30-3F8F-8B58-6BB0731146DB}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
