@@ -1,1 +1,1 @@
-runExe /root/exe/snake.exe -b
+runExe \root\exe\snake.exe -b -c

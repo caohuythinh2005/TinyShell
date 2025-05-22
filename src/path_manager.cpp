@@ -18,9 +18,6 @@
 #include <algorithm>
 #include "globals.h"
 #include "system_commands.h"
-
-
-
 vector<string> split_path(const string& path) {
     vector<string> directories;
     stringstream ss(path);
@@ -82,7 +79,7 @@ int shell_path(vector<string> args) {
     }
 
     if (!found) {
-        cout << "No PATH entries start with \\root.";
+        cout << "No PATH entries start with /root.";
     }
     cout << "\n";
     return 0;
@@ -230,9 +227,9 @@ int shell_addpath(vector<string> args) {
     }
 
     string new_path = args[1];
-    // cout << "new path is " << new_path << endl;
+    cout << "new path is " << new_path << endl;
     string real_new_path = convertFakeToRealPath(new_path);
-    // cout << "real_new_path is " << real_new_path << endl;
+    cout << "real_new_path is " << real_new_path << endl;
     // Kiểm tra xem đường dẫn có tồn tại và là thư mục không
     if (!path_exists_and_is_directory(real_new_path)) {
         cout << "Invalid or non-existent path: " << new_path << "\n";
@@ -397,22 +394,38 @@ int shell_runExe(vector<string> args) {
     
         string input = args[1];
         string realPath;
+        string rootPath = origin_real_path + "\\root\\.."; // current_real_path
         bool isPath = (input.find("\\") == 0 || input.find("/") == 0); // Kiểm tra xem có phải đường dẫn không
+        // cout << "isPath: " << isPath << endl;
+        // cout << " current_real_path: " << current_real_path << endl;
+        // cout << "rootpath is: " << rootPath<< endl;
         DWORD file1 = GetFileAttributesA((current_real_path + "\\" + input).c_str());
         DWORD file2 = GetFileAttributesA((current_real_path + "\\" + input + ".exe").c_str());
         if(file1 != INVALID_FILE_ATTRIBUTES && !(file1 & FILE_ATTRIBUTE_DIRECTORY)){
+            // cout <<"file1 is " << file1 << endl;
             realPath = current_real_path + "\\" + input;
+            // cout << "real path is: " << realPath << endl;
+            // cout << "find: " << realPath.find(rootPath) << endl;
+            if(realPath.find(rootPath) == 0){
+                printf("Error: not found: ", input.c_str());
+                return BAD_COMMAND;
+            }
         }
         else if(file2 != INVALID_FILE_ATTRIBUTES && !(file2 & FILE_ATTRIBUTE_DIRECTORY)) {
+            // cout << "file 2 is: " << file2 << endl;
             realPath = current_real_path + "\\" + input + ".exe";
+            // cout << "real path is: " << realPath << endl;
+            if(realPath.find(rootPath) == 0){
+                printf("Error: not found: ", input.c_str());
+                return BAD_COMMAND;
+            }
         }
         else{
-            // Nếu là đường dẫn, chuyển đổi trực tiếp
             if (isPath) {
                 realPath = convertFakeToRealPath(input);
                 // cout << "realPath in isPath is: " << realPath << endl;
-            } else {
-                // Nếu chỉ là tên file, tìm trong PATH
+            } 
+            else {
                 const char* path_env = getenv("PATH");
                 if (!path_env) {
                     printf("PATH environment variable not set.\n");
@@ -476,6 +489,7 @@ int shell_runExe(vector<string> args) {
 
     bool isExecutable = (realPath.find(".exe") != string::npos);
     // bool isfile = (realPath.find(".bat") != string::npos);
+    bool isfilebat = (realPath.find(".bat") != string::npos);
     int isfile = fileExists(input);
     bool isBackground = false;
     bool createConsole = false;
@@ -489,6 +503,9 @@ int shell_runExe(vector<string> args) {
         }
     }
 
+    // cout << "isExecutable : " << isExecutable << endl;
+    // cout << "isfilebat: " << isfilebat << endl;
+    // cout << "isfile: " << isfile << endl;
     if (isExecutable) {
         string cmdLine = (realPath.find(".bat") != string::npos) ? "cmd.exe /c \"" + realPath + "\"" : realPath;
         char* cmdLineBuffer = new char[cmdLine.length() + 1];
@@ -551,7 +568,8 @@ int shell_runExe(vector<string> args) {
             childProcesses.erase(childProcesses.end() - 1);
         }
         // Không đóng handle ngay nếu chạy nền, để quản lý sau
-    } else if (isfile != ERROR_PATH && isfile != FILE_NOT_EXIST) {
+    } else if (isfilebat) {
+        // cout << "test " << endl;
         ifstream scriptFile(realPath);
         if (!scriptFile)
         {
@@ -584,7 +602,29 @@ int shell_runExe(vector<string> args) {
     return 0;
 }
 
+// // Hàm mới để tạm dừng tiến trình con theo PID
+// int shell_pause(vector<string> args) {
+//     if (args.size() != 2) {
+//         printf("Usage: pause <pid>\n");
+//         return BAD_COMMAND;
+//     }
 
+//     DWORD pid = atoi(args[1].c_str());
+//     pauseChild(pid);
+//     return 0;
+// }
+
+// // Hàm mới để tiếp tục tiến trình con theo PID
+// int shell_resume(vector<string> args) {
+//     if (args.size() != 2) {
+//         printf("Usage: resume <pid>\n");
+//         return BAD_COMMAND;
+//     }
+
+//     DWORD pid = atoi(args[1].c_str());
+//     resumeChild(pid);
+//     return 0;
+// }
 
 int shell_where(vector<string> args){
     if(args.size() != 2){

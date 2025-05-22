@@ -1,6 +1,7 @@
-E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\main.cpp;E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\TinyShell.dir\Release\main.obj
-E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\directory_manager.cpp;E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\TinyShell.dir\Release\directory_manager.obj
-E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\system_commands.cpp;E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\TinyShell.dir\Release\system_commands.obj
-E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\utils.cpp;E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\TinyShell.dir\Release\utils.obj
-E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\path_manager.cpp;E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\TinyShell.dir\Release\path_manager.obj
-E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\src\process.cpp;E:\Dai_Hoc_nam_2\HDH\tiny_shell\TinyShell\build\TinyShell.dir\Release\process.obj
+D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\main.cpp;D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\build\TinyShell.dir\Release\main.obj
+D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\directory_manager.cpp;D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\build\TinyShell.dir\Release\directory_manager.obj
+D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\system_commands.cpp;D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\build\TinyShell.dir\Release\system_commands.obj
+D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\utils.cpp;D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\build\TinyShell.dir\Release\utils.obj
+D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\path_manager.cpp;D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\build\TinyShell.dir\Release\path_manager.obj
+D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\process.cpp;D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\build\TinyShell.dir\Release\process.obj
+D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\cal.cpp;D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\build\TinyShell.dir\Release\cal.obj

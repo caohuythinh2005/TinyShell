@@ -11,7 +11,7 @@
 #include "system_commands.h"
 #include "path_manager.h"
 #include "process.h"
-
+#include "cal.h"
 void init_system_commands() {
     status = 1;
 }
@@ -19,11 +19,12 @@ void init_system_commands() {
 int shell_help(vector<string> args) {
     if (args.size() == 1) {
         cout << "\nAVAILABLE COMMANDS:\n";
-        cout << "-------------------------------------------------------------\n";
+        cout << "--------------------------------------------------------------------------------------------------\n";
         cout << "cls                          : Clear the console screen\n";
         cout << "exit                         : Exit the shell\n";
         cout << "pwd                          : Show the current working directory\n";
         cout << "dir                          : List all files and folders in the current directory\n";
+        cout << "cal [num1] [op] [num2]       : Calculate the value of two numbers\n";
         cout << "cd [path]                    : Change current directory to [path]\n";
         cout << "cd ..                        : Move to the parent directory\n";
         cout << "mkdir [name]                 : Create a new directory with given name\n";
@@ -51,8 +52,7 @@ int shell_help(vector<string> args) {
         cout << "set [var] [var=value]        : Display, set, or delete environment variables\n";
         cout << "addpath <path>               : Add a new path to PATH \n";
         cout << "delpath <path>               : Removing a directory from PATH\n";
-        cout << "runExe <name/path> [-b] [-c] : run file/path\n";
-        cout << "-------------------------------------------------------------\n";
+        cout << "--------------------------------------------------------------------------------------------------\n";
     } else {
         cout << "Bad command...\n";
         return BAD_COMMAND;
@@ -85,7 +85,7 @@ string read_command_line()
 vector<string> parse_command(string line) {
     vector<string> args;
     string arg;
-
+    
     for (char ch : line) {
         if (isspace(ch)) {
             if (!arg.empty()) {

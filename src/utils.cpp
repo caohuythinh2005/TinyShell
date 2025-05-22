@@ -19,7 +19,7 @@ boolean isPrefix(const string& full, const string& prefix) {
 string formatFakePathToUnixStyle(const string& fake_path) {
     string unix_path = fake_path;
     for (char& c : unix_path) {
-        if (c == '\\') c = '\\';
+        if (c == '\\') c = '/';
     }
     return unix_path;
 }

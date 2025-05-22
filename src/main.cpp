@@ -13,7 +13,7 @@
 #include "directory_manager.h"
 #include "utils.h"
 #include "path_manager.h"
-
+#include "cal.h"
 
 // global var
 int status; /*flag to determine when to exit program*/
@@ -44,6 +44,7 @@ vector<string> builtin_str = {
     "exit",
 	"pwd",
 	"dir",
+	"cal",
 	"cd",
 	"mkdir",
 	"del",
@@ -75,6 +76,7 @@ int (*builtin_func[]) (vector<string>) = {
     &shell_exit,
 	&shell_pwd,
 	&shell_dir,
+	&shell_cal,
 	&shell_cd,
 	&shell_mkdir,
 	&shell_del,
