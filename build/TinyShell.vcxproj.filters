@@ -19,6 +19,9 @@
     <ClCompile Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\cal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\CMakeLists.txt" />

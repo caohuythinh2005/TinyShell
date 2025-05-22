@@ -11,7 +11,7 @@
 #include "system_commands.h"
 #include "path_manager.h"
 #include "process.h"
-
+#include "cal.h"
 void init_system_commands() {
     status = 1;
 }
@@ -24,6 +24,7 @@ int shell_help(vector<string> args) {
         cout << "exit                         : Exit the shell\n";
         cout << "pwd                          : Show the current working directory\n";
         cout << "dir                          : List all files and folders in the current directory\n";
+        cout << "cal [num1] [op] [num2]       : Calculate the value of two numbers\n";
         cout << "cd [path]                    : Change current directory to [path]\n";
         cout << "cd ..                        : Move to the parent directory\n";
         cout << "mkdir [name]                 : Create a new directory with given name\n";

@@ -394,16 +394,31 @@ int shell_runExe(vector<string> args) {
     
         string input = args[1];
         string realPath;
+        string rootPath = origin_real_path + "\\root\\.."; // current_real_path
         bool isPath = (input.find("\\") == 0 || input.find("/") == 0); // Kiểm tra xem có phải đường dẫn không
         // cout << "isPath: " << isPath << endl;
         // cout << " current_real_path: " << current_real_path << endl;
+        // cout << "rootpath is: " << rootPath<< endl;
         DWORD file1 = GetFileAttributesA((current_real_path + "\\" + input).c_str());
         DWORD file2 = GetFileAttributesA((current_real_path + "\\" + input + ".exe").c_str());
         if(file1 != INVALID_FILE_ATTRIBUTES && !(file1 & FILE_ATTRIBUTE_DIRECTORY)){
+            // cout <<"file1 is " << file1 << endl;
             realPath = current_real_path + "\\" + input;
+            // cout << "real path is: " << realPath << endl;
+            // cout << "find: " << realPath.find(rootPath) << endl;
+            if(realPath.find(rootPath) == 0){
+                printf("Error: not found: ", input.c_str());
+                return BAD_COMMAND;
+            }
         }
         else if(file2 != INVALID_FILE_ATTRIBUTES && !(file2 & FILE_ATTRIBUTE_DIRECTORY)) {
+            // cout << "file 2 is: " << file2 << endl;
             realPath = current_real_path + "\\" + input + ".exe";
+            // cout << "real path is: " << realPath << endl;
+            if(realPath.find(rootPath) == 0){
+                printf("Error: not found: ", input.c_str());
+                return BAD_COMMAND;
+            }
         }
         else{
             if (isPath) {
