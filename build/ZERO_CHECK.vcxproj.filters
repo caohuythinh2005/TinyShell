@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="D:\TinyShell-minh\TinyShell-minh\build\CMakeFiles\15ebde1b3cb5c34c712d85e11a106bac\generate.stamp.rule">
+    <CustomBuild Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\build\CMakeFiles\1958d559784912a4c1a59f8652ca51f3\generate.stamp.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{000F3B37-26CF-3710-9B38-4D1CE4DAC2B9}</UniqueIdentifier>
+      <UniqueIdentifier>{A0C54B17-4A72-37BD-ACCF-1DB3DAFA77DD}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

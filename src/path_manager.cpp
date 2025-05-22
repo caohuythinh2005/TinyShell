@@ -395,6 +395,8 @@ int shell_runExe(vector<string> args) {
         string input = args[1];
         string realPath;
         bool isPath = (input.find("\\") == 0 || input.find("/") == 0); // Kiểm tra xem có phải đường dẫn không
+        // cout << "isPath: " << isPath << endl;
+        // cout << " current_real_path: " << current_real_path << endl;
         DWORD file1 = GetFileAttributesA((current_real_path + "\\" + input).c_str());
         DWORD file2 = GetFileAttributesA((current_real_path + "\\" + input + ".exe").c_str());
         if(file1 != INVALID_FILE_ATTRIBUTES && !(file1 & FILE_ATTRIBUTE_DIRECTORY)){
@@ -404,12 +406,11 @@ int shell_runExe(vector<string> args) {
             realPath = current_real_path + "\\" + input + ".exe";
         }
         else{
-            // Nếu là đường dẫn, chuyển đổi trực tiếp
             if (isPath) {
                 realPath = convertFakeToRealPath(input);
                 // cout << "realPath in isPath is: " << realPath << endl;
-            } else {
-                // Nếu chỉ là tên file, tìm trong PATH
+            } 
+            else {
                 const char* path_env = getenv("PATH");
                 if (!path_env) {
                     printf("PATH environment variable not set.\n");
@@ -472,7 +473,7 @@ int shell_runExe(vector<string> args) {
     }
 
     bool isExecutable = (realPath.find(".exe") != string::npos);
-    // bool isfile = (realPath.find(".bat") != string::npos);
+    bool isfilebat = (realPath.find(".bat") != string::npos);
     int isfile = fileExists(input);
     bool isBackground = false;
     bool createConsole = false;
@@ -485,7 +486,9 @@ int shell_runExe(vector<string> args) {
             return BAD_COMMAND;
         }
     }
-
+    // cout << "isExecutable : " << isExecutable << endl;
+    // cout << "isfilebat: " << isfilebat << endl;
+    // cout << "isfile: " << isfile << endl;
     if (isExecutable) {
         string cmdLine = (realPath.find(".bat") != string::npos) ? "cmd.exe /c \"" + realPath + "\"" : realPath;
         char* cmdLineBuffer = new char[cmdLine.length() + 1];
@@ -548,7 +551,8 @@ int shell_runExe(vector<string> args) {
             childProcesses.erase(childProcesses.end() - 1);
         }
         // Không đóng handle ngay nếu chạy nền, để quản lý sau
-    } else if (isfile != ERROR_PATH && isfile != FILE_NOT_EXIST) {
+    } else if (isfilebat) {
+        // cout << "test " << endl;
         ifstream scriptFile(realPath);
         if (!scriptFile)
         {

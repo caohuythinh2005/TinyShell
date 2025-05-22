@@ -353,6 +353,7 @@ string getNormalizedDirectory(const string& fakePath) {
 
 int fileExists(const string &path) {
     string absPath = convertFakeToRealPath(path);
+    // string rPath = 
     if (!filesystem::exists(absPath)) {
         return ERROR_PATH;
     }

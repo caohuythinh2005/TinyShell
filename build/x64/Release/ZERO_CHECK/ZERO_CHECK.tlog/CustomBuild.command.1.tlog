@@ -1,6 +1,6 @@
-^D:\TINYSHELL-MINH\TINYSHELL-MINH\BUILD\CMAKEFILES\15EBDE1B3CB5C34C712D85E11A106BAC\GENERATE.STAMP.RULE
+^D:\DAI_HOC_NAM_2\HDH\TINYSHELL\TINYSHELL\BUILD\CMAKEFILES\1958D559784912A4C1A59F8652CA51F3\GENERATE.STAMP.RULE
 setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/TinyShell-minh/TinyShell-minh -BD:/TinyShell-minh/TinyShell-minh/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/TinyShell-minh/TinyShell-minh/build/TinyShell.sln
+D:\newCMake\bin\cmake.exe -SD:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell -BD:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell/build/TinyShell.sln
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

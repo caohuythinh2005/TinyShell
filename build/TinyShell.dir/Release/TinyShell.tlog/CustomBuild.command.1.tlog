@@ -1,6 +1,6 @@
-^D:\TINYSHELL-MINH\TINYSHELL-MINH\CMAKELISTS.TXT
+^D:\DAI_HOC_NAM_2\HDH\TINYSHELL\TINYSHELL\CMAKELISTS.TXT
 setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SD:/TinyShell-minh/TinyShell-minh -BD:/TinyShell-minh/TinyShell-minh/build --check-stamp-file D:/TinyShell-minh/TinyShell-minh/build/CMakeFiles/generate.stamp
+D:\newCMake\bin\cmake.exe -SD:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell -BD:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell/build --check-stamp-file D:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell/build/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

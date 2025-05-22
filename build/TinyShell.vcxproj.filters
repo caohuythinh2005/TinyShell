@@ -1,31 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="D:\TinyShell-minh\TinyShell-minh\src\main.cpp">
+    <ClCompile Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\TinyShell-minh\TinyShell-minh\src\directory_manager.cpp">
+    <ClCompile Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\directory_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\TinyShell-minh\TinyShell-minh\src\system_commands.cpp">
+    <ClCompile Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\system_commands.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\TinyShell-minh\TinyShell-minh\src\utils.cpp">
+    <ClCompile Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\TinyShell-minh\TinyShell-minh\src\path_manager.cpp">
+    <ClCompile Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\path_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\TinyShell-minh\TinyShell-minh\src\process.cpp">
+    <ClCompile Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\src\process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="D:\TinyShell-minh\TinyShell-minh\CMakeLists.txt" />
+    <CustomBuild Include="D:\Dai_hoc_nam_2\HDH\tinyshell\TinyShell\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{2C1939D7-617A-33E4-A603-C9DF327C1BAD}</UniqueIdentifier>
+      <UniqueIdentifier>{5060290C-16C4-3B1D-BA43-326E8D4139B1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
