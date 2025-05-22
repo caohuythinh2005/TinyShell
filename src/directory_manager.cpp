@@ -202,6 +202,10 @@ int shell_cd(vector<string> args) {
                     return DIRECTORY_NOT_EXIST;
                 }
                 string fullPath = getNormalizedCurrentDirectory();
+                if (folderExists(path_str) != EXIST_FILE_OR_DIRECTORY) {
+                    cerr << "Destination must be an existing folder.\n";
+                    return -1;
+                }
                 SetCurrentDirectory(origin_real_path.c_str());
                 current_real_path = fullPath;
                 current_fake_path = removePrefix(current_real_path, origin_real_path);
@@ -240,6 +244,11 @@ int shell_cd(vector<string> args) {
                 return DIRECTORY_NOT_EXIST;
             } else {
                 string fullPath = getNormalizedCurrentDirectory();
+                if (folderExists(string(current_fake_path) + '\\' + path_str) != EXIST_FILE_OR_DIRECTORY) {
+                    cout << string(full_path) << endl;
+                    cerr << "Destination must be an existing folder.\n";
+                    return -1;
+                }
                 if (isPrefix(fullPath, fixed_real_path)) {
                     SetCurrentDirectory(origin_real_path.c_str());
                     current_real_path = fullPath;
