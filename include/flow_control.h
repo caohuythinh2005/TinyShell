@@ -2,6 +2,12 @@
 #define _FLOW_CONTROL_H_
 
 #include "globals.h"
+#include <map>
+#include <string>
+
+using namespace std;
+
+extern map<string, int> label_map;
 
 // if ... else ...
 int shell_if(vector<string> args);

@@ -88,7 +88,7 @@ int shell_path(vector<string> args) {
 
 
 // Cập nhật biến môi trường với giá trị mới (chỉ trong cục bộ, nếu muốn thêm vĩnh viễn thì tạo thêm hàm setx là đc)
-int shell_set(vector<string> args) {
+int shell_setP(vector<string> args) {
     if (args.size() == 1) {
         // Hiển thị các biến môi trường liên quan đến /root
         char** env = environ;

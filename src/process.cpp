@@ -43,6 +43,7 @@ int init_process() {
 // đầu tiên là exec, thứ hai là đường dẫn
 // Về sau hỗ trợ các mode sau
 
+
 int shell_runScript(vector<string> args)
 {
     if (args.size() != 2)

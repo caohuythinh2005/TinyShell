@@ -14,6 +14,9 @@
 #include "utils.h"
 #include "path_manager.h"
 #include "cal.h"
+#include "flow_control.h"
+#include "condition_evaluator.h"
+#include "variable_manager.h"
 
 // global var
 int status; /*flag to determine when to exit program*/
@@ -66,9 +69,11 @@ vector<string> builtin_str = {
 	"copy",
 	"path",
 	"addpath",
-	"set",
+	"setP",
 	"delpath",
-	"where"
+	"where",
+	"echo",
+	"set"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -98,9 +103,11 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_copy,
 	&shell_path,
 	&shell_addpath,
-	&shell_set,
+	&shell_setP,
 	&shell_delpath,
-	&shell_where
+	&shell_where,
+	&shell_echo,
+	&shell_set
 };
 
 

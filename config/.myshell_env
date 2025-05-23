@@ -1,0 +1,8 @@
+# Shell sandbox environment variables
+PATH=D:\sandbox\bin;C:\sandbox\tools
+USER=mysandboxuser
+EDITOR=vim
+LANG=en_US.UTF-8
+
+# Một biến khác
+MY_VAR=Hello World

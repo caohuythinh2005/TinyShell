@@ -20,3 +20,7 @@
 
 # Khi thêm thì thêm vào CMakeLists.txt (vào add_executable)
 - Có cả ở thư mục gốc (TinyShell) và các chương trình con ở cpp
+
+
+# flow_control -> luồng
+# conditio_evaluator -> xử lý điều kiện luồng

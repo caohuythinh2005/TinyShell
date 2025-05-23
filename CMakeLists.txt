@@ -16,4 +16,5 @@ src/path_manager.cpp
 src/process.cpp
 src/cal.cpp
 src/condition_evaluator.cpp
-src/flow_control.cpp)
+src/flow_control.cpp
+src/variable_manager.cpp)
