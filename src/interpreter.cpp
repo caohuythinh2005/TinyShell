@@ -13,13 +13,31 @@
 
 using namespace std;
 
-vector<string> builtin_str_script;
-int (*builtin_func_script[])(vector<string>);
+map<string, int> g_label_map;
+
+vector<string> builtin_str_script = {
+    "goto",
+    "if",
+    "for",
+    "while",
+    "do",
+    "exit"
+};
+
+int (*builtin_func_script[])(vector<string>) = {
+    &shell_goto,
+    &shell_if,
+    &shell_for,
+    &shell_while,
+    &shell_do,
+    &shell_exit
+};
 
 // Tìm index lệnh trong builtin_str_script (chỉ phục vụ trong bat)
-int find_builtin(const string& cmd) {
-    for (int i = 0; i < (int)builtin_str.size(); ++i) {
-        if (builtin_str[i] == cmd) return i;
+int find_builtin_script(const string& cmd) {
+    for (int i = 0; i < builtin_str_script.size(); ++i) {
+        if (builtin_str_script[i] == cmd)
+            return i;
     }
     return -1;
 }
@@ -31,17 +49,17 @@ int shell_run_script(vector<string> args) {
         return -1;
     }
 
-    const string& filepath = args[1];
+    const string& filepath = current_real_path + "\\" + args[1];
     vector<string> script_lines;
-    map<string, int> label_map;
 
-    if (!read_script_file(filepath, script_lines, label_map)) {
+
+    if (!read_script_file(filepath, script_lines, g_label_map)) {
         cerr << "Failed to load script file: " << filepath << endl;
         return -1;
     }
 
     int current_line = 0;
-    int n = (int)script_lines.size();
+    int n = static_cast<int>(script_lines.size());
 
     while (current_line < n) {
         const string& line = script_lines[current_line];
@@ -53,33 +71,45 @@ int shell_run_script(vector<string> args) {
         }
 
         string cmd = cmd_args[0];
-        transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
 
         int idx = find_builtin(cmd);
         if (idx != -1) {
             int ret = builtin_func[idx](cmd_args);
-
-            // Lệnh điều khiển có thể trả về dòng cần nhảy tới
-            if (cmd == "goto" || cmd == "if" || cmd == "for" || cmd == "while" || cmd == "do") {
-                if (ret >= 0 && ret < n) {
-                    current_line = ret;
-                    continue;
-                } else if (ret == -1) {
-                    cerr << "Error in control flow at line " << current_line + 1 << endl;
-                    return ret;
-                }
-            } else if (cmd == "exit") {
-                return 0;
-            } else {
-                if (ret != 0) {
-                    cerr << "Error executing command '" << cmd << "' at line " << current_line + 1 << endl;
-                    return ret;
-                }
+            if (ret != 0) {
+                cerr << "Error executing command '" << cmd << "' at line " << current_line + 1 << endl;
+                return ret;
             }
-        } else {
-            cout << "Unknown command: " << cmd << endl;
+            ++current_line;
+            continue;
         }
 
+        int script_idx = find_builtin_script(cmd);
+        if (script_idx != -1) {
+            int ret = builtin_func_script[script_idx](cmd_args);
+
+            if (ret == -1) {
+                cerr << "Error in control flow command '" << cmd << "' at line " << current_line + 1 << endl;
+                return ret;
+            }
+
+            if (cmd == "exit") {
+                return 0;
+            }
+            
+            /*
+            Phục vụ goto
+            */
+            if (ret >= 0 && ret < n) {
+                current_line = ret;
+                continue;
+            }
+
+            ++current_line;
+            continue;
+        }
+
+        // Nếu không tìm thấy lệnh nào phù hợp
+        cout << "Unknown command: " << cmd << endl;
         ++current_line;
     }
 

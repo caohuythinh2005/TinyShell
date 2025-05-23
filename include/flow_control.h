@@ -7,6 +7,8 @@
 
 using namespace std;
 
+extern map<string, int> g_label_map;
+
 // if ... else ...
 int shell_if(vector<string> args);
 
@@ -27,5 +29,7 @@ int shell_do_while(vector<string> args);
 
 // exit script
 int shell_exit(vector<string> args);
+
+int shell_do(vector<string> args);
 
 #endif

@@ -14,6 +14,8 @@
 #include <filesystem>
 #include <csignal>
 
+
+
 using namespace std;
 
 struct ProcessInfor{
@@ -23,6 +25,12 @@ struct ProcessInfor{
 };
 
 typedef struct ProcessInfor ProcessInfor;
+
+
+extern vector<string> builtin_str;
+extern int (*builtin_func[]) (vector<string>);
+
+int find_builtin(const string& cmd);
 
 
 // global var

@@ -117,6 +117,17 @@ int (*builtin_func[]) (vector<string>) = {
 };
 
 
+
+
+int find_builtin(const string& cmd) {
+    for (int i = 0; i < (int)builtin_str.size(); ++i) {
+        if (builtin_str[i] == cmd) { // phân biệt hoa thường
+            return i;
+        }
+    }
+    return -1;
+}
+
 int main() {
 	init_process();
 	init_system_commands();
