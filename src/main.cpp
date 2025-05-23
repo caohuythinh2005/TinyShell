@@ -17,6 +17,8 @@
 #include "flow_control.h"
 #include "condition_evaluator.h"
 #include "variable_manager.h"
+#include "script_io.h"
+#include "interpreter.h"
 
 // global var
 int status; /*flag to determine when to exit program*/
@@ -74,7 +76,8 @@ vector<string> builtin_str = {
 	"where",
 	"echo",
 	"set",
-	"setx"
+	"setx",
+	"runs"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -109,7 +112,8 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_where,
 	&shell_echo,
 	&shell_set,
-	&shell_setx
+	&shell_setx,
+	&shell_run_script
 };
 
 

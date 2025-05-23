@@ -17,4 +17,6 @@ src/process.cpp
 src/cal.cpp
 src/condition_evaluator.cpp
 src/flow_control.cpp
+src/interpreter.cpp
+src/script_io.cpp
 src/variable_manager.cpp)
