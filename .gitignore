@@ -1,4 +1,4 @@
 .vs/
-build/
-cpp/build/
-cpp/Release/
+/build/
+/cpp/build/
+/cpp/Release/
