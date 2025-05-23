@@ -1,7 +1,7 @@
 @echo off
 
 REM Kiểm tra nếu thư mục cpp\Release tồn tại
-if exist "cpp\exe" (
+if exist "cpp\Release" (
     REM Kiểm tra nếu thư mục root\exe chưa tồn tại thì tạo
     if not exist "root\exe" (
         mkdir "root\exe"
