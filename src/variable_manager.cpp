@@ -58,15 +58,12 @@ int shell_set(vector<string> args) {
 
 
 int shell_setx(vector<string> args) {
-    // Nếu chỉ gọi `setx`, hiển thị tất cả biến persistent
     if (args.size() == 1) {
         for (const auto& [k, v] : persistent_vars) {
             cout << k << "=" << v << endl;
         }
         return 0;
     }
-
-    // Gộp các args từ 1 trở đi thành 1 chuỗi "x = 5"
     string combined;
     for (size_t i = 1; i < args.size(); ++i) {
         if (i > 1) combined += " ";
@@ -83,12 +80,16 @@ int shell_setx(vector<string> args) {
     string var_value = combined.substr(pos + 1);
 
     // Nếu giá trị rỗng → không cho phép unset persistent
+    // CMD thực chất cũng thế
     if (var_value.empty()) {
         cout << "Error: Cannot unset persistent variable using setx. Use set instead." << endl;
         return 1;
     }
 
-    set_variable(var_name, var_value, true);
+    // Cập nhật cả hai nơi
+    persistent_vars[var_name] = var_value;
+    session_vars[var_name] = var_value;
+
     save_persistent_vars();
 
     return 0;
@@ -119,6 +120,7 @@ bool init_variable_manager(const string& sandbox_env_file) {
     if (!fin.is_open()) {
         return true;
     }
+
     string line;
     while (getline(fin, line)) {
         if (line.empty() || line[0] == '#') continue;
@@ -129,6 +131,10 @@ bool init_variable_manager(const string& sandbox_env_file) {
         persistent_vars[key] = value;
     }
     fin.close();
+
+    // Sau khi load xong thì nạp toàn bộ vào session
+    session_vars = persistent_vars;
+
     return true;
 }
 
@@ -164,8 +170,7 @@ void set_variable(const string &key, const string &value, bool persistent) {
 
 void unset_variable(const string &key) {
     session_vars.erase(key);
-    persistent_vars.erase(key);
-    save_persistent_vars();
+    // KHÔNG xóa khỏi persistent_vars ở đây
 }
 
 string resolve_variable(const string &raw) {
@@ -195,12 +200,8 @@ string resolve_variable(const string &raw) {
 
 unordered_map<string, string> get_all_variables() {
     /*
-    Chú ý session luôn chiếm quyền ưu tiên, do đó ta phải gán persistent_vars trước
-    xong mới gán với session_vars
+    Chỉ trả về các biến trong session.
+    Mặc định các biến persistent đã được nạp vào session từ init rồi.
     */
-    unordered_map<string, string> all_vars = persistent_vars;
-    for (auto &kv : session_vars) {
-        all_vars[kv.first] = kv.second;
-    }
-    return all_vars;
+    return session_vars;
 }
