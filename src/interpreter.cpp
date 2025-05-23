@@ -97,7 +97,7 @@ int shell_run_script(vector<string> args) {
             }
             
             /*
-            Phục vụ goto
+            Phục vụ goto, hoac cac lenh nhay
             */
             if (ret >= 0 && ret < n) {
                 current_line = ret;
