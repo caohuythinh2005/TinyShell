@@ -1,3 +1,0 @@
-D:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell/build/CMakeFiles/TinyShell.dir
-D:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell/build/CMakeFiles/ALL_BUILD.dir
-D:/Dai_hoc_nam_2/HDH/tinyshell/TinyShell/build/CMakeFiles/ZERO_CHECK.dir

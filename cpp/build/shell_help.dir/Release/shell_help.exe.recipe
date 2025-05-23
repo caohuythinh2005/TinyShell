@@ -2,10 +2,10 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>D:\He_dieu_hanh\TinyShell\cpp\build\x64\Release\ZERO_CHECK</FullPath>
+      <FullPath>D:\Code\HDH\TinyShell\cpp\build\x64\Release\ZERO_CHECK</FullPath>
     </ProjectOutput>
     <ProjectOutput>
-      <FullPath>D:\He_dieu_hanh\TinyShell\cpp\Release\shell_help.exe</FullPath>
+      <FullPath>D:\Code\HDH\TinyShell\cpp\Release\shell_help.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"D:/He_dieu_hanh/TinyShell/cpp/build/cmake_install.cmake"
+		"D:/Code/HDH/TinyShell/cpp/build/cmake_install.cmake"
 	],
 	"Parallel" : false
 }
