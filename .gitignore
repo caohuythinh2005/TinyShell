@@ -1,4 +1,4 @@
-.vs/
+.vscode/
 /build/
 /cpp/build/
 /cpp/Release/
