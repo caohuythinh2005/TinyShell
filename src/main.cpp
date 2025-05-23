@@ -73,7 +73,8 @@ vector<string> builtin_str = {
 	"delpath",
 	"where",
 	"echo",
-	"set"
+	"set",
+	"setx"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -107,7 +108,8 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_delpath,
 	&shell_where,
 	&shell_echo,
-	&shell_set
+	&shell_set,
+	&shell_setx
 };
 
 
@@ -115,6 +117,7 @@ int main() {
 	init_process();
 	init_system_commands();
 	init_directory();
+	init_variable_manager("config\\.myshell_env");
 	string line;  /*command line*/ 
 	vector<string> args; /*command line arguments*/
 	while (status) {

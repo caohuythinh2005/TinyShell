@@ -15,6 +15,10 @@ như thao tác trực tiếp với setx khá nguy hiểm
 Lằng nhằng vc, tụ dưng lòi cái sandbox :)
 */
 
+/*
+Phải cấu hình lại path chút để nó lưu lại trong náy
+*/
+
 int shell_set(vector<string> args) {
     // Nếu chỉ gọi `set`, hiển thị tất cả biến session và persistent
     if (args.size() == 1) {
@@ -25,7 +29,7 @@ int shell_set(vector<string> args) {
         return 0;
     }
 
-    // Nối các args từ 1 trở đi thành một chuỗi
+    // Gộp các args từ 1 trở đi thành 1 chuỗi "x = 5"
     string combined;
     for (size_t i = 1; i < args.size(); ++i) {
         if (i > 1) combined += " ";
@@ -41,10 +45,16 @@ int shell_set(vector<string> args) {
     string var_name = combined.substr(0, pos);
     string var_value = combined.substr(pos + 1);
 
-    set_variable(var_name, var_value, false);
+    // Nếu giá trị rỗng, tức là unset (CMD-style)
+    if (var_value.empty()) {
+        unset_variable(var_name);
+    } else {
+        set_variable(var_name, var_value, false);
+    }
 
     return 0;
 }
+
 
 
 int shell_setx(vector<string> args) {
@@ -56,7 +66,7 @@ int shell_setx(vector<string> args) {
         return 0;
     }
 
-    // Gộp các tham số từ 1 trở đi thành 1 chuỗi "x = 5"
+    // Gộp các args từ 1 trở đi thành 1 chuỗi "x = 5"
     string combined;
     for (size_t i = 1; i < args.size(); ++i) {
         if (i > 1) combined += " ";
@@ -72,8 +82,14 @@ int shell_setx(vector<string> args) {
     string var_name = combined.substr(0, pos);
     string var_value = combined.substr(pos + 1);
 
-    set_variable(var_name, var_value, true);  // true -> lưu persistent
-    save_persistent_vars();                   // lưu xuống file luôn
+    // Nếu giá trị rỗng → không cho phép unset persistent
+    if (var_value.empty()) {
+        cout << "Error: Cannot unset persistent variable using setx. Use set instead." << endl;
+        return 1;
+    }
+
+    set_variable(var_name, var_value, true);
+    save_persistent_vars();
 
     return 0;
 }
@@ -178,8 +194,11 @@ string resolve_variable(const string &raw) {
 }
 
 unordered_map<string, string> get_all_variables() {
+    /*
+    Chú ý session luôn chiếm quyền ưu tiên, do đó ta phải gán persistent_vars trước
+    xong mới gán với session_vars
+    */
     unordered_map<string, string> all_vars = persistent_vars;
-    // session vars override persistent
     for (auto &kv : session_vars) {
         all_vars[kv.first] = kv.second;
     }

@@ -1,8 +1,5 @@
-# Shell sandbox environment variables
-PATH=D:\sandbox\bin;C:\sandbox\tools
-USER=mysandboxuser
-EDITOR=vim
-LANG=en_US.UTF-8
-
-# Một biến khác
+ITTN=BO_CNPM
+PATH=TAM HOC NHIEU
 MY_VAR=Hello World
+z=4
+x=3
