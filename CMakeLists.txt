@@ -14,4 +14,6 @@ src/system_commands.cpp
 src/utils.cpp
 src/path_manager.cpp
 src/process.cpp
-src/cal.cpp)
+src/cal.cpp
+src/condition_evaluator.cpp
+src/flow_control.cpp)
