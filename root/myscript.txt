@@ -1,14 +1,15 @@
 echo start
 rem hello
+set x=-1
 if (x > 0) 
 {
-               rem hello
-               echo heee
+    rem hello
+    echo heee
     echo positive
-    if (x > 0) 
+    if (x > 1) 
     {
         echo positive 2
-        if (x > 0) 
+        if (x < 2) 
         {
             echo positive 3
         } 
@@ -24,6 +25,8 @@ if (x > 0)
 } 
 else 
 {
+    echo nguyen dinh tuan minh %x%
+    pwd
     echo non-positive
 }
 

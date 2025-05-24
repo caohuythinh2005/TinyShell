@@ -12,7 +12,7 @@ CommandNode::CommandNode(const vector<string>& arguments) {
 }
 
 int CommandNode::execute() {
-    cout << "[Command] Executing: " << command << endl;
+    // cout << "[Command] Executing: " << command << endl;
     shell_working(args);
     return 0;
 }

@@ -25,6 +25,7 @@
 #include "ast/builder.h"
 
 
+
 // global var
 int status; /*flag to determine when to exit program*/
 STARTUPINFO si;
@@ -60,7 +61,6 @@ vector<string> builtin_str = {
 	"del",
 	"help",
 	"test",
-	"exec",
 	"time",
 	"date",
 	"runExe",
@@ -82,7 +82,8 @@ vector<string> builtin_str = {
 	"echo",
 	"set",
 	"setx",
-	"thinh"
+	"exec",
+	"eval"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -96,7 +97,6 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_del,
 	&shell_help,
 	&shell_test,
-	&shell_runScript,
 	&shell_time,
 	&shell_date,
 	&shell_runExe,
@@ -118,23 +118,9 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_echo,
 	&shell_set,
 	&shell_setx,
-	&main1
+	&shell_exec,
+	&shell_eval
 };
-
-int main1(vector<string> args) {
-    vector<string> script_lines;
-    if (!read_script_file("myscript.txt", script_lines)) {
-        return 1;
-    }
-
-    Node* root = build(script_lines);
-    if (root) {
-        root->execute();
-        delete root;
-    }
-
-    return 0;
-}
 
 
 int find_builtin(const string& cmd) {

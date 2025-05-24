@@ -9,5 +9,5 @@ enum ConditionType {
 
 
 bool evaluate_condition(const string& expr);
-
+int shell_eval(vector<string> args);
 #endif

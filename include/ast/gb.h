@@ -7,5 +7,6 @@
 #include "ast/if_node.h"
 #include "node.h"
 #include "while_note.h"
+#include "ast/for_node.h"
 
 #endif

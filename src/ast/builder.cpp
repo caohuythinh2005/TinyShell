@@ -6,6 +6,8 @@
 #include "ast/if_node.h"
 #include "ast/gb.h"
 #include <iostream>
+#include "script_io.h"
+#include "ast/for_node.h"
 
 using namespace std;
 
@@ -36,6 +38,7 @@ Node* parse_block(const vector<string>& lines, size_t& index) {
         const string& cmd = tokens[0];
 
         if (cmd == "if") {
+
             string condition = trim(line.substr(2));
             ++index;
 
@@ -69,6 +72,42 @@ Node* parse_block(const vector<string>& lines, size_t& index) {
 
             block->addStatement(new WhileNode(condition, bodyNode));
         }
+        else if (cmd == "for") {
+            string for_expr = trim(line.substr(3)); // lấy phần sau "for"
+
+            // Bỏ ngoặc nếu có
+            if (for_expr.front() == '(' && for_expr.back() == ')') {
+                for_expr = for_expr.substr(1, for_expr.size() - 2);
+            }
+
+            // Tách 3 phần: init; condition; increment
+            size_t semi1 = for_expr.find(';');
+            size_t semi2 = for_expr.find(';', semi1 + 1);
+
+            if (semi1 == string::npos || semi2 == string::npos) {
+                cout << "Invalid for syntax. Expected: for (init; condition; increment)" << endl;
+                ++index;
+                continue;
+            }
+
+            string init = trim(for_expr.substr(0, semi1));
+            string condition = trim(for_expr.substr(semi1 + 1, semi2 - semi1 - 1));
+            string increment = trim(for_expr.substr(semi2 + 1));
+
+            ++index; // qua dòng for
+
+            // Nếu có dấu { mở block thì qua nó
+            if (index < lines.size() && trim(lines[index]) == "{") ++index;
+
+            Node* bodyNode = parse_block(lines, index);
+            
+            // cout << init << endl;
+            // cout << condition << endl;
+            // cout << increment << endl;
+            // return nullptr;
+
+            block->addStatement(new ForNode(init, condition, increment, bodyNode));
+        }
         else {
             block->addStatement(new CommandNode(tokens));
             ++index;
@@ -82,4 +121,21 @@ Node* parse_block(const vector<string>& lines, size_t& index) {
 Node* build(const vector<string>& script_lines) {
     size_t index = 0;
     return parse_block(script_lines, index);
+}
+
+int shell_exec(vector<string> args) {
+    if (args.size() < 2) {
+        cout << "Usage: exec <filename>" << endl;
+        return -1;
+    }
+    vector<string> script_lines;
+    if (!read_script_file(args[1], script_lines)) {
+        return 1;
+    }
+    Node* root = build(script_lines);
+    if (root) {
+        root->execute();
+        delete root;
+    }
+    return 0;
 }

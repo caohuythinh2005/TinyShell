@@ -3,7 +3,6 @@
 #include <iostream>
 
 using namespace std;
-
 IfNode::IfNode(const std::string& cond, Node* thenBlk, Node* elseBlk)
     : condition(cond), thenBlock(thenBlk), elseBlock(elseBlk) {}
 

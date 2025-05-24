@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 
+#define _HAS_STD_BYTE 0
+
 using namespace std;
 
 /*
@@ -17,6 +19,8 @@ extern string env_filename; // Đường dẫn file biến persistent sandbox
 /*
 Mục đích : hỗ tợ lưu trữ kiểu persistent và theo session -> có thể lưu path vĩnh viễn
 */
+
+void evaluate_assignment(const string& expr);
 
 int shell_set(vector<string> args);
 int shell_setx(vector<string> args);
