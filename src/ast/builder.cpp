@@ -8,6 +8,7 @@
 #include <iostream>
 #include "script_io.h"
 #include "ast/for_node.h"
+#include "directory_manager.h"
 
 using namespace std;
 

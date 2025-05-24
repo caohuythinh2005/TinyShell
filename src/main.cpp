@@ -23,6 +23,7 @@
 #include "ast/command_node.h"
 #include "ast/gb.h"
 #include "ast/builder.h"
+#include "editor/editor.h"
 
 
 
@@ -83,7 +84,8 @@ vector<string> builtin_str = {
 	"set",
 	"setx",
 	"exec",
-	"eval"
+	"eval",
+	"editor"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -119,7 +121,8 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_set,
 	&shell_setx,
 	&shell_exec,
-	&shell_eval
+	&shell_eval,
+	&shell_editor
 };
 
 
