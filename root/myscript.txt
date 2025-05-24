@@ -1,6 +1,9 @@
 echo start
+rem hello
 if (x > 0) 
 {
+               rem hello
+               echo heee
     echo positive
     if (x > 0) 
     {

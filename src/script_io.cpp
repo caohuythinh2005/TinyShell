@@ -9,8 +9,6 @@
 
 using namespace std;
 
-// Giả sử bạn đã có hàm trim() trong utils.h
-string trim(const string& s);
 
 // Hàm kiểm tra comment hoặc dòng rỗng
 bool is_comment_or_empty(const string& line) {
@@ -30,18 +28,16 @@ bool is_comment_or_empty(const string& line) {
  * Đọc file .bat script
  * @param filepath : đường dẫn file
  * @param script_lines : vector để lưu các dòng lệnh (đã chuẩn hóa, loại bỏ comment)
- * @param label_map : map lưu label -> dòng số trong script_lines
  * @return true nếu đọc thành công
  */
-bool read_script_file(const string& filepath, vector<string>& script_lines, map<string, int>& label_map) {
-    ifstream fin(filepath);
+bool read_script_file(const string& filepath, vector<string>& script_lines) {
+    ifstream fin(current_real_path + "\\" + filepath);
     if (!fin.is_open()) {
         cerr << "Unable to open script file: " << filepath << endl;
         return false;
     }
 
     string line;
-    int line_number = 0;
     while (getline(fin, line)) {
         // Loại bỏ ký tự \r (Windows \r\n)
         line.erase(remove(line.begin(), line.end(), '\r'), line.end());
@@ -54,36 +50,16 @@ bool read_script_file(const string& filepath, vector<string>& script_lines, map<
 
         if (clean_line.empty()) continue;
 
-        // Nếu dòng bắt đầu bằng dấu :, đó là label
+        // Bỏ qua dòng label (bắt đầu bằng ':')
         if (clean_line[0] == ':') {
-            string label_name = clean_line.substr(1);
-            label_map[label_name] = line_number; 
-            // Không thêm label vào script_lines (để chạy script không gặp lệnh này)
-            // Nếu bạn muốn giữ lại label trong script_lines thì bỏ comment dòng bên dưới
-            // script_lines.push_back(clean_line);
-        } else {
-            // Dòng bình thường, lưu vào vector script
-            script_lines.push_back(clean_line);
-            line_number++;
+            // Không thêm vào script_lines, bỏ qua
+            continue;
         }
+
+        // Lưu dòng lệnh đã chuẩn hóa
+        script_lines.push_back(clean_line);
     }
 
     fin.close();
-    return true;
-}
-
-bool read_script_text_file(const string& filepath, vector<string>& lines) {
-    ifstream file(current_real_path + "\\" + filepath);
-    if (!file.is_open()) {
-        cerr << "Cannot open script file: " << filepath << endl;
-        return false;
-    }
-
-    string line;
-    while (std::getline(file, line)) {
-        lines.push_back(line);
-    }
-
-    file.close();
     return true;
 }

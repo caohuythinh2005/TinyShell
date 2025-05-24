@@ -14,11 +14,9 @@
 #include "utils.h"
 #include "path_manager.h"
 #include "cal.h"
-#include "flow_control.h"
 #include "condition_evaluator.h"
 #include "variable_manager.h"
 #include "script_io.h"
-#include "interpreter.h"
 #include "ast/node.h"
 #include "ast/if_node.h"
 #include "ast/block_node.h"
@@ -84,7 +82,6 @@ vector<string> builtin_str = {
 	"echo",
 	"set",
 	"setx",
-	"runs",
 	"thinh"
 };
 
@@ -121,13 +118,12 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_echo,
 	&shell_set,
 	&shell_setx,
-	&shell_run_script,
 	&main1
 };
 
 int main1(vector<string> args) {
     vector<string> script_lines;
-    if (!read_script_text_file("myscript.txt", script_lines)) {
+    if (!read_script_file("myscript.txt", script_lines)) {
         return 1;
     }
 

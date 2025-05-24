@@ -14,5 +14,4 @@ using namespace std;
 
 string trim(const string& s);
 bool is_comment_or_empty(const string& line);
-bool read_script_file(const string& filepath, vector<string>& script_lines, map<string, int>& label_map);
-bool read_script_text_file(const string& filepath, vector<string>& lines);
+bool read_script_file(const string& filepath, vector<string>& script_lines);

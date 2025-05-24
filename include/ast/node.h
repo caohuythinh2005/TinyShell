@@ -1,5 +1,5 @@
 #pragma once
-#define _HAS_STD_BYTE 0
+#define _HAS_STD_BYTE 0 // Đừng xóa lỗi đấy std::byte
 #include <string>
 #include <vector>
 
