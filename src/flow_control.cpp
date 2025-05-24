@@ -1,6 +1,8 @@
 #include "flow_control.h"
 #include "condition_evaluator.h"
 #include "utils.h"
+#include "interpreter.h"
+#include "system_commands.h"
 
 
 #include <iostream>
@@ -13,76 +15,46 @@ map<string, int> label_map;
 
 // if ... else ...
 int shell_if(vector<string> args) {
-    // args: [ "if", <condition parts...>, <command parts...> ]
-
-    if (args.size() < 3) {
-        cerr << "if: too few arguments" << endl;
+    if (args.size() < 4 || args[1] != "(") {
+        cerr << "Syntax error: if (condition) { command }" << endl;
         return -1;
     }
 
-    // 1. Phân tích điều kiện
-    int cond_start = 1;
-    bool negate = false;
-
-    if (args[cond_start] == "not") {
-        negate = true;
-        cond_start++;
+    // Ghép điều kiện giữa dấu ngoặc ()
+    string condition;
+    int i = 2;
+    while (i < args.size() && args[i] != ")") {
+        condition += args[i++] + " ";
     }
 
-    // Ví dụ: args[cond_start] có thể là 'exist', 'errorlevel', 'string compare', etc.
-    // Bạn cần viết code riêng cho từng kiểu điều kiện.
-
-    bool cond_result = false;
-    int cond_end = -1; // index cuối cùng của điều kiện, để biết chỗ bắt đầu command
-
-    // Ví dụ xử lý điều kiện 'exist'
-    if (args[cond_start] == "exist" && cond_start + 1 < (int)args.size()) {
-        string file = args[cond_start + 1];
-        cond_result = file_exists(file);
-        cond_end = cond_start + 1;
-    } 
-    else if (args[cond_start] == "errorlevel" && cond_start + 1 < (int)args.size()) {
-        int level = stoi(args[cond_start + 1]);
-        cond_result = (g_last_errorlevel >= level);  // giả sử có biến lưu errorlevel
-        cond_end = cond_start + 1;
-    }
-    else {
-        // Có thể xử lý thêm các kiểu so sánh chuỗi/numeric
-        // Nếu không hiểu điều kiện thì báo lỗi
-        cerr << "if: unsupported condition" << endl;
+    if (i == args.size() || args[i] != ")") {
+        cerr << "Missing ')' in condition" << endl;
         return -1;
     }
 
-    if (negate) cond_result = !cond_result;
-
-    // 2. Nếu điều kiện sai thì không làm gì, trả về 0
-    if (!cond_result) {
-        return 0;
+    // Ghép phần body sau dấu )
+    string body;
+    ++i;
+    while (i < args.size()) {
+        body += args[i++] + " ";
     }
 
-    // 3. Nếu đúng thì chạy lệnh bắt đầu từ cond_end + 1
-    if (cond_end + 1 >= (int)args.size()) return 0;
+    if (evaluate_condition(trim(condition))) {
+        vector<string> body_args = parse_command(trim(body));
+        if (body_args.empty()) return 0;
 
-    vector<string> cmd_args(args.begin() + cond_end + 1, args.end());
+        string cmd = body_args[0];
+        int idx = find_builtin(cmd);
+        if (idx != -1) return builtin_func[idx](body_args);
 
-    if (cmd_args.empty()) return 0;
+        int script_idx = find_builtin_script(cmd);
+        if (script_idx != -1) return builtin_func_script[script_idx](body_args);
 
-    string cmd = cmd_args[0];
-
-    // Tìm lệnh builtin
-    int idx = find_builtin(cmd);
-    if (idx != -1) {
-        return builtin_func[idx](cmd_args);
+        cerr << "Unknown command in if-body: " << cmd << endl;
+        return -1;
     }
 
-    // Tìm lệnh control flow hoặc script
-    int script_idx = find_builtin_script(cmd);
-    if (script_idx != -1) {
-        return builtin_func_script[script_idx](cmd_args);
-    }
-
-    cerr << "if: unknown command '" << cmd << "'" << endl;
-    return -1;
+    return 0;
 }
 
 

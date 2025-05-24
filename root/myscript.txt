@@ -1,0 +1,27 @@
+echo start
+if (x > 0) 
+{
+    echo positive
+    if (x > 0) 
+    {
+        echo positive 2
+        if (x > 0) 
+        {
+            echo positive 3
+        } 
+        else 
+        {
+            echo non-positive 3
+        }
+    } 
+    else 
+    {
+        echo non-positive 2
+    }
+} 
+else 
+{
+    echo non-positive
+}
+
+echo end

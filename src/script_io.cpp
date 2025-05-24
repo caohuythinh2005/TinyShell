@@ -71,3 +71,19 @@ bool read_script_file(const string& filepath, vector<string>& script_lines, map<
     fin.close();
     return true;
 }
+
+bool read_script_text_file(const string& filepath, vector<string>& lines) {
+    ifstream file(current_real_path + "\\" + filepath);
+    if (!file.is_open()) {
+        cerr << "Cannot open script file: " << filepath << endl;
+        return false;
+    }
+
+    string line;
+    while (std::getline(file, line)) {
+        lines.push_back(line);
+    }
+
+    file.close();
+    return true;
+}
