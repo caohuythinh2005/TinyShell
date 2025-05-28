@@ -63,7 +63,7 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `set VAR=value`              | Tạo hoặc cập nhật biến môi trường                           |
 | `set VAR=`                   | Xóa biến môi trường                                         |
 | `set /a expression`          | Tính biểu thức số học (giống CMD)                          |
-| `setx VAR value`             | Tạo biến môi trường vĩnh viễn (Windows)                    |
+| `setx VAR=value`             | Tạo biến môi trường vĩnh viễn                  |
 | `path`                       | Hiển thị biến PATH                                          |
 | `addpath <path>`             | Thêm thư mục vào PATH                                       |
 | `delpath <path>`             | Xóa thư mục khỏi PATH                                       |
