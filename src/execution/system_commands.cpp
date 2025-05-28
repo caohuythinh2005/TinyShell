@@ -83,6 +83,17 @@ int shell_help(std::vector<std::string> args) {
         cout << "| editor -h                 | Show key bindings for editor                       |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
+        // Control Structures
+        cout << "\nControl Structures:\n";
+        cout << "+--------------------------------------------+-------------------------------------------------------------+\n";
+        cout << "| if <cond>                                  | Execute block if condition is true                          |\n";
+        cout << "| if <cond> else                             | Execute second block if condition is false                  |\n";
+        cout << "| while <cond>                               | Repeat block while condition is true                        |\n";
+        cout << "| for (<var>=<start>;<cond>;<update>)        | Classic for-loop (like C-style)                             |\n";
+        cout << "| eval <expression>                          | Evaluate logical/arithmetic expression                      |\n";
+        cout << "+--------------------------------------------+-------------------------------------------------------------+\n";
+
+
         cout << "\n====================================================================================\n";
     } else {
         cout << "Bad command...\n";

@@ -80,6 +80,16 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `exit`                       | Thoát khỏi shell                                            |
 | `help`                       | Hiển thị danh sách lệnh                                     |
 
+### 🔁 Cấu trúc điều khiển  
+| Lệnh                                      | Mô tả                                                               |
+|-------------------------------------------|---------------------------------------------------------------------|
+| `if <cond>`                               | Thực thi khối lệnh nếu điều kiện đúng                              |
+| `if <cond> else`                          | Thực thi khối `else` nếu điều kiện sai                             |
+| `while <cond>`                            | Lặp lại khối lệnh khi điều kiện đúng                               |
+| `for (<var>=<start>;<cond>;<update>)`     | Vòng lặp kiểu C: khởi tạo, điều kiện và cập nhật                   |
+| `eval <expression>`                       | Đánh giá biểu thức logic hoặc số học                               |
+
+
 ### 📝 Trình soạn thảo tích hợp
 | Lệnh                          | Mô tả                                                       |
 |------------------------------|-------------------------------------------------------------|
