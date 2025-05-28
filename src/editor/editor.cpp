@@ -1,8 +1,8 @@
 #include "editor/editor.h"
 #include <conio.h>  // Windows-only
 #include <cstdlib>  // system("cls")
-#include "directory_manager.h"
-#include "system_commands.h"
+#include "filesystem/directory_manager.h"
+#include "execution/system_commands.h"
 Editor::Editor(const std::string& fname) : filename(fname) {
     loadFile();
 }

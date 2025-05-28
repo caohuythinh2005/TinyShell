@@ -1,6 +1,7 @@
-PATH=MCMC
 ITTN=rrr
-z=4
+PATH=MCMC
 MY_VAR=Hello World
-x=3
-y=3
+z=4
+x=1000
+y=4
+i=4

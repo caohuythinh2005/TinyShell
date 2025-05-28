@@ -21,4 +21,9 @@ if (x < 3)
 else
 {
     echo sai
+    set y=0
+    if (y>-1)
+    {
+        echo gia tri cua y la : %y%
+    }
 }

@@ -1,6 +1,6 @@
 .vscode/
 /build/
-/cpp/build/
-/cpp/Release/
+/apps/build/
+/apps/Release/
 /out/
 /test/
