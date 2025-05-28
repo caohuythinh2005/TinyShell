@@ -1,53 +1,39 @@
-# Bảng Tổ Hợp Phím
+# 🐚 TinyShell
 
-| Phím/Nhóm phím             | Chế độ        | Chức năng                                   |
-|----------------------------|---------------|---------------------------------------------|
-| `i`                        | Normal Mode   | Chuyển sang Insert Mode (chế độ nhập liệu)  |
-| `Esc`                      | Insert Mode   | Thoát về Normal Mode                        |
-| `Ctrl + i` (Tab)           | Insert Mode   | Thoát về Normal Mode                        |
-| `:`                        | Normal Mode   | Vào Command Mode (nhập lệnh)                |
-| `Enter`                    | Command Mode  | Thực thi lệnh (`:w`, `:q`, `:wq` ...)       |
-| `Esc`                      | Command Mode  | Hủy nhập lệnh, trở về Normal Mode           |
-| `phim trai`                | Normal Mode   | Di chuyển con trỏ sang trái                 |
-| `phim duoi`                | Normal Mode   | Di chuyển con trỏ xuống dưới                |
-| `phim tren`                | Normal Mode   | Di chuyển con trỏ lên trên                  |
-| `phim phai`                | Normal Mode   | Di chuyển con trỏ sang phải                 |
-| `Backspace`                | Insert Mode   | Xóa ký tự trước con trỏ                     |
-| `Enter`                    | Insert Mode   | Xuống dòng mới                              |
+TinyShell là một chương trình mô phỏng terminal đơn giản được viết bằng C++, hỗ trợ nhiều lệnh quản lý file, thư mục, biến môi trường và tiến trình. Đây là công cụ tuyệt vời để hiểu rõ hơn về cách hoạt động của shell, cũng như luyện tập kỹ năng xử lý hệ thống và lập trình hệ điều hành.
 
 ---
 
-# Các Lệnh Trong Command Mode
+## 📌 Yêu cầu hệ thống
 
-| Lệnh   | Chức năng                    |
-|--------|------------------------------|
-| `w`    | Lưu file hiện tại            |
-| `q`    | Thoát trình soạn thảo        |
-| `wq`   | Lưu file và thoát            |
+- **Hệ điều hành**: Windows 11
+- **Trình biên dịch**: Visual Studio 2019 trở lên (có hỗ trợ C++17)
+- **CMake**: phiên bản ≥ 3.12
+- **Command Prompt / PowerShell**
 
 ---
 
-# Cách Sử Dụng
+## ⚙️ Hướng dẫn cài đặt và chạy
 
-Chạy chương trình với cú pháp: editor tenfile.txt
+### ✅ Cài đặt nhanh
 
+1. **Clone dự án**:
 
+    ```bash
+    git clone https://github.com/your_username/tinyshell.git
+    cd tinyshell
+    ```
 
-# Thông tin
-- constant : chứa các hằng cần thiết
-- globals : khai báo các biến cục bộ xuất hiện trong chương trình
-- system_commands : chứa các lệnh system cần thiết như date, time, cls, exit,...
-- directory_manager : chứa các lệnh quản lý về thư mục
-- process : chứa các lệnh chuyên để quản lý process
-- path : xử lý đường dẫn path
-# Các file .bat
-- build_cpp_tool.bat : build lại các chương trình con trong cpp
-- move.bat : chuyển các file thực thi đã build bên trên vào /root/exe
-- build.bat : build lại hệ thống
-- run.bat : chạy lại hệ thống
+2. **Build với `build.bat` (dành cho Windows + Visual Studio)**:
 
-# Thứ tự chạy (theo thứ tự):
-- build_cpp_tool.bat
-- move.bat
-- build.bat
-- run.bat
+    ```bash
+    build.bat
+    ```
+
+3. **Chạy TinyShell với `run.bat`**:
+
+    ```bash
+    run.bat
+    ```
+
+---

@@ -16,47 +16,79 @@ void init_system_commands() {
     status = 1;
 }
 
-int shell_help(vector<string> args) {
+int shell_help(std::vector<std::string> args) {
     if (args.size() == 1) {
-        cout << "\nAVAILABLE COMMANDS:\n";
-        cout << "--------------------------------------------------------------------------------------------------\n";
-        cout << "cls                          : Clear the console screen\n";
-        cout << "exit                         : Exit the shell\n";
-        cout << "pwd                          : Show the current working directory\n";
-        cout << "dir                          : List all files and folders in the current directory\n";
-        cout << "cal [num1] [op] [num2]       : Calculate the value of two numbers\n";
-        cout << "cd [path]                    : Change current directory to [path]\n";
-        cout << "cd ..                        : Move to the parent directory\n";
-        cout << "mkdir [name]                 : Create a new directory with given name\n";
-        cout << "del [name]                   : Delete a file or folder (recursively if it's a folder)\n";
-        cout << "help                         : Show this help message\n";
-        cout << "test [-f|-d] [path]          : Check if the file or directory exists\n";
-        cout << "exec [path]                  : Execute a bat file \n";
-        cout << "time                         : Display current system time\n";
-        cout << "date                         : Display current system date\n";
-        cout << "runExe [path] [-b] [-c]      : Run an executable with optional background and console options.\n";
-        cout << "                               -b : Run in background (non-blocking).\n";
-        cout << "                               -c : Open in a new console window.\n";
-        cout << "kill_id [pid]                : Kill a process with the given PID (must be managed)\n";
-        cout << "pause_id [pid]               : Suspend a managed process by PID\n";
-        cout << "resume_id [pid]              : Resume a suspended managed process by PID\n";
-        cout << "list                         : List all processes managed by TinyShell\n";
-        cout << "touch [-f] [name]            : Create an empty file, overwrite if exists with -f\n";
-        cout << "cat [name]                   : Display contents of a file\n";
-        cout << "write [-f|-a] [name]         : Write to a file; -f to overwrite, -a to append\n";
-        cout << "                               (default: overwrite if file exists, else create new)\n";
-        cout << "rename [old_name] [new_name] : Rename file or folder\n";
-        cout << "move [source] [dest_folder]  : Move a file or folder to the destination folder.\n";
-        cout << "copy [source] [dest_folder]  : Copy a file or folder to the destination folder.\n";
-        cout << "path                         : Display the system PATH environment variable\n";
-        cout << "set [var] [var=value]        : Display, set, or delete environment variables\n";
-        cout << "addpath <path>               : Add a new path to PATH \n";
-        cout << "delpath <path>               : Removing a directory from PATH\n";
-        cout << "--------------------------------------------------------------------------------------------------\n";
+        // Navigation
+        cout << "\nDirectory Navigation:\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+        cout << "| cd [path]                 | Change current directory to [path]                 |\n";
+        cout << "| cd ..                     | Move to the parent directory                       |\n";
+        cout << "| pwd                       | Show the current working directory                 |\n";
+        cout << "| dir                       | List files and folders in the current directory    |\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+
+        // File operations
+        cout << "\nFile and Folder Operations:\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+        cout << "| mkdir [name]              | Create a new directory                             |\n";
+        cout << "| del [name]                | Delete a file or folder (recursive if folder)      |\n";
+        cout << "| touch [-f] [name]         | Create empty file; overwrite if -f                 |\n";
+        cout << "| cat [name]                | Display contents of a file                         |\n";
+        cout << "| write [-f|-a] [name]      | Write to file; -f overwrite, -a append             |\n";
+        cout << "| rename [old] [new]        | Rename a file or folder                            |\n";
+        cout << "| move [src] [dest]         | Move file or folder                                |\n";
+        cout << "| copy [src] [dest]         | Copy file or folder                                |\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+
+        // Process management
+        cout << "\nProcess Management:\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+        cout << "| runExe [path] [-b|-c]     | Run executable; -b background, -c new console      |\n";
+        cout << "| kill_id [pid]             | Kill managed process by PID                        |\n";
+        cout << "| pause_id [pid]            | Suspend managed process by PID                     |\n";
+        cout << "| resume_id [pid]           | Resume suspended process by PID                    |\n";
+        cout << "| list                      | List processes managed by TinyShell                |\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+
+        // Environment variables
+        cout << "\nEnvironment Variables:\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+        cout << "| set                       | Display all environment variables                  |\n";
+        cout << "| set VAR=value             | Set or update a variable                           |\n";
+        cout << "| set VAR=                  | Delete a variable                                  |\n";
+        cout << "| set /a expression         | Evaluate arithmetic expression (like VAR=1+2)      |\n";
+        cout << "| setx VAR=value            | Persistently set variable                          |\n";
+        cout << "| path                      | Show system PATH variable                          |\n";
+        cout << "| addpath <path>            | Add new directory to PATH                          |\n";
+        cout << "| delpath <path>            | Remove directory from PATH                         |\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+
+        // Utility and system
+        cout << "\nSystem Utilities:\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+        cout << "| time                      | Show system time                                   |\n";
+        cout << "| date                      | Show system date                                   |\n";
+        cout << "| test [-f|-d] [path]       | Check if file (-f) or directory (-d) exists        |\n";
+        cout << "| exec [path]               | Execute a .bat file                                |\n";
+        cout << "| cal [num1] [op] [num2]    | Perform calculation (+ - * / %)                    |\n";
+        cout << "| cls                       | Clear the console screen                           |\n";
+        cout << "| exit                      | Exit the shell                                     |\n";
+        cout << "| help                      | Show this help message                             |\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+
+        // Editor
+        cout << "\nBuilt-in Text Editor:\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+        cout << "| editor -i <file>          | Open file in interactive editor                    |\n";
+        cout << "| editor -h                 | Show key bindings for editor                       |\n";
+        cout << "+---------------------------+-----------------------------------------------------+\n";
+
+        cout << "\n====================================================================================\n";
     } else {
         cout << "Bad command...\n";
         return BAD_COMMAND;
     }
+
     return 0;
 }
 
