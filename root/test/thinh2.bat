@@ -1,3 +1,5 @@
+
+
 echo start
 echo hello nhe
 rem hello
@@ -41,3 +43,7 @@ echo %PATH%
 
 
 echo thendddddddddddddd
+
+
+echo ssss
+

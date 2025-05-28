@@ -107,10 +107,11 @@ int shell_del(vector<string> args) {
     return success ? 0 : BAD_COMMAND;
 }
 
+
 int shell_dir(vector<string> args) {
-	if (args.size() > 1) {
+    if (args.size() > 1) {
         printf("\nBad command ... \n");
-        return BAD_COMMAND;
+        return 1; // BAD_COMMAND
     }
 
     char current_real_path_cstr[MAX_PATH];
@@ -119,31 +120,52 @@ int shell_dir(vector<string> args) {
     WIN32_FIND_DATA findFileData;
     char searchPath[MAX_PATH];
 
-    // Tạo đường dẫn tìm kiếm trong thư mục hiện tại
     snprintf(searchPath, MAX_PATH, "%s\\*", current_real_path_cstr);
 
     HANDLE hFind = FindFirstFile(searchPath, &findFileData);
-    
+
     if (hFind == INVALID_HANDLE_VALUE) {
-        printf("Không thể đọc thư mục (%s).\n", current_real_path_cstr);
-        return 1;  // Báo lỗi
+        printf("Cannot read directory (%s).\n", current_real_path_cstr);
+        return 1;
     }
-    
+
+    // Print table header
+    printf("+------+---------------------------+---------------------+---------------------+\n");
+    printf("| Type | Name                      | Creation Date       | Modification Date   |\n");
+    printf("+------+---------------------------+---------------------+---------------------+\n");
+
     do {
-        // Bỏ qua "." và ".." để làm cho shell dễ dùng hơn :))
         if (strcmp(findFileData.cFileName, ".") == 0 || strcmp(findFileData.cFileName, "..") == 0)
             continue;
 
+        SYSTEMTIME creationTime, modifiedTime;
+        FileTimeToSystemTime(&findFileData.ftCreationTime, &creationTime);
+        FileTimeToSystemTime(&findFileData.ftLastWriteTime, &modifiedTime);
+
+        char type[6];
         if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            printf("[DIR]  %s\n", findFileData.cFileName);
+            strcpy(type, "DIR");
         } else {
-            printf("[FILE] %s\n", findFileData.cFileName);
+            strcpy(type, "FILE");
         }
+
+        printf("| %-4s | %-25s | %02d/%02d/%04d %02d:%02d:%02d | %02d/%02d/%04d %02d:%02d:%02d |\n",
+            type,
+            findFileData.cFileName,
+            creationTime.wDay, creationTime.wMonth, creationTime.wYear,
+            creationTime.wHour, creationTime.wMinute, creationTime.wSecond,
+            modifiedTime.wDay, modifiedTime.wMonth, modifiedTime.wYear,
+            modifiedTime.wHour, modifiedTime.wMinute, modifiedTime.wSecond
+        );
+
     } while (FindNextFile(hFind, &findFileData) != 0);
-    
+
+    printf("+------+---------------------------+---------------------+---------------------+\n");
+
     FindClose(hFind);
     return 0;
 }
+
 
 int shell_pwd(vector<string> args) {
 	if (args.size() > 1) {

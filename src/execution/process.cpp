@@ -296,21 +296,27 @@ vector<ProcessInfor> getShellProcessesWithStatus() {
 }
 
 void printProcesses(const vector<ProcessInfor>& processes) {
-    cout << "-----------------------------------------\n";
-    cout << "PID\t\tName\t\tStatus\n";
-    cout << "-----------------------------------------\n";
+    // Print table header
+    cout << "+---------+---------------------------+----------+\n";
+    cout << "| PID     | Name                      | Status   |\n";
+    cout << "+---------+---------------------------+----------+\n";
 
     for (const auto& p : processes) {
-        // Lọc bỏ những tiến trình không cần thiết (ví dụ như "conhost.exe")
+        // Skip unnecessary processes
         if (strcmp(p.processName.c_str(), "conhost.exe") == 0) {
-            continue;  // Bỏ qua các tiến trình conhost.exe
+            continue;  // Skip conhost.exe processes
         }
 
-        // In ra thông tin tiến trình
-        cout << p.pid << "\t\t" << p.processName << "\t\t" << p.status << endl;
+        // Print each process info with fixed width columns
+        printf("| %-7d | %-25s | %-8s |\n",
+            p.pid,
+            p.processName.c_str(),
+            p.status.c_str()
+        );
     }
 
-    cout << "-----------------------------------------\n";
+    // Print table footer
+    cout << "+---------+---------------------------+----------+\n";
 }
 
 int shell_killProcessById(vector<string> args) {
