@@ -3,6 +3,9 @@
 #include <regex>
 #include <iostream>
 #include "utilities/utils.h"
+#include <unordered_map>
+#include <unordered_set>
+#include <stack>
 
 unordered_map<string, string> session_vars;    // Biến tạm thời trong phiên làm việc
 unordered_map<string, string> persistent_vars; // Biến lưu trong sandbox (file)
@@ -12,55 +15,152 @@ string env_filename; // Đường dẫn file biến persistent sandbox
 Nhìn chung vẫn phải code lại cái này, không không kiểm soát được các biến vĩnh viễn, cũng
 như thao tác trực tiếp với setx khá nguy hiểm
 */
-/*
-Lằng nhằng vc, tụ dưng lòi cái sandbox :)
-*/
+bool is_num(const string& s) {
+    if (s.empty()) return false;
+    if (s[0] == '-') return all_of(s.begin() + 1, s.end(), ::isdigit);
+    return all_of(s.begin(), s.end(), ::isdigit);
+}
 
-/*
-Phải cấu hình lại path chút để nó lưu lại trong náy
-*/
+vector<string> tk(const string& expr) {
+    vector<string> res;
+    string t;
+    for (size_t i = 0; i < expr.length(); ++i) {
+        char c = expr[i];
+        if (isspace(c)) continue;
 
-void evaluate_assignment(const string& expr) {
-    smatch match;
-    regex inc_pattern(R"((\w+)\s*\+=\s*(-?\w+))");
-    regex op_pattern(R"((\w+)\s*=\s*(\w+)\s*([\+\-\*/])\s*(\w+))");
-    regex assign_pattern(R"((\w+)\s*=\s*(\w+))");  // <-- THÊM DÒNG NÀY
+        if (isalnum(c) || c == '_') {
+            t += c;
+        } else {
+            if (!t.empty()) {
+                res.push_back(t);
+                t.clear();
+            }
 
-    if (regex_match(expr, match, inc_pattern)) {
-        string var = match[1];
-        string delta_str = match[2];
+            if (i + 1 < expr.length()) {
+                string two = expr.substr(i, 2);
+                if (two == "==" || two == "!=" || two == ">=" || two == "<=" ||
+                    two == "&&" || two == "||") {
+                    res.push_back(two);
+                    ++i;
+                    continue;
+                }
+            }
 
-        int delta = session_vars.count(delta_str) ? stoi(session_vars[delta_str]) : stoi(delta_str);
-        int val = session_vars.count(var) ? stoi(session_vars[var]) : 0;
-
-        session_vars[var] = to_string(val + delta);
+            res.emplace_back(1, c);
+        }
     }
-    else if (regex_match(expr, match, op_pattern)) {
-        string var = match[1];
-        string left = match[2];
-        string op = match[3];
-        string right = match[4];
+    if (!t.empty()) res.push_back(t);
+    return res;
+}
 
-        int lval = session_vars.count(left) ? stoi(session_vars[left]) : stoi(left);
-        int rval = session_vars.count(right) ? stoi(session_vars[right]) : stoi(right);
+void replace_var(vector<string>& tokens) {
+    for (auto& t : tokens) {
+        if (!is_op(t) && !is_num(t) && t != "(" && t != ")") {
+            if (session_vars.count(t)) {
+                t = session_vars[t];
+            } else {
+                t = "0";
+            }
+        }
+    }
+}
 
-        int result = 0;
-        if (op == "+") result = lval + rval;
-        else if (op == "-") result = lval - rval;
-        else if (op == "*") result = lval * rval;
-        else if (op == "/") result = (rval != 0) ? lval / rval : 0;
+int prec(const string& op) {
+    if (op == "||") return 1;
+    if (op == "&&") return 2;
+    if (op == "==" || op == "!=") return 3;
+    if (op == ">" || op == "<" || op == ">=" || op == "<=") return 4;
+    if (op == "+" || op == "-") return 5;
+    if (op == "*" || op == "/") return 6;
+    return 0;
+}
 
-        session_vars[var] = to_string(result);
+bool is_op(const string& token) {
+    static const unordered_set<string> ops = {
+        "+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">=", "&&", "||"
+    };
+    return ops.count(token);
+}
+
+vector<string> infix2postfix(const vector<string>& tokens) {
+    vector<string> out;
+    stack<string> st;
+
+    for (const auto& token : tokens) {
+        if (is_num(token)) {
+            out.push_back(token);
+        } else if (!is_op(token) && token != "(" && token != ")") {
+            out.push_back(token);
+        } else if (token == "(") {
+            st.push(token);
+        } else if (token == ")") {
+            while (!st.empty() && st.top() != "(") {
+                out.push_back(st.top());
+                st.pop();
+            }
+            if (!st.empty()) st.pop();
+        } else {
+            while (!st.empty() && prec(st.top()) >= prec(token)) {
+                out.push_back(st.top());
+                st.pop();
+            }
+            st.push(token);
+        }
     }
-    else if (regex_match(expr, match, assign_pattern)) {
-        string var = match[1];
-        string val = match[2];
-        int result = session_vars.count(val) ? stoi(session_vars[val]) : stoi(val);
-        session_vars[var] = to_string(result);
+    while (!st.empty()) {
+        out.push_back(st.top());
+        st.pop();
     }
-    else {
-        cerr << "Invalid expression in set /a: " << expr << endl;
+    return out;
+}
+
+int eval_postfix_expr(const vector<string>& postfix) {
+    stack<int> stk;
+    for (const auto& token : postfix) {
+        if (is_num(token)) {
+            stk.push(stoi(token));
+        } else if (is_op(token)) {
+            int b = stk.top(); stk.pop();
+            int a = stk.top(); stk.pop();
+            if (token == "+") stk.push(a + b);
+            else if (token == "-") stk.push(a - b);
+            else if (token == "*") stk.push(a * b);
+            else if (token == "/") stk.push(b != 0 ? a / b : 0);
+            else if (token == "==") stk.push(a == b);
+            else if (token == "!=") stk.push(a != b);
+            else if (token == "<") stk.push(a < b);
+            else if (token == ">") stk.push(a > b);
+            else if (token == "<=") stk.push(a <= b);
+            else if (token == ">=") stk.push(a >= b);
+            else if (token == "&&") stk.push(a && b);
+            else if (token == "||") stk.push(a || b);
+        }
     }
+    return stk.top();
+}
+
+void evaluate_assignment(const string& expr_raw) {
+    string expr = trim(expr_raw);
+    size_t eq = expr.find('=');
+    if (eq == string::npos) {
+        cerr << "Invalid expression (missing '='): " << expr << endl;
+        return;
+    }
+
+    string lhs = trim(expr.substr(0, eq));
+    string rhs = trim(expr.substr(eq + 1));
+
+    if (lhs.empty() || rhs.empty()) {
+        cerr << "Invalid expression: " << expr << endl;
+        return;
+    }
+
+    vector<string> tokens = tk(rhs);
+    replace_var(tokens);
+    vector<string> postfix = infix2postfix(tokens);
+    int result = eval_postfix_expr(postfix);  // đổi tên gọi hàm tại đây
+
+    session_vars[lhs] = to_string(result);
 }
 
 /*

@@ -19,7 +19,13 @@ extern string env_filename; // Đường dẫn file biến persistent sandbox
 /*
 Mục đích : hỗ tợ lưu trữ kiểu persistent và theo session -> có thể lưu path vĩnh viễn
 */
-
+// bool is_number(const string& s);
+// vector<string> tokenize(const string& expr);
+// void replace_variables(vector<string>& tokens);
+// int precedence(const string& op);
+bool is_op(const string& token);
+// vector<string> infix_to_postfix(const vector<string>& tokens);
+// int evaluate_postfix(const vector<string>& postfix);
 void evaluate_assignment(const string& expr);
 
 int shell_set(vector<string> args);
