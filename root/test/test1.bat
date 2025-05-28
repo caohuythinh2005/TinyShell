@@ -9,9 +9,11 @@ while (x < 3)
         echo rat la ... : %j%
     }
     pwd
-    cd exe
+    cd ..
+    cd apps
     runExe countdown.exe -b -c
     cd ..
+    cd test
 }
 
 if (x < 3)

@@ -15,57 +15,23 @@ string env_filename; // Đường dẫn file biến persistent sandbox
 Nhìn chung vẫn phải code lại cái này, không không kiểm soát được các biến vĩnh viễn, cũng
 như thao tác trực tiếp với setx khá nguy hiểm
 */
-bool is_num(const string& s) {
+// Kiểm tra xem string có phải số (có dấu âm hay không)
+bool vm_is_num(const string& s) {
     if (s.empty()) return false;
-    if (s[0] == '-') return all_of(s.begin() + 1, s.end(), ::isdigit);
-    return all_of(s.begin(), s.end(), ::isdigit);
+    int start = (s[0] == '-') ? 1 : 0;
+    return all_of(s.begin() + start, s.end(), ::isdigit);
 }
 
-vector<string> tk(const string& expr) {
-    vector<string> res;
-    string t;
-    for (size_t i = 0; i < expr.length(); ++i) {
-        char c = expr[i];
-        if (isspace(c)) continue;
-
-        if (isalnum(c) || c == '_') {
-            t += c;
-        } else {
-            if (!t.empty()) {
-                res.push_back(t);
-                t.clear();
-            }
-
-            if (i + 1 < expr.length()) {
-                string two = expr.substr(i, 2);
-                if (two == "==" || two == "!=" || two == ">=" || two == "<=" ||
-                    two == "&&" || two == "||") {
-                    res.push_back(two);
-                    ++i;
-                    continue;
-                }
-            }
-
-            res.emplace_back(1, c);
-        }
-    }
-    if (!t.empty()) res.push_back(t);
-    return res;
+// Kiểm tra xem token có phải toán tử không
+bool vm_is_op(const string& token) {
+    static const unordered_set<string> ops = {
+        "+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">=", "&&", "||"
+    };
+    return ops.count(token);
 }
 
-void replace_var(vector<string>& tokens) {
-    for (auto& t : tokens) {
-        if (!is_op(t) && !is_num(t) && t != "(" && t != ")") {
-            if (session_vars.count(t)) {
-                t = session_vars[t];
-            } else {
-                t = "0";
-            }
-        }
-    }
-}
-
-int prec(const string& op) {
+// Độ ưu tiên toán tử
+int vm_precedence(const string& op) {
     if (op == "||") return 1;
     if (op == "&&") return 2;
     if (op == "==" || op == "!=") return 3;
@@ -75,94 +41,208 @@ int prec(const string& op) {
     return 0;
 }
 
-bool is_op(const string& token) {
-    static const unordered_set<string> ops = {
-        "+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">=", "&&", "||"
-    };
-    return ops.count(token);
-}
+// Tách chuỗi biểu thức thành các token (biến, số, toán tử, ngoặc)
+vector<string> vm_tokenize(const string& expr) {
+    vector<string> tokens;
+    string temp;
+    for (size_t i = 0; i < expr.length(); ++i) {
+        char c = expr[i];
+        if (isspace(c)) continue;
 
-vector<string> infix2postfix(const vector<string>& tokens) {
-    vector<string> out;
-    stack<string> st;
-
-    for (const auto& token : tokens) {
-        if (is_num(token)) {
-            out.push_back(token);
-        } else if (!is_op(token) && token != "(" && token != ")") {
-            out.push_back(token);
-        } else if (token == "(") {
-            st.push(token);
-        } else if (token == ")") {
-            while (!st.empty() && st.top() != "(") {
-                out.push_back(st.top());
-                st.pop();
-            }
-            if (!st.empty()) st.pop();
+        if (isalnum(c) || c == '_') {
+            temp += c;
         } else {
-            while (!st.empty() && prec(st.top()) >= prec(token)) {
-                out.push_back(st.top());
-                st.pop();
+            if (!temp.empty()) {
+                tokens.push_back(temp);
+                temp.clear();
             }
-            st.push(token);
+
+            if (i + 1 < expr.length()) {
+                string two = expr.substr(i, 2);
+                if (vm_is_op(two)) {
+                    tokens.push_back(two);
+                    ++i;
+                    continue;
+                }
+            }
+
+            tokens.emplace_back(1, c);
         }
     }
-    while (!st.empty()) {
-        out.push_back(st.top());
-        st.pop();
-    }
-    return out;
+    if (!temp.empty()) tokens.push_back(temp);
+    return tokens;
 }
 
-int eval_postfix_expr(const vector<string>& postfix) {
+// Thay thế biến trong token bằng giá trị tương ứng
+void vm_replace_variables(vector<string>& tokens) {
+    for (auto& tok : tokens) {
+        if (!vm_is_op(tok) && !vm_is_num(tok) && tok != "(" && tok != ")") {
+            if (session_vars.count(tok)) {
+                tok = session_vars[tok];
+            } else if (persistent_vars.count(tok)) {
+                tok = persistent_vars[tok];
+            } else {
+                tok = "0";  // fallback
+            }
+        }
+    }
+}
+
+// Chuyển biểu thức infix sang postfix
+vector<string> vm_infix_to_postfix(const vector<string>& tokens) {
+    vector<string> output;
+    stack<string> op_stack;
+
+    for (const auto& tok : tokens) {
+        if (vm_is_num(tok)) {
+            output.push_back(tok);
+        } else if (tok == "(") {
+            op_stack.push(tok);
+        } else if (tok == ")") {
+            while (!op_stack.empty() && op_stack.top() != "(") {
+                output.push_back(op_stack.top());
+                op_stack.pop();
+            }
+            if (!op_stack.empty()) op_stack.pop(); // pop '('
+        } else if (vm_is_op(tok)) {
+            while (!op_stack.empty() && vm_precedence(op_stack.top()) >= vm_precedence(tok)) {
+                output.push_back(op_stack.top());
+                op_stack.pop();
+            }
+            op_stack.push(tok);
+        } else {
+            // unexpected token, treat as variable (đã replace trước đó)
+            output.push_back(tok);
+        }
+    }
+
+    while (!op_stack.empty()) {
+        output.push_back(op_stack.top());
+        op_stack.pop();
+    }
+    return output;
+}
+
+// Đánh giá biểu thức postfix
+int vm_evaluate_postfix(const vector<string>& postfix) {
     stack<int> stk;
-    for (const auto& token : postfix) {
-        if (is_num(token)) {
-            stk.push(stoi(token));
-        } else if (is_op(token)) {
+    for (const auto& tok : postfix) {
+        if (vm_is_num(tok)) {
+            stk.push(stoi(tok));
+        } else if (vm_is_op(tok)) {
+            if (stk.size() < 2) {
+                cerr << "Invalid expression: insufficient operands for '" << tok << "'\n";
+                return 0;
+            }
             int b = stk.top(); stk.pop();
             int a = stk.top(); stk.pop();
-            if (token == "+") stk.push(a + b);
-            else if (token == "-") stk.push(a - b);
-            else if (token == "*") stk.push(a * b);
-            else if (token == "/") stk.push(b != 0 ? a / b : 0);
-            else if (token == "==") stk.push(a == b);
-            else if (token == "!=") stk.push(a != b);
-            else if (token == "<") stk.push(a < b);
-            else if (token == ">") stk.push(a > b);
-            else if (token == "<=") stk.push(a <= b);
-            else if (token == ">=") stk.push(a >= b);
-            else if (token == "&&") stk.push(a && b);
-            else if (token == "||") stk.push(a || b);
+
+            if (tok == "+") stk.push(a + b);
+            else if (tok == "-") stk.push(a - b);
+            else if (tok == "*") stk.push(a * b);
+            else if (tok == "/") stk.push(b != 0 ? a / b : 0);
+            else if (tok == "==") stk.push(a == b);
+            else if (tok == "!=") stk.push(a != b);
+            else if (tok == "<") stk.push(a < b);
+            else if (tok == ">") stk.push(a > b);
+            else if (tok == "<=") stk.push(a <= b);
+            else if (tok == ">=") stk.push(a >= b);
+            else if (tok == "&&") stk.push(a && b);
+            else if (tok == "||") stk.push(a || b);
+        } else {
+            cerr << "Unknown token in evaluation: " << tok << endl;
+            return 0;
         }
     }
+
+    if (stk.size() != 1) {
+        cerr << "Invalid postfix expression. Stack size: " << stk.size() << endl;
+        return 0;
+    }
+
     return stk.top();
 }
 
+// Hàm chính để xử lý gán biểu thức dạng a = expr
 void evaluate_assignment(const string& expr_raw) {
     string expr = trim(expr_raw);
-    size_t eq = expr.find('=');
-    if (eq == string::npos) {
-        cerr << "Invalid expression (missing '='): " << expr << endl;
+
+    // Tìm vị trí toán tử gán, có thể là =, +=, -=, *=, /=
+    size_t pos = string::npos;
+    string assign_op;
+
+    vector<string> assign_ops = {"+=", "-=", "*=", "/=", "="};
+    for (const auto& op : assign_ops) {
+        size_t p = expr.find(op);
+        if (p != string::npos) {
+            if (pos == string::npos || p < pos) {
+                pos = p;
+                assign_op = op;
+            }
+        }
+    }
+
+    if (pos == string::npos) {
+        cerr << "Error: Missing assignment operator in expression: " << expr << endl;
         return;
     }
 
-    string lhs = trim(expr.substr(0, eq));
-    string rhs = trim(expr.substr(eq + 1));
+    string lhs = trim(expr.substr(0, pos));
+    string rhs = trim(expr.substr(pos + assign_op.length()));
 
     if (lhs.empty() || rhs.empty()) {
-        cerr << "Invalid expression: " << expr << endl;
+        cerr << "Error: Invalid assignment: " << expr << endl;
         return;
     }
 
-    vector<string> tokens = tk(rhs);
-    replace_var(tokens);
-    vector<string> postfix = infix2postfix(tokens);
-    int result = eval_postfix_expr(postfix);  // đổi tên gọi hàm tại đây
+    // Nếu biến lhs chưa có, khởi tạo = 0
+    if (!session_vars.count(lhs) && !persistent_vars.count(lhs)) {
+        session_vars[lhs] = "0";
+    }
+
+    vector<string> tokens = vm_tokenize(rhs);
+    vm_replace_variables(tokens);
+    vector<string> postfix = vm_infix_to_postfix(tokens);
+    int rhs_val;
+
+    try {
+        rhs_val = vm_evaluate_postfix(postfix);
+    } catch (const std::exception& e) {
+        cerr << "Error evaluating right-hand side: " << endl;
+        return;
+    }
+
+    int lhs_val = 0;
+    try {
+        if (session_vars.count(lhs)) lhs_val = stoi(session_vars[lhs]);
+        else if (persistent_vars.count(lhs)) lhs_val = stoi(persistent_vars[lhs]);
+    } catch (const std::exception& e) {
+        cerr << "Error converting LHS variable '" << lhs << "' to integer: " << endl;
+        return;
+    }
+
+    int result = 0;
+    if (assign_op == "=") {
+        result = rhs_val;
+    } else if (assign_op == "+=") {
+        result = lhs_val + rhs_val;
+    } else if (assign_op == "-=") {
+        result = lhs_val - rhs_val;
+    } else if (assign_op == "*=") {
+        result = lhs_val * rhs_val;
+    } else if (assign_op == "/=") {
+        if (rhs_val == 0) {
+            cerr << "Error: Division by zero\n";
+            return;
+        }
+        result = lhs_val / rhs_val;
+    } else {
+        cerr << "Error: Unsupported assignment operator: " << assign_op << endl;
+        return;
+    }
 
     session_vars[lhs] = to_string(result);
 }
-
 /*
 Windows that ko ho tro setx /a vi ly do an toan
 tham chi setx x= cung ko ho tro
@@ -216,45 +296,12 @@ int shell_set(vector<string> args) {
     return 0;
 }
 
-// int shell_set(vector<string> args) {
-//     // Nếu chỉ gọi `set`, hiển thị tất cả biến session và persistent
-//     if (args.size() == 1) {
-//         auto vars = get_all_variables();
-//         for (const auto& [k, v] : vars) {
-//             cout << k << "=" << v << endl;
-//         }
-//         return 0;
-//     }
-
-//     // Gộp các args từ 1 trở đi thành 1 chuỗi "x = 5"
-//     string combined;
-//     for (size_t i = 1; i < args.size(); ++i) {
-//         if (i > 1) combined += " ";
-//         combined += args[i];
-//     }
-
-//     size_t pos = combined.find('=');
-//     if (pos == string::npos) {
-//         cout << "Invalid syntax. Use var=value" << endl;
-//         return 1;
-//     }
-
-//     string var_name = combined.substr(0, pos);
-//     string var_value = combined.substr(pos + 1);
-
-//     // Nếu giá trị rỗng, tức là unset (CMD-style)
-//     if (var_value.empty()) {
-//         unset_variable(var_name);
-//     } else {
-//         set_variable(var_name, var_value, false);
-//     }
-
-//     return 0;
-// }
-
-
 
 int shell_setx(vector<string> args) {
+    if (args.size() > 1 && args[1] == "/a") {
+        cout << "Error: The /a option is not supported by setx." << endl;
+        return 1;
+    }
     if (args.size() == 1) {
         for (const auto& [k, v] : persistent_vars) {
             cout << k << "=" << v << endl;
