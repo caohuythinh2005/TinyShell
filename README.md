@@ -45,11 +45,12 @@ TinyShell là một chương trình mô phỏng terminal đơn giản được v
 ### ⚙️ Quản lý tiến trình
 | Lệnh                          | Mô tả                                                       |
 |------------------------------|-------------------------------------------------------------|
-| `runExe [path] [-b|-c]`      | Chạy file thực thi (`-b`: nền, `-c`: cửa sổ mới)           |
+| `runExe [path] [-b|-c]`      | Chạy file thực thi (`-b`: chạy nền, `-c`: mở cửa sổ mới)    |
 | `kill_id [pid]`              | Kết thúc tiến trình theo PID (do TinyShell quản lý)         |
 | `pause_id [pid]`             | Tạm dừng tiến trình                                         |
 | `resume_id [pid]`            | Tiếp tục tiến trình đã tạm dừng                             |
 | `list`                       | Liệt kê các tiến trình TinyShell đang quản lý               |
+
 
 ### 🌐 Biến môi trường
 | Lệnh                          | Mô tả                                                       |
