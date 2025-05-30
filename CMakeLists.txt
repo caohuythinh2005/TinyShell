@@ -4,14 +4,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-D_HAS_STD_BYTE=0)
 
-
 include_directories(include)
 
 
 # Add executable and all .cpp files using glob
 file(GLOB TINYSHELL_SOURCES
     "src/*.cpp"
-    "src/**/*.cpp" # Include .cpp files in subdirectories of src
+    "src/**/*.cpp"
+    "src/**/**/*.cpp"
 )
 
 add_executable(TinyShell ${TINYSHELL_SOURCES})

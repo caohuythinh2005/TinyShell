@@ -1,8 +1,8 @@
 #include "editor/editor.h"
 #include <conio.h>  // Windows-only
 #include <cstdlib>  // system("cls")
-#include "directory_manager.h"
-#include "system_commands.h"
+#include "filesystem/directory_manager.h"
+#include "execution/system_commands.h"
 Editor::Editor(const std::string& fname) : filename(fname) {
     loadFile();
 }
@@ -139,14 +139,55 @@ void Editor::run() {
 
 int shell_editor(std::vector<std::string> args) {
     if (args.size() < 2) {
-        std::cout << "Usage: editor <file>" << std::endl;
+        std::cout << "Usage:\n";
+        std::cout << "  editor -i <file>   Edit a file\n";
+        std::cout << "  editor -h          Show help\n";
         return 1;
     }
 
-    Editor editor(current_real_path + "\\" +  args[1]);
-    editor.run();
-    vector<string> dump;
-    dump.push_back("cls");
-    shell_cls(dump);
-    return 0;
+    if (args[1] == "-h") {
+        std::cout << "\n=== KEY COMBINATION TABLE ===\n\n";
+        std::cout << "| Key/Key Group         | Mode         | Function                                     |\n";
+        std::cout << "|-----------------------|--------------|----------------------------------------------|\n";
+        std::cout << "| i                     | Normal Mode  | Switch to Insert Mode                        |\n";
+        std::cout << "| Esc                   | Insert Mode  | Return to Normal Mode                        |\n";
+        std::cout << "| Ctrl + i (Tab)        | Insert Mode  | Return to Normal Mode                        |\n";
+        std::cout << "| :                     | Normal Mode  | Enter Command Mode                           |\n";
+        std::cout << "| Enter                 | Command Mode | Execute command (:w, :q, :wq, etc.)          |\n";
+        std::cout << "| Esc                   | Command Mode | Cancel command input, return to Normal Mode  |\n";
+        std::cout << "| Left Arrow            | Normal Mode  | Move cursor to the left                      |\n";
+        std::cout << "| Down Arrow            | Normal Mode  | Move cursor down                             |\n";
+        std::cout << "| Up Arrow              | Normal Mode  | Move cursor up                               |\n";
+        std::cout << "| Right Arrow           | Normal Mode  | Move cursor to the right                     |\n";
+        std::cout << "| Backspace             | Insert Mode  | Delete character before the cursor           |\n";
+        std::cout << "| Enter                 | Insert Mode  | Insert a new line                            |\n";
+
+        std::cout << "\n=== COMMANDS IN COMMAND MODE ===\n\n";
+        std::cout << "| Command | Function                       |\n";
+        std::cout << "|---------|--------------------------------|\n";
+        std::cout << "| w       | Save current file              |\n";
+        std::cout << "| q       | Quit the editor                |\n";
+        std::cout << "| wq      | Save the file and quit         |\n";
+
+        std::cout << std::endl;
+    } else if (args[1] == "-i") {
+        if (args.size() < 3) {
+            std::cout << "Error: No file specified to edit.\n";
+            std::cout << "Usage: editor -i <file>\n";
+            return 1;
+        }
+
+        Editor editor(current_real_path + "\\" + args[2]);
+        editor.run();
+
+        std::vector<std::string> dump;
+        dump.push_back("cls");
+        shell_cls(dump);
+
+        return 0;
+    } else {
+        std::cout << "Unknown option: " << args[1] << "\n";
+        std::cout << "Use 'editor -h' for help.\n";
+        return 1;
+    }
 }
