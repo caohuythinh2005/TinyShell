@@ -1,1 +1,0 @@
-runExe /root/exe/snake.exe -b

@@ -1,1 +1,0 @@
-runExe /root/exe/countdown.exe
