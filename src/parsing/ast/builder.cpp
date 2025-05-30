@@ -31,6 +31,7 @@ Node* parse_block(const vector<string>& lines, size_t& index) {
         }
 
         vector<string> tokens = parse_command(line);
+        tokens = formatToRealPath(tokens);
         if (tokens.empty()) {
             ++index;
             continue;
@@ -125,6 +126,10 @@ Node* build(const vector<string>& script_lines) {
 }
 
 int shell_exec(vector<string> args) {
+    for (string x: args) {
+        cout << x << " ";
+    }
+    cout << endl;
     if (args.size() < 2) {
         cout << "Usage: exec <filename>" << endl;
         return -1;

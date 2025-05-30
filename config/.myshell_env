@@ -1,5 +1,5 @@
 ITTN=rrr
-PATH=\root
+PATH=\root;\root\apps;\root\test
 b=4
 MY_VAR=Hello World
 x=3

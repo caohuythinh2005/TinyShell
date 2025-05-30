@@ -269,7 +269,7 @@ int shell_set(vector<string> args) {
     }
 
     // Hỗ trợ set /a <biểu thức số học>
-    if (args[1] == "/a") {
+    if (args[1] == "\\a") {
         string expr;
         for (size_t i = 2; i < args.size(); ++i) {
             if (i > 2) expr += " ";
@@ -310,7 +310,7 @@ int shell_set(vector<string> args) {
 
 
 int shell_setx(vector<string> args) {
-    if (args.size() > 1 && args[1] == "/a") {
+    if (args.size() > 1 && args[1] == "\\a") {
         cout << "Error: The /a option is not supported by setx." << endl;
         return 1;
     }

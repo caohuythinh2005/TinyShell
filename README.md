@@ -49,7 +49,7 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 ### ⚙️ Quản lý tiến trình
 | Lệnh                          | Mô tả                                                       |
 |------------------------------|-------------------------------------------------------------|
-| `runExe [path] [-b] [-c]`    | Chạy file thực thi (`-b`: chạy nền, `-c`: mở cửa sổ mới)    |
+| `exec [path] [-b] [-c]`      | Chạy file .exe hoặc .bat; (-b: chạy nền, -c: mở cửa sổ mới) cho file .exe |
 | `kill_id [pid]`              | Kết thúc tiến trình theo PID (do TinyShell quản lý)         |
 | `pause_id [pid]`             | Tạm dừng tiến trình                                         |
 | `resume_id [pid]`            | Tiếp tục tiến trình đã tạm dừng                             |
@@ -74,7 +74,6 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `time`                       | Hiển thị giờ hệ thống hiện tại                             |
 | `date`                       | Hiển thị ngày hiện tại                                      |
 | `test [-f] [-d] [path]`      | Kiểm tra tồn tại file (`-f`) hoặc thư mục (`-d`)             |
-| `exec [path]`                | Chạy file `.bat`                                              |
 | `cal [num1] [op] [num2]`     | Máy tính đơn giản (`+ - * / %`)                              |
 | `cls`                        | Xóa màn hình                                                |
 | `exit`                       | Thoát khỏi shell                                            |

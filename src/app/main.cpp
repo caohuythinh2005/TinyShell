@@ -64,7 +64,7 @@ vector<string> builtin_str = {
 	"test",
 	"time",
 	"date",
-	"runExe",
+	"exec",
 	"kill_id",
 	"pause_id",
 	"resume_id",
@@ -84,7 +84,6 @@ vector<string> builtin_str = {
 	"echo",
 	"set",
 	"setx",
-	"exec",
 	"eval",
 	"editor"
 };
@@ -122,7 +121,6 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_echo,
 	&shell_set,
 	&shell_setx,
-	&shell_exec,
 	&shell_eval,
 	&shell_editor
 };

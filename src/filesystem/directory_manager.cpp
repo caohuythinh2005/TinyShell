@@ -110,7 +110,7 @@ int shell_del(vector<string> args) {
 
 int shell_dir(vector<string> args) {
     if (args.size() > 1) {
-        printf("\nBad command ... \n");
+        printf("\nUsage: dir\n");
         return 1; // BAD_COMMAND
     }
 
@@ -169,7 +169,7 @@ int shell_dir(vector<string> args) {
 
 int shell_pwd(vector<string> args) {
 	if (args.size() > 1) {
-        printf("Bad command ... \n");
+        printf("Usage: pwd\n");
         return BAD_COMMAND;
     }
 	cout << formatFakePathToUnixStyle(current_fake_path) << endl;
@@ -267,7 +267,7 @@ int shell_cd(vector<string> args) {
             } else {
                 string fullPath = getNormalizedCurrentDirectory();
                 if (folderExists(string(current_fake_path) + '\\' + path_str) != EXIST_FILE_OR_DIRECTORY) {
-                    cout << string(full_path) << endl;
+                    
                     cerr << "Destination must be an existing folder.\n";
                     return -1;
                 }

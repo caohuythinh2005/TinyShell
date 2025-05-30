@@ -43,7 +43,7 @@ int shell_help(std::vector<std::string> args) {
         // Process management
         cout << "\nProcess Management:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
-        cout << "| runExe [path] [-b|-c]     | Run executable; -b background, -c new console      |\n";
+        cout << "| exec [path] [-b|-c]       | Execute .exe or .bat file. Options -b, -c (.exe)   |\n";
         cout << "| kill_id [pid]             | Kill managed process by PID                        |\n";
         cout << "| pause_id [pid]            | Suspend managed process by PID                     |\n";
         cout << "| resume_id [pid]           | Resume suspended process by PID                    |\n";
@@ -71,7 +71,6 @@ int shell_help(std::vector<std::string> args) {
         cout << "| time                      | Show system time                                   |\n";
         cout << "| date                      | Show system date                                   |\n";
         cout << "| test [-f|-d] [path]       | Check if file (-f) or directory (-d) exists        |\n";
-        cout << "| exec [path]               | Execute a .bat file                                |\n";
         cout << "| cal [num1] [op] [num2]    | Perform calculation (+ - * / %)                    |\n";
         cout << "| cls                       | Clear the console screen                           |\n";
         cout << "| exit                      | Exit the shell                                     |\n";

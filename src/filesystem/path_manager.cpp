@@ -406,7 +406,7 @@ void resumeChild(DWORD pid) {
 
 int shell_runExe(vector<string> args){
     if (args.size() < 2 || args.size() > 4) {
-        printf("Usage: runExe [path_or_name] [-b] [-c]\n");
+        printf("Usage: exec [path_or_name] [-b] [-c]\n");
         return BAD_COMMAND;
     }
     string input = args[1];
