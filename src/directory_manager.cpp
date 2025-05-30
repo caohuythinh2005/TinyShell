@@ -11,11 +11,11 @@
 #include <sys/types.h>
 #include <psapi.h>
 #include <filesystem>
-
+#include <shlwapi.h>
 #include "directory_manager.h"
 #include "constant.h"
 #include "utils.h"
-// #include "Shlwapi.h"
+#include "path_manager.h"
 
 using namespace std;
 
@@ -359,6 +359,32 @@ string getNormalizedDirectory(const string& fakePath) {
     return string(normalizedPath);
 }
 
+string getNormalizedFilePath(const string& fakeFilePath) {
+    string realPath = convertFakeToRealPath(fakeFilePath);
+    char fullPath[MAX_PATH];
+    DWORD attrs = GetFileAttributesA(realPath.c_str());
+    if (attrs == INVALID_FILE_ATTRIBUTES) {
+        cerr << "The path does not exist: " << fakeFilePath << "\n";
+        return "";
+    }
+    // Lấy đường dẫn đầy đủ (chuẩn hóa luôn cả .. và .)
+    DWORD result = GetFullPathNameA(realPath.c_str(), MAX_PATH, fullPath, nullptr);
+    if (result == 0 || result > MAX_PATH) {
+        cout << "Error...\n";
+        return ""; // Lỗi trong quá trình chuẩn hóa
+    }
+
+    // Tùy chọn: chuyển thành long path (tên đầy đủ nếu có dạng rút gọn 8.3)
+    char longPath[MAX_PATH];
+    DWORD longResult = GetLongPathNameA(fullPath, longPath, MAX_PATH);
+    if (longResult == 0 || longResult > MAX_PATH) {
+        return string(fullPath); // Trả về bản full path nếu không lấy được long path
+    }
+    // cout << "longpath la " << longPath << "\n";
+    return string(longPath);
+}
+
+
 
 int fileExists(const string &path) {
     string absPath = convertFakeToRealPath(path);
@@ -390,6 +416,16 @@ int folderExists(const string &path) {
 string convertFakeToRealPath(const string &currentFakePath)
 {
     return origin_real_path + currentFakePath;
+}
+// currentreal = C:/root/exe, origin_ = C:/root/exe/minh ??
+string convertRealToFakePath(const string &currentRealPath){
+    if(origin_real_path.length() > currentRealPath.length()){
+        return "";
+    }
+    string fake = currentRealPath.substr(origin_real_path.length());
+    if (!fake.empty() && fake[0] != '\\')
+        fake = '\\' + fake;
+    return fake;
 }
 
 int shell_touch(vector<string> args) {

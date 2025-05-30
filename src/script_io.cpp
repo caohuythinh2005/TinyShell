@@ -31,7 +31,7 @@ bool is_comment_or_empty(const string& line) {
  * @return true nếu đọc thành công
  */
 bool read_script_file(const string& filepath, vector<string>& script_lines) {
-    ifstream fin(current_real_path + "\\" + filepath);
+    ifstream fin(filepath);
     if (!fin.is_open()) {
         cerr << "Unable to open script file: " << filepath << endl;
         return false;

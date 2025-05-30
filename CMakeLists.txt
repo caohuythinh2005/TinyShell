@@ -15,3 +15,5 @@ file(GLOB TINYSHELL_SOURCES
 )
 
 add_executable(TinyShell ${TINYSHELL_SOURCES})
+
+target_link_libraries(TinyShell Shlwapi)

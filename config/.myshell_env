@@ -1,6 +1,9 @@
-PATH=MCMC
 ITTN=rrr
-z=4
+PATH=\root
+b=4
 MY_VAR=Hello World
-x=3
+z=4
+x=1
 y=3
+a=1
+PATH = \root;\root\exe

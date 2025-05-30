@@ -77,8 +77,10 @@ vector<string> builtin_str = {
 	"copy",
 	"path",
 	"addpath",
+	"addpathx",
 	"setP",
 	"delpath",
+	"delpathx",
 	"where",
 	"echo",
 	"set",
@@ -114,8 +116,10 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_copy,
 	&shell_path,
 	&shell_addpath,
+	&shell_addpathx,
 	&shell_setP,
 	&shell_delpath,
+	&shell_delpathx,
 	&shell_where,
 	&shell_echo,
 	&shell_set,
@@ -140,6 +144,7 @@ int main() {
 	init_system_commands();
 	init_directory();
 	init_variable_manager("config\\.myshell_env");
+	initPath();
 	string line;  /*command line*/ 
 	vector<string> args; /*command line arguments*/
 	while (status) {

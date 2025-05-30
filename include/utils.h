@@ -8,5 +8,4 @@ string trim(const string& s);
 string removePrefix(const string& full, const string& prefix);
 
 boolean isPrefix(const string& full, const string& prefix);
-
 #endif

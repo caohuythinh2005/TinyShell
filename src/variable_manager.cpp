@@ -3,7 +3,8 @@
 #include <regex>
 #include <iostream>
 #include "utils.h"
-
+#include "path_manager.h"
+#include "utils.h"
 unordered_map<string, string> session_vars;    // Biến tạm thời trong phiên làm việc
 unordered_map<string, string> persistent_vars; // Biến lưu trong sandbox (file)
 string env_filename; // Đường dẫn file biến persistent sandbox
@@ -74,7 +75,16 @@ int shell_set(vector<string> args) {
     if (args.size() == 1) {
         auto vars = get_all_variables();
         for (const auto& [k, v] : vars) {
-            cout << k << "=" << v << endl;
+            if(k == "PATH"){
+                cout << "PATH=";
+                for(auto s : envPaths){
+                    cout << s << ";";
+                }
+                cout << "\n";
+            }
+            else{
+                cout << k << "=" << v << endl;                
+            }
         }
         return 0;
     }
@@ -112,7 +122,10 @@ int shell_set(vector<string> args) {
     } else {
         set_variable(var_name, var_value, false);  // false = session variable
     }
-
+    if (var_name == "PATH") {
+            envPaths.clear(); // xóa path cũ
+            initPath();       // nạp lại path mới
+    }
     return 0;
 }
 
@@ -188,7 +201,10 @@ int shell_setx(vector<string> args) {
     session_vars[var_name] = var_value;
 
     save_persistent_vars();
-
+    if (var_name == "PATH") {
+            envPaths.clear(); // xóa path cũ
+            initPath();       // nạp lại path từ file mới
+    }
     return 0;
 }
 

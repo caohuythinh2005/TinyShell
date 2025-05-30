@@ -18,6 +18,11 @@
 #include <algorithm>
 #include "globals.h"
 #include "system_commands.h"
+#include "variable_manager.h"
+#include "constant.h"
+#include "ast/builder.h"
+#include "script_io.h"
+vector<string> envPaths;
 vector<string> split_path(const string& path) {
     vector<string> directories;
     stringstream ss(path);
@@ -49,18 +54,21 @@ int shell_path(vector<string> args) {
         return BAD_COMMAND;
     }
 
-    const char* path_env = getenv("PATH");
-    // cout << path_env << endl;
-    if (path_env == nullptr) {
-        cout << "Failed to retrieve PATH environment variable.\n";
-        return BAD_COMMAND;
+    // const char* path_env = getenv("PATH");
+    // // cout << path_env << endl;
+    // if (path_env == nullptr) {
+    //     cout << "Failed to retrieve PATH environment variable.\n";
+    //     return BAD_COMMAND;
+    // }
+    if(envPaths.empty()){
+        cout << "No PATH entries start with /root.\n";
+        return 0;
     }
-
-    vector<string> directories = split_path(path_env);
+    // vector<string> directories = split_path(path_env);
     bool found = false;
     bool flag = false;
     int i = 0;
-    for (const string& dir : directories) {
+    for (const string& dir : envPaths) {
         // cout << ++i << endl;
         // cout << "dir is : " << dir << endl;
         if (isPrefix(dir, fixed_real_path) || isPrefix(dir, current_fake_path) || isPrefix(origin_real_path + dir, fixed_real_path)) {
@@ -88,129 +96,6 @@ int shell_path(vector<string> args) {
 
 
 // Cập nhật biến môi trường với giá trị mới (chỉ trong cục bộ, nếu muốn thêm vĩnh viễn thì tạo thêm hàm setx là đc)
-int shell_setP(vector<string> args) {
-    if (args.size() == 1) {
-        // Hiển thị các biến môi trường liên quan đến /root
-        char** env = environ;
-        if (!env) {
-            cout << "Failed to retrieve environment variables.\n";
-            return BAD_COMMAND;
-        }
-
-        for (char** current = env; *current; ++current) {
-            string env_str = *current;
-            size_t equal_pos = env_str.find('=');
-            // cout << "equal_pos: " << equal_pos << endl;
-            if (equal_pos != string::npos) {
-                string var = env_str.substr(0, equal_pos);
-                transform(var.begin(), var.end(), var.begin(), ::tolower);
-                string value = env_str.substr(equal_pos + 1);
-                // cout << "var: " << var << endl;
-                // cout << "value " << value << endl;
-                if (var == "path") {
-                    // Xử lý PATH: chỉ hiển thị các đường dẫn trong /root
-                    // vector<string> directories = split_path(value);
-                    // string filtered_path;
-                    // bool has_root_related = false;
-
-                    // for (const string& dir : directories) {
-                    //     string real_dir = dir;
-                    //     // Nếu đường dẫn chứa fixed_real_path, thay bằng /root
-                    //     if (isPrefix(real_dir, fixed_real_path)) {
-                    //         string virtual_path = replaceRoot(real_dir, fixed_real_path);
-                    //         if (!filtered_path.empty()) filtered_path += ";";
-                    //         filtered_path += virtual_path;
-                    //         has_root_related = true;
-                    //     }
-                    // }
-
-                    // if (has_root_related) {
-                    //     cout << "Path=" << filtered_path << "\n";
-                    // }
-                    shell_path({"path"});
-                } else {
-                    // Xử lý các biến khác: chỉ hiển thị nếu giá trị liên quan đến /root
-                    string real_value = value;
-                    // cout << "real_value is " << real_value << endl;
-                    if (real_value.find("\\") != string::npos || real_value.find("/") != string::npos){
-                        if (isPrefix(real_value, fixed_real_path)) {
-                            string virtual_value = replaceRoot(real_value, fixed_real_path);
-                            cout << var << "=" << virtual_value << "\n";
-                        }
-                    }
-                    else{
-                        cout << var << "=" << real_value << "\n";
-                    }
-                }
-            }
-        }
-        return 0;
-    }
-
-    if (args.size() == 2) {
-        string arg = args[1];
-        transform(arg.begin(), arg.end(), arg.begin(), ::tolower);
-        size_t equal_pos = arg.find('=');
-        if (equal_pos == string::npos) {
-            // Hiển thị giá trị của biến
-            const char* value = getenv(arg.c_str());
-            if (!value) {
-                cout << "Environment variable does not exist.\n";
-                return BAD_COMMAND;
-            }
-            string val_str = value;
-            if (arg == "path") {
-                shell_path({"path"});
-            } else {
-                string real_value = val_str;
-                if (real_value.find("\\") == 0 || real_value.find("/") == 0) {
-                    if (isPrefix(real_value, fixed_real_path)) {
-                        string virtual_value = replaceRoot(real_value, fixed_real_path);
-                        cout << arg << "=" << virtual_value << "\n";
-                    }
-                } else {
-                    cout << arg << "=" << real_value << "\n";
-                }
-            }
-            return 0;
-        }
-
-        string var = arg.substr(0, equal_pos);
-        transform(var.begin(), var.end(), var.begin(), ::tolower);
-        string value = (equal_pos == arg.length() - 1) ? "" : arg.substr(equal_pos + 1);
-
-        if (value.empty()) {
-            // Xóa biến
-            string unset_cmd = var + "=";
-            if (_putenv(unset_cmd.c_str()) != 0) {
-                cout << "Failed to delete environment variable.\n";
-                return BAD_COMMAND;
-            }
-            cout << "Environment variable " << var << " deleted.\n";
-        } else {
-            // Thiết lập biến
-            string set_cmd = arg;
-            if (_putenv(set_cmd.c_str()) != 0) {
-                cout << "Failed to set environment variable.\n";
-                return BAD_COMMAND;
-            }
-            // Kiểm tra PATH
-            if (var == "path") {
-                vector<string> directories = split_path(value);
-                for (const string& dir : directories) {
-                    string real_dir = convertFakeToRealPath(dir);
-                    if (!isPrefix(real_dir, fixed_real_path)) {
-                        cout << "Warning: PATH contains directory outside /root: " << dir << "\n";
-                    }
-                }
-            }
-        }
-        return 0;
-    }
-
-    cout << "Usage: set [variable] [variable=value]\n";
-    return BAD_COMMAND;
-}
 
 bool path_exists_and_is_directory(const string& path) {
     DWORD attrs = GetFileAttributes(path.c_str());
@@ -220,49 +105,162 @@ bool path_exists_and_is_directory(const string& path) {
     return (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
-int shell_addpath(vector<string> args) {
-    if (args.size() != 2) {
+// int shell_addpath(vector<string> args) {
+//     if (args.size() != 2) {
+//         cout << "Usage: addpath <path>\n";
+//         return BAD_COMMAND;
+//     }
+
+//     string new_path = args[1];
+//     cout << "new path is " << new_path << endl;
+//     string real_new_path = getNormalizedDirectory(new_path);
+//     cout << "real_new_path is " << real_new_path << endl;
+//     // Kiểm tra xem đường dẫn có tồn tại và là thư mục không
+//     if (!path_exists_and_is_directory(real_new_path)) {
+//         cout << "Invalid or non-existent path: " << new_path << "\n";
+//         return BAD_COMMAND;
+//     }
+
+//     // Kiểm tra xem đường dẫn có nằm trong /root không
+//     if (!isPrefix(real_new_path, fixed_real_path) || folderExists(new_path) != 0) {
+//         cout << "Path must be inside /root.\n";
+//         return BAD_COMMAND;
+//     }
+
+//     // Lấy PATH hiện tại
+//     const char* current_path = getenv("PATH");
+//     string current_path_str = current_path ? current_path : "";
+//     cout << "current_path_str: " << current_path_str << "\n";
+//     // Chuyển đổi đường dẫn thực tế thành đường dẫn ảo
+//     string virtual_new_path = removePrefix(real_new_path, origin_real_path);
+//     // cout << "virtual_new+path = " << virtual_new_path << "\n";
+//     // Kiểm tra xem đường dẫn đã có trong PATH chưa
+//     if (current_path_str.find(virtual_new_path) != string::npos) {
+//         cout << "Path " << virtual_new_path << " already exists in PATH.\n";
+//         return 0;
+//     }
+//     // Thêm đường dẫn ảo mới vào PATH
+//     string updated_path = current_path_str.empty() ? virtual_new_path : current_path_str + ";" + virtual_new_path;
+//     string set_cmd = "PATH=" + updated_path;
+//     if (_putenv(set_cmd.c_str()) != 0) {
+//         cout << "Failed to update PATH environment variable.\n";
+//         return BAD_COMMAND;
+//     }
+
+//     cout << "Added " << virtual_new_path << " to PATH.\n";
+//     return 0;
+// }
+
+void initPath() {
+    auto it = session_vars.find("PATH");
+    if (it == session_vars.end()) {
+        cout << "No PATH variable found in session variables.\n";
+        return;
+    }
+
+    string path_value = it->second;
+    if (path_value.empty()) {
+        cout << "PATH is empty.\n";
+        return;
+    }
+
+    string current_path = "";
+    vector<string> paths = split_path(path_value);
+    for (string& virtual_path : paths) {
+        string realPath = getNormalizedDirectory(virtual_path);
+
+        // Kiểm tra thư mục tồn tại thực sự không
+        if (!path_exists_and_is_directory(realPath)) {
+            // cout << "Invalid path: " << virtual_path << "\n";
+            continue;
+        }
+
+        // Kiểm tra xem có nằm trong /root không
+        if (folderExists(virtual_path) != 0) {
+            cout << "Path must be inside /root.\n";
+            continue;
+        }
+
+        current_path = current_path.empty() ? virtual_path : current_path + ";" + virtual_path;
+        envPaths.push_back(virtual_path);
+    }
+
+    // if (envPaths.empty()) {
+    //     cout << "No valid paths found in PATH.\n";
+    // }
+}
+
+
+bool isPathInEnvList(const string& path, const vector<string>& envPaths) {
+    string normalized_path = getNormalizedDirectory(path);
+    for (const string& envPath : envPaths) {
+        if (getNormalizedDirectory(envPath) == normalized_path) {
+            return true;
+        }
+    }
+    return false;
+}
+// Add trong phiên làm việc của tiny shell (Không phải thêm toàn cục)
+int shell_addpath(vector<string> args){
+    // static bool initialized = false;
+    // if (!initialized) {
+    //     initPath();
+    //     initialized = true;
+    // }
+    if(args.size() != 2){
         cout << "Usage: addpath <path>\n";
         return BAD_COMMAND;
     }
-
     string new_path = args[1];
-    cout << "new path is " << new_path << endl;
-    string real_new_path = convertFakeToRealPath(new_path);
-    cout << "real_new_path is " << real_new_path << endl;
-    // Kiểm tra xem đường dẫn có tồn tại và là thư mục không
+    string real_new_path = getNormalizedDirectory(new_path);
+    cout << "real_new_path: " << real_new_path << "\n";
     if (!path_exists_and_is_directory(real_new_path)) {
         cout << "Invalid or non-existent path: " << new_path << "\n";
         return BAD_COMMAND;
     }
-
-    // Kiểm tra xem đường dẫn có nằm trong /root không
-    if (!isPrefix(real_new_path, fixed_real_path)) {
+    if(folderExists(new_path) != 0){
         cout << "Path must be inside /root.\n";
+        return ERROR_PATH;
+    }
+    string virtual_new_path = convertRealToFakePath(real_new_path);
+    // if (isPathInEnvList(virtual_new_path, envPaths)) {
+    //     cout << "Path " << virtual_new_path << " already exists in myshell.\n";
+    //     return ERROR_PATH;
+    // }
+    envPaths.push_back(virtual_new_path);
+    cout << "Added: " << virtual_new_path << " to PATH \n";
+    return 0;
+}
+
+
+int shell_addpathx(vector<string> args) {
+    if (args.size() != 2) {
+        cout << "Usage: addpathx <path>\n";
         return BAD_COMMAND;
     }
-
-    // Lấy PATH hiện tại
-    const char* current_path = getenv("PATH");
-    string current_path_str = current_path ? current_path : "";
-
-    // Chuyển đổi đường dẫn thực tế thành đường dẫn ảo
-    string virtual_new_path = removePrefix(real_new_path, origin_real_path);
-
-    // Kiểm tra xem đường dẫn đã có trong PATH chưa
-    if (current_path_str.find(virtual_new_path) != string::npos) {
-        cout << "Path " << virtual_new_path << " already exists in PATH.\n";
-        return 0;
-    }
-    // Thêm đường dẫn ảo mới vào PATH
-    string updated_path = current_path_str.empty() ? virtual_new_path : current_path_str + ";" + virtual_new_path;
-    string set_cmd = "PATH=" + updated_path;
-    if (_putenv(set_cmd.c_str()) != 0) {
-        cout << "Failed to update PATH environment variable.\n";
+    string new_path = args[1];
+    string real_new_path = getNormalizedDirectory(new_path);
+    if (!path_exists_and_is_directory(real_new_path)) {
+        cout << "Invalid or non-existent path: " << new_path << "\n";
         return BAD_COMMAND;
     }
+    string virtual_new_path = convertRealToFakePath(real_new_path);
+    if (folderExists(new_path) != 0) {
+        cout << "Path must be inside /root.\n";
+        return ERROR_PATH;
+    }
+    // if (isPathInEnvList(virtual_new_path, envPaths)) {
+    //     cout << "Path " << virtual_new_path << " already exists in PATH.\n";
+    //     return ERROR_PATH;
+    // }
 
-    cout << "Added " << virtual_new_path << " to PATH.\n";
+    envPaths.push_back(virtual_new_path);
+    
+    persistent_vars["PATH"] = persistent_vars["PATH"] + ";" + virtual_new_path;
+    session_vars["PATH"] = session_vars["PATH"] + ";" + virtual_new_path;
+    save_persistent_vars();
+
+    cout << "Added: " << virtual_new_path << " to PATH \n";
     return 0;
 }
 
@@ -273,10 +271,9 @@ int shell_delpath(vector<string> args){
     }
 
     string path_to_remove = args[1];
-    cout << "Path to remove is " << path_to_remove << endl;
-    string real_path_to_remove = convertFakeToRealPath(path_to_remove);
-    cout << "real_path_to_remove is " << real_path_to_remove << endl;
-
+    // cout << "Path to remove is " << path_to_remove << endl;
+    string real_path_to_remove = getNormalizedDirectory(path_to_remove);
+    // cout << "real_path_to_remove is " << real_path_to_remove << endl;
     // Kiểm tra xem đường dẫn có tồn tại và là thư mục không
     if (!path_exists_and_is_directory(real_path_to_remove)) {
         cout << "Invalid or non-existent path: " << path_to_remove << "\n";
@@ -284,55 +281,72 @@ int shell_delpath(vector<string> args){
     }
 
     // Kiểm tra xem đường dẫn có nằm trong /root không
-    if (!isPrefix(real_path_to_remove, fixed_real_path)) {
+    if (folderExists(path_to_remove) != 0) {
         cout << "Path must be inside /root.\n";
         return BAD_COMMAND;
     }
 
-    // Lấy PATH hiện tại
-    const char* current_path = getenv("PATH");
-    string current_path_str = current_path ? current_path : "";
-    if (current_path_str.empty()) {
-        cout << "PATH is empty, nothing to delete.\n";
-        return 0;
-    }
+    string path_remove = convertRealToFakePath(real_path_to_remove);
+     auto it = find(envPaths.begin(), envPaths.end(), path_remove);
 
-    // Chuyển đổi đường dẫn thực tế thành đường dẫn ảo
-    string virtual_path_to_remove = removePrefix(real_path_to_remove, origin_real_path);
-
-    // Kiểm tra xem đường dẫn có trong PATH không
-    size_t pos = current_path_str.find(virtual_path_to_remove);
-    if (pos == string::npos) {
-        cout << "Path " << virtual_path_to_remove << " does not exist in PATH.\n";
-        return 0;
-    }
-
-    // Xóa đường dẫn khỏi PATH
-    string updated_path = current_path_str;
-    if (pos > 0 && updated_path[pos - 1] == ';') {
-        // Xóa cả dấu chấm phẩy phía trước nếu có
-        updated_path.erase(pos - 1, virtual_path_to_remove.length() + 1);
-    } else if (pos == 0 && updated_path.length() > virtual_path_to_remove.length() && updated_path[virtual_path_to_remove.length()] == ';') {
-        // Xóa dấu chấm phẩy phía sau nếu có
-        updated_path.erase(pos, virtual_path_to_remove.length() + 1);
+    // Kiểm tra nếu tìm thấy
+    if (it != envPaths.end()) {
+        envPaths.erase(remove(envPaths.begin(), envPaths.end(), path_remove), envPaths.end());
     } else {
-        // Xóa chính xác đường dẫn
-        updated_path.erase(pos, virtual_path_to_remove.length());
+        cout << "Can not remove path. \n";
     }
+    return 0;
+}
 
-    // Nếu PATH rỗng sau khi xóa, đặt lại thành chuỗi rỗng
-    if (updated_path.empty()) {
-        updated_path = "";
-    }
-
-    // Cập nhật PATH
-    string set_cmd = "PATH=" + updated_path;
-    if (_putenv(set_cmd.c_str()) != 0) {
-        cout << "Failed to update PATH environment variable.\n";
+int shell_delpathx(vector<string> args) {
+    if (args.size() != 2) {
+        cout << "Usage: delpathx <path>\n";
         return BAD_COMMAND;
     }
 
-    cout << "Deleted " << virtual_path_to_remove << " from PATH.\n";
+    string path_to_remove = args[1];
+    string real_path_to_remove = getNormalizedDirectory(path_to_remove);
+
+    if (!path_exists_and_is_directory(real_path_to_remove)) {
+        cout << "Invalid or non-existent path: " << path_to_remove << "\n";
+        return BAD_COMMAND;
+    }
+
+    if (folderExists(path_to_remove) != 0) {
+        cout << "Path must be inside /root.\n";
+        return BAD_COMMAND;
+    }
+
+    string path_remove = convertRealToFakePath(real_path_to_remove);
+
+    auto it = find(envPaths.begin(), envPaths.end(), path_remove);
+    if (it != envPaths.end()) {
+        envPaths.erase(remove(envPaths.begin(), envPaths.end(), path_remove), envPaths.end());
+    } else {
+        cout << "Can not remove path.\n";
+    }
+
+    string& persistentPath = persistent_vars["PATH"];
+    vector<string> paths;
+    stringstream ss(persistentPath);
+    string segment;
+    while (getline(ss, segment, ';')) {
+        if (segment != path_remove) {
+            paths.push_back(segment);
+        }
+    }
+    ostringstream oss;
+    for (size_t i = 0; i < paths.size(); ++i) {
+        oss << paths[i];
+        if (i != paths.size() - 1) oss << ";";
+    }
+    persistent_vars["PATH"] = oss.str();
+
+    session_vars["PATH"] = persistent_vars["PATH"];
+
+    save_persistent_vars();
+
+    cout << "Removed permanently: " << path_remove << " from PATH.\n";
     return 0;
 }
 
@@ -386,104 +400,94 @@ void resumeChild(DWORD pid) {
     }
 }
 
-int shell_runExe(vector<string> args) {
-        if (args.size() < 2 || args.size() > 4) {
-            printf("Usage: runExe [path_or_name] [-b] [-c]\n");
-            return BAD_COMMAND;
-        }
-    
-        string input = args[1];
-        string realPath;
-        string rootPath = origin_real_path + "\\root\\.."; // current_real_path
-        bool isPath = (input.find("\\") == 0 || input.find("/") == 0); // Kiểm tra xem có phải đường dẫn không
-        // cout << "isPath: " << isPath << endl;
-        // cout << " current_real_path: " << current_real_path << endl;
-        // cout << "rootpath is: " << rootPath<< endl;
-        DWORD file1 = GetFileAttributesA((current_real_path + "\\" + input).c_str());
-        DWORD file2 = GetFileAttributesA((current_real_path + "\\" + input + ".exe").c_str());
-        if(file1 != INVALID_FILE_ATTRIBUTES && !(file1 & FILE_ATTRIBUTE_DIRECTORY)){
-            // cout <<"file1 is " << file1 << endl;
-            realPath = current_real_path + "\\" + input;
-            // cout << "real path is: " << realPath << endl;
-            // cout << "find: " << realPath.find(rootPath) << endl;
-            if(realPath.find(rootPath) == 0){
-                printf("Error: not found: ", input.c_str());
+int shell_runExe(vector<string> args){
+    if (args.size() < 2 || args.size() > 4) {
+        printf("Usage: runExe [path_or_name] [-b] [-c]\n");
+        return BAD_COMMAND;
+    }
+    string input = args[1];
+    string realPath;
+    bool isPath = (input.find("\\") == 0 || input.find("/") == 0);
+    // cout << "getNormalizedFilePath: " << getNormalizedFilePath(input) << "\n";
+    // cout << "current_real_path is: " << current_real_path << "\n";
+    // cout << "current_real_path + \\ + input : " << current_real_path + "\\" + input << "\n";
+    if(!isPath){
+        string combinedPath1 = current_real_path + "\\" + input;
+        string combinedPath2 = current_real_path + "\\" + input + ".exe";
+        char fullPath[MAX_PATH];
+        DWORD file1 = GetFileAttributesA(combinedPath1.c_str());
+        DWORD file2 = GetFileAttributesA(combinedPath2.c_str());
+        if (file1 != INVALID_FILE_ATTRIBUTES && !(file1 & FILE_ATTRIBUTE_DIRECTORY)) {
+            // realPath = current_real_path + "\\" + input;
+            // cout << "realPath iss: +++++ " << realPath << "\n";
+            // if(realPath.find(current_real_path) != 0){
+            //     printf("Error: not found: ", input.c_str());
+            //     return BAD_COMMAND;
+            // }
+            GetFullPathNameA(combinedPath1.c_str(), MAX_PATH, fullPath, NULL);
+            realPath = fullPath;
+            if (realPath.find(current_real_path) != 0) {
+                printf("Error: not found: %s\n", input.c_str());
                 return BAD_COMMAND;
             }
         }
-        else if(file2 != INVALID_FILE_ATTRIBUTES && !(file2 & FILE_ATTRIBUTE_DIRECTORY)) {
-            // cout << "file 2 is: " << file2 << endl;
-            realPath = current_real_path + "\\" + input + ".exe";
-            // cout << "real path is: " << realPath << endl;
-            if(realPath.find(rootPath) == 0){
-                printf("Error: not found: ", input.c_str());
+        else if (file2 != INVALID_FILE_ATTRIBUTES && !(file2 & FILE_ATTRIBUTE_DIRECTORY)) {
+            GetFullPathNameA(combinedPath2.c_str(), MAX_PATH, fullPath, NULL);
+            realPath = fullPath;
+            if (realPath.find(current_real_path) != 0) {
+                printf("Error: not found: %s\n", input.c_str());
                 return BAD_COMMAND;
             }
         }
         else{
-            if (isPath) {
-                realPath = convertFakeToRealPath(input);
-                // cout << "realPath in isPath is: " << realPath << endl;
-            } 
-            else {
-                const char* path_env = getenv("PATH");
-                if (!path_env) {
-                    printf("PATH environment variable not set.\n");
-                    return BAD_COMMAND;
+            bool found = false;
+            for (const string& dir : envPaths) {
+                string rPath = getNormalizedDirectory(dir);
+                string testPath = rPath + "\\" + input;
+                string testPathWithExe = testPath + ".exe";
+                //exe
+                DWORD fileAttr = GetFileAttributesA(testPathWithExe.c_str());
+                if (fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
+                    realPath = testPathWithExe;
+                    found = true;
+                    break;
                 }
-                // cout << "input: " << input << endl;
-                vector<string> directories = split_path(path_env);
-                bool found = false;
-                for (const string& dir : directories) {
-                    // cout << "dir: " << dir << endl;
-                    string testPath = origin_real_path + dir + "\\" + input;
-                    // cout << "testPath :" << testPath << endl;
-                    if (dir.find("\\root") == 0) { // Nếu là đường dẫn ảo trong Tiny Shell
-                        testPath = convertFakeToRealPath(dir) + "\\" + input;
-                    }
-                    // Kiểm tra file .exe
-                    string testPathWithExe = testPath + ".exe";
-                    DWORD fileAttr = GetFileAttributesA(testPathWithExe.c_str());
-                    if (fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
-                        realPath = testPathWithExe;
-                        found = true;
-                        break;
-                    }
-                    // Kiểm tra file .bat
-                    string testPathWithBat = testPath + ".bat";
-                    fileAttr = GetFileAttributesA(testPathWithBat.c_str());
-                    if (fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
-                        realPath = testPathWithBat;
-                        found = true;
-                        break;
-                    }
-                    // // Thêm đuôi .exe
-                    // if (testPath.find(".exe") == string::npos) {
-                    //     testPath += ".exe";
-                    // }
-                    fileAttr = GetFileAttributesA(testPath.c_str());
-                    if (fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
-                        realPath = testPath;
-                        found = true;
-                        break;
-                    }
-                    // printf("Checking path: %s\n", testPath.c_str());
+                //bat
+                string testPathWithBat = testPath + ".bat";
+                fileAttr = GetFileAttributesA(testPathWithBat.c_str());
+                if (fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
+                    realPath = testPathWithBat;
+                    found = true;
+                    break;
                 }
-        
-                if (!found) {
-                    printf("Executable '%s' not found in PATH.\n", input.c_str());
-                    return BAD_COMMAND;
+                fileAttr = GetFileAttributesA(testPath.c_str());
+                if (fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
+                    realPath = testPath;
+                    found = true;
+                    break;
                 }
             }
+            if (!found) {
+                printf("Executable '%s' not found in current directory or envPaths.\n", input.c_str());
+                return BAD_COMMAND;
+            }
         }
-    printf("Attempting to execute: %s\n", realPath.c_str());
+    }
+    else{
+        realPath = getNormalizedFilePath(input);
+        if (realPath.find(origin_real_path + "\\root") != 0) {
+                printf("Error: not found: %s\n", input.c_str());
+                return BAD_COMMAND;
+            }
+    }
+    // printf("Attempting to execute: %s\n", realPath.c_str());
     DWORD fileAttr = GetFileAttributesA(realPath.c_str());
     if (fileAttr == INVALID_FILE_ATTRIBUTES) {
-        printf("File does not exist: %s\n", realPath.c_str());
+        printf("File does not exist: %s\n", input.c_str());
         return BAD_COMMAND;
     }
     if (fileAttr & FILE_ATTRIBUTE_DIRECTORY) {
-        printf("Path is a directory, not a file: %s\n", realPath.c_str());
+        printf("Path is a directory, not a file: %s\n", input.c_str());
         return BAD_COMMAND;
     }
 
@@ -506,8 +510,9 @@ int shell_runExe(vector<string> args) {
     // cout << "isExecutable : " << isExecutable << endl;
     // cout << "isfilebat: " << isfilebat << endl;
     // cout << "isfile: " << isfile << endl;
+    
     if (isExecutable) {
-        string cmdLine = (realPath.find(".bat") != string::npos) ? "cmd.exe /c \"" + realPath + "\"" : realPath;
+        string cmdLine = realPath;
         char* cmdLineBuffer = new char[cmdLine.length() + 1];
         strcpy(cmdLineBuffer, cmdLine.c_str());
 
@@ -556,7 +561,7 @@ int shell_runExe(vector<string> args) {
 
         // Lưu thông tin tiến trình con
         childProcesses.push_back(pi);
-        printf("Child process created with PID: %lu\n", pi.dwProcessId);
+        // printf("Child process created with PID: %lu\n", pi.dwProcessId);
 
         // Đăng ký xử lý tín hiệu cho tiến trình hiện tại
         signal(SIGINT, sigintHandler);
@@ -570,25 +575,18 @@ int shell_runExe(vector<string> args) {
         // Không đóng handle ngay nếu chạy nền, để quản lý sau
     } else if (isfilebat) {
         // cout << "test " << endl;
-        ifstream scriptFile(realPath);
-        if (!scriptFile)
-        {
-            cout << "UNABLE TO OPEN SCRIPT FILE: " << realPath << endl;
+       vector<string> script_lines;
+        if (!read_script_file(realPath, script_lines)) {
             return UNABLE_TO_OPEN_SCRIPT_FILE;
         }
-        string line;
-        while (getline(scriptFile, line))
-        {
-            args = parse_command(line);
-            if (args.size() > 0) {
-                shell_working(args);
-            }
+        Node* root = build(script_lines);
+        if (root) {
+            root->execute();
+            delete root;
         }
-
-        scriptFile.close();
         return 0;
     }
-     else {
+    else {
         HINSTANCE result = ShellExecuteA(NULL, "open", realPath.c_str(), NULL, NULL, SW_SHOWNORMAL);
         if ((intptr_t)result <= 32) {
             cerr << "Failed to open file. Error code: " << (intptr_t)result << "\n";
@@ -633,40 +631,66 @@ int shell_where(vector<string> args){
     }
     string input = args[1];
 
-    const char* path_env = getenv("PATH");
+    // const char* path_env = getenv("PATH");
     // cout << path_env << endl;
-    if (path_env == nullptr) {
+    if (envPaths.empty()) {
         cout << "Failed to retrieve PATH environment variable.\n";
         return BAD_COMMAND;
     }
 
-    vector<string> directories = split_path(path_env);
+    // vector<string> directories = split_path(path_env);
     vector<string> path_tiny_shell;
     bool found = false;
-
-    for (const string& dir : directories) {
-        // cout << ++i << endl;
-        // cout << "dir is : " << dir << endl;
-        if (isPrefix(dir, fixed_real_path) || isPrefix(dir, current_fake_path) || isPrefix(origin_real_path + dir, fixed_real_path)) {
-            string relative_path = removePrefix(dir, origin_real_path);
-            // cout << "relative_path is " << relative_path << endl;
-            string unix_relative_path = formatFakePathToUnixStyle(relative_path);
-            path_tiny_shell.push_back(unix_relative_path);
+    // kiem tra trong thu muc hien tai
+    string test_path = current_real_path + "\\" + input;
+    vector<string> ex = {"", ".exe", ".bat"};
+    for (const string& v : ex) {
+        string fullPath = test_path + v;
+        DWORD fileAttr = GetFileAttributesA(fullPath.c_str());
+        if (fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
+            string relative_path = removePrefix(fullPath, origin_real_path);
+            string unix_path = formatFakePathToUnixStyle(relative_path);
+            cout << unix_path << "\n";
+            found = true;
         }
     }
-
-    for(const string& dir : path_tiny_shell){
-        string test_path = origin_real_path + dir + "\\" + input;
+    // Kiem tra trong env
+    for (const string& dir : envPaths) {
+        // cout << ++i << endl;
+        // cout << "dir is : " << dir << endl;
+        // if (isPrefix(dir, fixed_real_path) || isPrefix(dir, current_fake_path) || isPrefix(origin_real_path + dir, fixed_real_path)) {
+        //     string relative_path = removePrefix(dir, origin_real_path);
+        //     // cout << "relative_path is " << relative_path << endl;
+        //     string unix_relative_path = formatFakePathToUnixStyle(relative_path);
+        //     path_tiny_shell.push_back(unix_relative_path);
+        // }
+        string realDir = getNormalizedDirectory(dir);
+        string test_path = realDir + "\\" + input;
         vector<string> ex = {"", ".exe", ".bat"};
-        for (const string& v : ex){
+        for (const string& v : ex) {
             string fullPath = test_path + v;
             DWORD fileAttr = GetFileAttributesA(fullPath.c_str());
-            if(fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)){
-                cout << dir + "\\" + input + v << "\n";
+            if (fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
+                string relative_path = removePrefix(fullPath, origin_real_path);
+                string unix_path = formatFakePathToUnixStyle(relative_path);
+                cout << unix_path << "\n";
                 found = true;
             }
         }
     }
+
+    // for(const string& dir : path_tiny_shell){
+    //     string test_path = origin_real_path + dir + "\\" + input;
+    //     vector<string> ex = {"", ".exe", ".bat"};
+    //     for (const string& v : ex){
+    //         string fullPath = test_path + v;
+    //         DWORD fileAttr = GetFileAttributesA(fullPath.c_str());
+    //         if(fileAttr != INVALID_FILE_ATTRIBUTES && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY)){
+    //             cout << dir + "\\" + input + v << "\n";
+    //             found = true;
+    //         }
+    //     }
+    // }
     if(found == false){
         cout << "INFO: Could not find files for the given pattern(s).\n";
     }

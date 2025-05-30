@@ -16,9 +16,11 @@ int shell_test(vector<string> args);
 string formatFakePathToUnixStyle(const string& fake_path);
 string getNormalizedCurrentDirectory();
 string getNormalizedDirectory(const string& fakePath);
+string getNormalizedFilePath(const string& fakePath);
 int fileExists(const string &path);
 int folderExists(const string &path);
 string convertFakeToRealPath(const string &currentFakePath);
+string convertRealToFakePath(const string &currentRealPath);
 
 int shell_touch(vector<string> args);
 int shell_cat(vector<string> args);
