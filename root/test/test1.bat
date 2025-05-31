@@ -11,7 +11,7 @@ while (x < 3)
     pwd
     cd ..
     cd apps
-    runExe countdown.exe -b -c
+    exec countdown.exe -b -c
     cd ..
     cd test
 }
@@ -29,3 +29,10 @@ else
         echo gia tri cua y la : %y%
     }
 }
+
+
+
+
+
+echo minh
+

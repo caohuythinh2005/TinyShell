@@ -472,7 +472,7 @@ int shell_runExe(vector<string> args){
                 }
             }
             if (!found) {
-                printf("Executable '%s' not found in current directory or envPaths.\n", formatFakePathToUnixStyle(input.c_str()));
+                printf("Executable '%s' not found in current directory or envPaths.\n", formatFakePathToUnixStyle(input));
                 return BAD_COMMAND;
             }
         }
@@ -480,18 +480,18 @@ int shell_runExe(vector<string> args){
     else{
         realPath = getNormalizedFilePath(input);
         if (realPath.find(origin_real_path + "\\root") != 0) {
-                printf("Error: not found: %s\n", input.c_str());
+                // printf("Error: not found: %s\n",  formatFakePathToUnixStyle(input));
                 return BAD_COMMAND;
             }
     }
     // printf("Attempting to execute: %s\n", realPath.c_str());
     DWORD fileAttr = GetFileAttributesA(realPath.c_str());
     if (fileAttr == INVALID_FILE_ATTRIBUTES) {
-        printf("File does not exist: %s\n", (input.c_str()));
+        printf("File does not exist: %s\n", formatFakePathToUnixStyle(input));
         return BAD_COMMAND;
     }
     if (fileAttr & FILE_ATTRIBUTE_DIRECTORY) {
-        printf("Path is a directory, not a file: %s\n", input.c_str());
+        printf("Path is a directory, not a file: %s\n", formatFakePathToUnixStyle(input));
         return BAD_COMMAND;
     }
 

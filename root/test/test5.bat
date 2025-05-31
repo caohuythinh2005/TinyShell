@@ -6,7 +6,7 @@ cd ..
 pwd
 
 
-if exist apps && exist apps && notexist apps
+if exist apps && notexist apps
 {
    echo file exists
    echo hello

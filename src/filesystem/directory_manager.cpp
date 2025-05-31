@@ -386,7 +386,7 @@ string getNormalizedFilePath(const string& fakeFilePath) {
     char fullPath[MAX_PATH];
     DWORD attrs = GetFileAttributesA(realPath.c_str());
     if (attrs == INVALID_FILE_ATTRIBUTES) {
-        cerr << "The path does not exist: " << fakeFilePath << "\n";
+        cerr << "The path does not exist: " << formatFakePathToUnixStyle(fakeFilePath) << "\n";
         return "";
     }
     // Lấy đường dẫn đầy đủ (chuẩn hóa luôn cả .. và .)
