@@ -373,6 +373,7 @@ string read_command_line()
         }
         else if (ch == 9) // TAB
         {
+            // Lấy toàn dòng và tách lại token
             vector<string> tokens = split_tokens(line);
             string prefix;
             int token_start_pos = 0;
@@ -380,7 +381,13 @@ string read_command_line()
             if (!tokens.empty())
             {
                 prefix = tokens.back();
-                token_start_pos = (int)(line.size() - prefix.size());
+
+                // Tính vị trí bắt đầu của token cuối bằng cách tìm từ cuối
+                size_t found = line.rfind(prefix, pos);
+                if (found != string::npos)
+                    token_start_pos = (int)found;
+                else
+                    token_start_pos = (int)(line.size() - prefix.size());
             }
 
             vector<string> candidates;
@@ -485,82 +492,42 @@ string read_command_line()
             }
 
             if (candidates.empty())
+            {
                 continue;
-
-            auto normalizeSlashes = [](const string &path) -> string
+            }
+            else if (candidates.size() == 1)
             {
-                string result;
-                bool prevSlash = false;
-                for (char ch : path)
+                string completion = candidates[0];
+
+                int erase_count = (int)(pos - token_start_pos);
+                for (int i = 0; i < erase_count; ++i)
                 {
-                    if (ch == '/' || ch == '\\')
-                    {
-                        if (!prevSlash)
-                        {
-                            result += '/';
-                            prevSlash = true;
-                        }
-                    }
-                    else
-                    {
-                        result += ch;
-                        prevSlash = false;
-                    }
-                }
-                return result;
-            };
-
-            string normalized_fake_path = normalizeSlashes(current_fake_path);
-
-            if (candidates.size() == 1)
-            {
-                string completion = normalizeSlashes(candidates[0]);
-                if (completion != "/root" && isPrefix(completion, normalized_fake_path))
-                {
-                    completion = completion.substr(normalized_fake_path.size());
-                    if (!completion.empty() && completion[0] == '/')
-                        completion = completion.substr(1);
-                }
-
-                for (int i = 0; i < (int)(line.size() - token_start_pos); ++i)
                     cout << "\b \b";
+                }
 
-                line.erase(token_start_pos);
-                line += completion;
+                line.erase(token_start_pos, erase_count);
+                line.insert(token_start_pos, completion);
                 cout << completion;
-                pos = (int)line.size();
+
+                pos = token_start_pos + (int)completion.size();
             }
             else
             {
                 cout << "\n";
-                for (auto c : candidates)
-                {
-                    c = normalizeSlashes(c);
-                    if (c != "/root" && isPrefix(c, normalized_fake_path))
-                    {
-                        c = c.substr(normalized_fake_path.size());
-                        if (!c.empty() && c[0] == '/')
-                            c = c.substr(1);
-                    }
+                for (const auto &c : candidates)
                     cout << c << "  ";
-                }
                 cout << "\n> " << line;
                 for (int i = (int)line.size(); i > pos; --i)
                     cout << '\b';
             }
         }
-        else if (ch >= 32 && ch <= 126) // Ký tự in được
+        else if (ch >= 32 && ch <= 126) // printable characters
         {
             line.insert(pos, 1, (char)ch);
             ++pos;
 
-            // In phần còn lại của dòng sau khi chèn (từ vị trí pos - 1)
             cout << line.substr(pos - 1);
-
-            // Xóa phần dư cũ nếu có
             cout << ' ';
-
-            // Đưa con trỏ về lại đúng vị trí (lùi lại số ký tự dư)
             for (size_t i = pos; i <= line.size(); ++i)
                 cout << '\b';
         }
@@ -568,6 +535,7 @@ string read_command_line()
 
     return line;
 }
+
 
 vector<string> parse_command(string line)
 {
