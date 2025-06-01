@@ -12,12 +12,21 @@
 #include "filesystem/path_manager.h"
 #include "execution/process.h"
 #include "utilities/cal.h"
-void init_system_commands() {
+#include <conio.h>
+#include "utilities/utils.h"
+
+vector<string> history;
+int history_pos = -1;
+
+void init_system_commands()
+{
     status = 1;
 }
 
-int shell_help(std::vector<std::string> args) {
-    if (args.size() == 1) {
+int shell_help(std::vector<std::string> args)
+{
+    if (args.size() == 1)
+    {
         // Navigation
         cout << "\nDirectory Navigation:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
@@ -63,6 +72,7 @@ int shell_help(std::vector<std::string> args) {
         cout << "| addpathx <path>           | Add new directory to PATH (permanent)              |\n";
         cout << "| delpath <path>            | Remove directory from PATH (session only)          |\n";
         cout << "| delpathx <path>           | Remove directory from PATH (permanent)             |\n";
+        cout << "| where                     | Show full path of a .bat or .exe file              |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Utility and system
@@ -75,6 +85,8 @@ int shell_help(std::vector<std::string> args) {
         cout << "| cls                       | Clear the console screen                           |\n";
         cout << "| exit                      | Exit the shell                                     |\n";
         cout << "| help                      | Show this help message                             |\n";
+        cout << "| tab                       | Autocomplete command or filename                   |\n";
+        cout << "| tree [optional path]      | Display directory tree                             |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Editor
@@ -94,9 +106,10 @@ int shell_help(std::vector<std::string> args) {
         cout << "| eval <expression>                          | Evaluate logical/arithmetic expression                      |\n";
         cout << "+--------------------------------------------+-------------------------------------------------------------+\n";
 
-
         cout << "\n====================================================================================\n";
-    } else {
+    }
+    else
+    {
         cout << "Bad command...\n";
         return BAD_COMMAND;
     }
@@ -104,53 +117,463 @@ int shell_help(std::vector<std::string> args) {
     return 0;
 }
 
-void shell_working(vector<string> args) {
+void shell_working(vector<string> args)
+{
     int shell_num_builtins = builtin_str.size();
     int check = 0;
-    for (int i = 0; i < shell_num_builtins; i++) {
-        if (args[0] == builtin_str[i]) {
+    for (int i = 0; i < shell_num_builtins; i++)
+    {
+        if (args[0] == builtin_str[i])
+        {
             check = 1;
             (*builtin_func[i])(args);
             return;
         }
     }
-    if (check == 0) {
+    if (check == 0)
+    {
         printf("Bad command....\n");
     }
 }
 
+// Lấy danh sách lệnh bắt đầu với prefix
+vector<string> get_autocomplete_candidates(const string &prefix)
+{
+    vector<string> candidates;
+    for (const auto &cmd : builtin_str)
+    {
+        if (cmd.find(prefix) == 0)
+        {
+            candidates.push_back(cmd);
+        }
+    }
+    return candidates;
+}
+
+vector<string> list_directory_with_prefix(const string &directory, const string &prefix)
+{
+    vector<string> result;
+
+    // Chuẩn hóa directory: nếu không có \ cuối thì thêm
+    string norm_dir = directory;
+    if (!norm_dir.empty() && norm_dir.back() != '\\' && norm_dir.back() != '/')
+        norm_dir += "\\";
+
+    string search_path = norm_dir + "*";
+
+    WIN32_FIND_DATAA findData;
+    HANDLE hFind = FindFirstFileA(search_path.c_str(), &findData);
+
+    // cout << "\nDanh sach cac ung vien:\n";
+
+    if (hFind == INVALID_HANDLE_VALUE)
+        return result;
+
+    do
+    {
+        string name = findData.cFileName;
+
+        // Bỏ "." và ".."
+        if (name == "." || name == "..")
+            continue;
+
+        // Kiểm tra prefix (không phân biệt hoa thường)
+        if (name.size() >= prefix.size())
+        {
+            bool match = true;
+            for (size_t i = 0; i < prefix.size(); ++i)
+            {
+                if (tolower(name[i]) != tolower(prefix[i]))
+                {
+                    match = false;
+                    break;
+                }
+            }
+            if (match)
+            {
+                // cout << name << endl;
+                result.push_back(name);
+            }
+        }
+    } while (FindNextFileA(hFind, &findData));
+    FindClose(hFind);
+    return result;
+}
+
+// Hàm tách line thành tokens (theo dấu cách)
+vector<string> split_tokens(const string &line)
+{
+    vector<string> tokens;
+    string token;
+    for (char c : line)
+    {
+        if (c == ' ')
+        {
+            if (!token.empty())
+            {
+                tokens.push_back(token);
+                token.clear();
+            }
+        }
+        else
+        {
+            token += c;
+        }
+    }
+    if (!token.empty())
+        tokens.push_back(token);
+    return tokens;
+}
+
+// // Trả về real path tương ứng với fake path, hoặc empty string nếu không hợp lệ
+// string resolve_fake_path_to_real(const string& input_fake_path) {
+//     if (input_fake_path.empty()) return current_real_path;
+
+//     if (input_fake_path[0] == '/' || input_fake_path[0] == '\\') {
+//         // Đường dẫn tuyệt đối trong fake path: chỉ chấp nhận /root
+//         if (input_fake_path.size() >= 5 &&
+//             (input_fake_path.substr(0, 5) == "/root" || input_fake_path.substr(0, 5) == "\\root")) {
+//             string full_real_path = origin_real_path + input_fake_path;
+//             full_real_path = normalize_path(full_real_path);
+//             if (folderExists(full_real_path) == EXIST_FILE_OR_DIRECTORY) {
+//                 return full_real_path;
+//             } else {
+//                 return ""; // không tồn tại
+//             }
+//         } else {
+//             return ""; // sai đường dẫn tuyệt đối
+//         }
+//     } else if (input_fake_path == "..") {
+//         if (current_fake_path == "\\root" || current_fake_path == "/root") {
+//             return current_real_path; // không lên trên root
+//         }
+//         // Lên thư mục cha
+//         size_t pos = current_real_path.find_last_of("\\/");
+//         string parent_real = (pos == string::npos) ? current_real_path : current_real_path.substr(0, pos);
+//         return parent_real;
+//     } else if (input_fake_path == ".") {
+//         return current_real_path;
+//     } else {
+//         // Đường dẫn tương đối nối với current_fake_path
+//         string combined_fake;
+//         if (!current_fake_path.empty() &&
+//             (current_fake_path.back() == '\\' || current_fake_path.back() == '/')) {
+//             combined_fake = current_fake_path + input_fake_path;
+//         } else {
+//             combined_fake = current_fake_path + "\\" + input_fake_path;
+//         }
+//         combined_fake = normalize_path(combined_fake);
+
+//         string real_dir = origin_real_path;
+//         if (!origin_real_path.empty() &&
+//             origin_real_path.back() != '\\' && origin_real_path.back() != '/')
+//             real_dir += "\\";
+//         real_dir += combined_fake;
+//         real_dir = normalize_path(real_dir);
+
+//         if (folderExists(real_dir) == EXIST_FILE_OR_DIRECTORY &&
+//             isPrefix(real_dir, fixed_real_path)) {
+//             return real_dir;
+//         } else {
+//             return "";
+//         }
+//     }
+// }
+
 string read_command_line()
 {
-    string line = "";
-    getline(cin, line);
+    string line;
+    int pos = 0;
+    static vector<string> history;
+    static int history_index = -1;
+
+    while (true)
+    {
+        int ch = _getch();
+
+        if (ch == 224)
+        {
+            int ch2 = _getch();
+            if (ch2 == 72) // UP
+            {
+                if (!history.empty())
+                {
+                    if (history_index == -1)
+                        history_index = (int)history.size() - 1;
+                    else if (history_index > 0)
+                        history_index--;
+
+                    for (int i = 0; i < (int)line.size(); ++i)
+                        cout << "\b \b";
+                    line = history[history_index];
+                    cout << line;
+                    pos = (int)line.size();
+                }
+            }
+            else if (ch2 == 80) // DOWN
+            {
+                if (!history.empty() && history_index != -1)
+                {
+                    history_index++;
+                    if (history_index >= (int)history.size())
+                    {
+                        history_index = -1;
+                        for (int i = 0; i < (int)line.size(); ++i)
+                            cout << "\b \b";
+                        line.clear();
+                        pos = 0;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < (int)line.size(); ++i)
+                            cout << "\b \b";
+                        line = history[history_index];
+                        cout << line;
+                        pos = (int)line.size();
+                    }
+                }
+            }
+            else if (ch2 == 75) // LEFT
+            {
+                if (pos > 0)
+                {
+                    cout << '\b';
+                    pos--;
+                }
+            }
+            else if (ch2 == 77) // RIGHT
+            {
+                if (pos < (int)line.size())
+                {
+                    cout << line[pos];
+                    pos++;
+                }
+            }
+            continue;
+        }
+
+        if (ch == 13) // ENTER
+        {
+            cout << "\n";
+            if (!line.empty())
+                history.push_back(line);
+            history_index = -1;
+            break;
+        }
+        else if (ch == 8) // BACKSPACE
+        {
+            if (!line.empty() && pos > 0)
+            {
+                line.erase(pos - 1, 1);
+                pos--;
+                cout << "\b \b";
+                for (size_t i = pos; i < line.size(); ++i)
+                    cout << line[i];
+                cout << ' ';
+                for (size_t i = pos; i <= line.size(); ++i)
+                    cout << '\b';
+            }
+        }
+        else if (ch == 9) // TAB
+        {
+            // Lấy toàn dòng và tách lại token
+            vector<string> tokens = split_tokens(line);
+            string prefix;
+            int token_start_pos = 0;
+
+            if (!tokens.empty())
+            {
+                prefix = tokens.back();
+
+                // Tính vị trí bắt đầu của token cuối bằng cách tìm từ cuối
+                size_t found = line.rfind(prefix, pos);
+                if (found != string::npos)
+                    token_start_pos = (int)found;
+                else
+                    token_start_pos = (int)(line.size() - prefix.size());
+            }
+
+            vector<string> candidates;
+            bool check = true;
+
+            if (tokens.size() <= 1)
+            {
+                candidates = get_autocomplete_candidates(prefix);
+            }
+            else
+            {
+                size_t last_slash = prefix.find_last_of("\\/");
+                string directory = current_real_path + "\\";
+                string file_prefix = prefix;
+                string dir_prefix = "";
+
+                if (last_slash != string::npos)
+                {
+                    string relative_dir = prefix.substr(0, last_slash + 1);
+                    file_prefix = prefix.substr(last_slash + 1);
+                    string fake_dir;
+
+                    if (!relative_dir.empty() && (relative_dir[0] == '/' || relative_dir[0] == '\\'))
+                        fake_dir = relative_dir.substr(1);
+                    else if (!current_fake_path.empty())
+                        fake_dir = current_fake_path + "\\" + relative_dir;
+                    else
+                        fake_dir = relative_dir;
+
+                    string real_dir = origin_real_path;
+                    if (!origin_real_path.empty() &&
+                        origin_real_path.back() != '\\' && origin_real_path.back() != '/')
+                        real_dir += "\\";
+                    real_dir += fake_dir;
+
+                    if (SetCurrentDirectory(real_dir.c_str()) == FALSE)
+                    {
+                        candidates.clear();
+                        continue;
+                    }
+
+                    real_dir = getNormalizedCurrentDirectory();
+
+                    if (!isPrefix(real_dir, fixed_real_path))
+                    {
+                        if (isPrefix(fixed_real_path, real_dir))
+                        {
+                            directory = formatFakePathToUnixStyle(convertRealToFakePath(fixed_real_path));
+                            candidates.push_back(directory);
+                            check = false;
+                        }
+                        else
+                        {
+                            candidates.clear();
+                            SetCurrentDirectory(origin_real_path.c_str());
+                            continue;
+                        }
+                    }
+
+                    if (check)
+                        directory = real_dir;
+
+                    dir_prefix = "";
+                    SetCurrentDirectory(origin_real_path.c_str());
+                }
+
+                if (check)
+                {
+                    candidates = list_directory_with_prefix(directory, file_prefix);
+                    if (candidates.empty())
+                        continue;
+
+                    for (auto &c : candidates)
+                        c = dir_prefix + c;
+
+                    for (auto &c : candidates)
+                    {
+                        string raw_path = convertRealToFakePath(directory) + '/' + c;
+                        string formatted;
+                        bool last_was_slash = false;
+                        for (char ch : raw_path)
+                        {
+                            if (ch == '/' || ch == '\\')
+                            {
+                                if (!last_was_slash)
+                                {
+                                    formatted += '/';
+                                    last_was_slash = true;
+                                }
+                            }
+                            else
+                            {
+                                formatted += ch;
+                                last_was_slash = false;
+                            }
+                        }
+                        if (formatted.size() > 1 && formatted.back() == '/')
+                            formatted.pop_back();
+                        c = formatted;
+                    }
+                }
+            }
+
+            if (candidates.empty())
+            {
+                continue;
+            }
+            else if (candidates.size() == 1)
+            {
+                string completion = candidates[0];
+
+                int erase_count = (int)(pos - token_start_pos);
+                for (int i = 0; i < erase_count; ++i)
+                {
+                    cout << "\b \b";
+                }
+
+                line.erase(token_start_pos, erase_count);
+                line.insert(token_start_pos, completion);
+                cout << completion;
+
+                pos = token_start_pos + (int)completion.size();
+            }
+            else
+            {
+                cout << "\n";
+                for (const auto &c : candidates)
+                    cout << c << "  ";
+                cout << "\n> " << line;
+                for (int i = (int)line.size(); i > pos; --i)
+                    cout << '\b';
+            }
+        }
+        else if (ch >= 32 && ch <= 126) // printable characters
+        {
+            line.insert(pos, 1, (char)ch);
+            ++pos;
+
+            cout << line.substr(pos - 1);
+            cout << ' ';
+            for (size_t i = pos; i <= line.size(); ++i)
+                cout << '\b';
+        }
+    }
+
     return line;
 }
 
-vector<string> parse_command(string line) {
+
+vector<string> parse_command(string line)
+{
     vector<string> args;
     string arg;
-    
-    for (char ch : line) {
-        if (isspace(ch)) {
-            if (!arg.empty()) {
+
+    for (char ch : line)
+    {
+        if (isspace(ch))
+        {
+            if (!arg.empty())
+            {
                 args.push_back(arg);
                 arg.clear();
             }
-        } else {
+        }
+        else
+        {
             arg.push_back(ch);
         }
     }
 
     // Nếu sau khi duyệt hết mà vẫn còn một token chưa được thêm vào, thêm vào args
-    if (!arg.empty()) {
+    if (!arg.empty())
+    {
         args.push_back(arg);
     }
 
     return args;
 }
 
-int shell_exit(vector<string> args) {
-    if (args.size() > 1) {
+int shell_exit(vector<string> args)
+{
+    if (args.size() > 1)
+    {
         printf("Bad command ... \n");
         return BAD_COMMAND;
     }
@@ -160,19 +583,22 @@ int shell_exit(vector<string> args) {
     return 0;
 }
 
-int shell_cls(vector<string> args) {
-    if (args.size() > 1){
+int shell_cls(vector<string> args)
+{
+    if (args.size() > 1)
+    {
         printf("\nBad command ....\n\n");
         return 0;
     }
     HANDLE hConsole;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD coordScreen = { 0, 0 };
+    COORD coordScreen = {0, 0};
     DWORD cCharsWritten;
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     DWORD dwConSize;
 
-    if (!GetConsoleScreenBufferInfo(hConsole, &csbi)) {
+    if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
+    {
         return ERROR_CLS;
     }
 
@@ -187,9 +613,9 @@ int shell_cls(vector<string> args) {
         return ERROR_CLS;
     }
 
-
     // Lấy lại thông tin màn hình
-    if (!GetConsoleScreenBufferInfo(hConsole, &csbi)) {
+    if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
+    {
         return ERROR_CLS;
     }
 
@@ -208,32 +634,35 @@ int shell_cls(vector<string> args) {
     return 0;
 }
 
-int shell_time(vector<string> args) {
-    if (args.size() != 1){
+int shell_time(vector<string> args)
+{
+    if (args.size() != 1)
+    {
         printf("Bad command....\n");
         return 0;
     }
     SYSTEMTIME lt = {0};
-  
+
     GetLocalTime(&lt);
-  
-    wprintf(L"\nThe local time is: %02d:%02d:%02d\n\n", 
-        lt.wHour, lt.wMinute, lt.wSecond);
+
+    wprintf(L"\nThe local time is: %02d:%02d:%02d\n\n",
+            lt.wHour, lt.wMinute, lt.wSecond);
 
     return 0;
 }
 
-int shell_date(vector<string> args) {
-    if (args.size() != 1){
+int shell_date(vector<string> args)
+{
+    if (args.size() != 1)
+    {
         printf("Bad command....\n");
         return 0;
     }
     SYSTEMTIME st = {0};
-  
+
     GetLocalTime(&st);
-  
+
     wprintf(L"\nToday is: %d-%02d-%02d\n\n", st.wYear, st.wMonth, st.wDay);
 
     return 0;
 }
-

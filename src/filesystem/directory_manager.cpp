@@ -18,6 +18,7 @@
 // #include "Shlwapi.h"
 #include "filesystem/path_manager.h"
 using namespace std;
+namespace fs = filesystem;
 
 
 int init_directory() {
@@ -745,3 +746,38 @@ int shell_copy(vector<string> args) {
     return 0;
 }
 
+
+// Hàm đệ quy in cây thư mục
+void print_tree(const fs::path& path, int depth = 0) {
+    if (!fs::exists(path) || !fs::is_directory(path)) return;
+
+    for (const auto& entry : fs::directory_iterator(path)) {
+        cout << string(depth * 2, ' ') << "|-- " << entry.path().filename().string() << endl;
+        if (fs::is_directory(entry)) {
+            print_tree(entry.path(), depth + 1);
+        }
+    }
+}
+
+int shell_tree(vector<string> args) {
+    if (args.size() > 2 || args.size() < 1 || args[0] != "tree") {
+        cout << "Usage: tree [<absolute_path>] or tree" << endl;
+        return -1;
+    }
+    string path = "";
+    if (args.size() == 1) path = current_real_path;
+    else path = origin_real_path + '\\' + args[1];
+    fs::path target_path;
+    target_path = fs::path(path);
+    if (!target_path.is_absolute()) {
+        cout << "Error: Path must be absolute." << endl;
+        return -1;
+    }
+    if (!fs::exists(target_path) || !fs::is_directory(target_path)) {
+        cout << "Invalid directory: " << convertRealToFakePath(path) << endl;
+        return -1;
+    }
+    // cout << target_path.string() << endl;
+    print_tree(target_path);
+    return 0;
+}

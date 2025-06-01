@@ -85,7 +85,8 @@ vector<string> builtin_str = {
 	"set",
 	"setx",
 	"eval",
-	"editor"
+	"editor",
+	"tree"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -122,7 +123,8 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_set,
 	&shell_setx,
 	&shell_eval,
-	&shell_editor
+	&shell_editor,
+	&shell_tree
 };
 
 
@@ -154,5 +156,4 @@ int main() {
 	}
 	return 0;
 }
-
 
