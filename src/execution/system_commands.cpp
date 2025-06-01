@@ -330,6 +330,22 @@ string read_command_line()
                     }
                 }
             }
+            else if (ch2 == 75) // LEFT
+            {
+                if (pos > 0)
+                {
+                    cout << '\b';
+                    pos--;
+                }
+            }
+            else if (ch2 == 77) // RIGHT
+            {
+                if (pos < (int)line.size())
+                {
+                    cout << line[pos];
+                    pos++;
+                }
+            }
             continue;
         }
 
