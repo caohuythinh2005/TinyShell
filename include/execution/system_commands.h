@@ -13,6 +13,7 @@ int shell_cls(vector<string> args);
 int shell_exit(vector<string> args);
 int shell_time(vector<string> args);
 int shell_date(vector<string> args);
+vector<string> get_autocomplete_candidates(const string& prefix);
 
 
 #endif
