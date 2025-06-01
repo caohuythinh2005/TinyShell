@@ -65,8 +65,10 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `set /a expression`          | Tính biểu thức số học (giống CMD)                          |
 | `setx VAR=value`             | Tạo biến môi trường vĩnh viễn                  |
 | `path`                       | Hiển thị biến PATH                                          |
-| `addpath <path>`             | Thêm thư mục vào PATH                                       |
-| `delpath <path>`             | Xóa thư mục khỏi PATH                                       |
+| `addpath <path>`             | Thêm thư mục vào PATH (session only)                            |
+| `delpath <path>`             | Xóa thư mục khỏi PATH (session only)                |
+| `addpathx <path>`            | Thêm thư mục vào PATH (permanent)                   |
+| `delpathx <path>`            | Xóa thư mục khỏi PATH (permanent)                                    |
 | `where`                      | Hiển thị đường dẫn đầy đủ của file `.bat` hoặc `.exe`       |
 
 ### 🧰 Công cụ và tiện ích khác
@@ -79,6 +81,7 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `cls`                        | Xóa màn hình                                                |
 | `exit`                       | Thoát khỏi shell                                            |
 | `help`                       | Hiển thị danh sách lệnh                                     |
+| `phím tab`                  | tự động hoàn thành lệnh                                     |
 | `tree [đường_dẫn_tùy_chọn]`  | Hiển thị cây thư mục từ thư mục hiện tại hoặc đường dẫn cho trước |
 
 ### 🔁 Cấu trúc điều khiển  
