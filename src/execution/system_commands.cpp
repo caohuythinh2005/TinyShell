@@ -283,7 +283,6 @@ vector<string> split_tokens(const string &line)
 //     }
 // }
 
-
 string read_command_line()
 {
     string line;
@@ -312,7 +311,7 @@ string read_command_line()
                         cout << "\b \b";
                     line = history[history_index];
 
-                    setTextColor(colorCommand);   // *** Thiết lập màu trước khi in ***
+                    setTextColor(colorCommand); // *** Thiết lập màu trước khi in ***
                     cout << line;
                     pos = (int)line.size();
                 }
@@ -336,7 +335,7 @@ string read_command_line()
                             cout << "\b \b";
                         line = history[history_index];
 
-                        setTextColor(colorCommand);   // *** Thiết lập màu trước khi in ***
+                        setTextColor(colorCommand); // *** Thiết lập màu trước khi in ***
                         cout << line;
                         pos = (int)line.size();
                     }
@@ -354,7 +353,7 @@ string read_command_line()
             {
                 if (pos < (int)line.size())
                 {
-                    setTextColor(colorCommand);   // *** Thiết lập màu trước khi in ***
+                    setTextColor(colorCommand); // *** Thiết lập màu trước khi in ***
                     cout << line[pos];
                     pos++;
                 }
@@ -377,7 +376,7 @@ string read_command_line()
                 line.erase(pos - 1, 1);
                 pos--;
                 cout << "\b \b";
-                setTextColor(colorCommand);       // *** Thiết lập màu ***
+                setTextColor(colorCommand); // *** Thiết lập màu ***
                 for (size_t i = pos; i < line.size(); ++i)
                     cout << line[i];
                 cout << ' ';
@@ -412,7 +411,96 @@ string read_command_line()
             }
             else
             {
-                // ... phần xử lý directory autocomplete
+                size_t last_slash = prefix.find_last_of("\\/");
+                string directory = current_real_path + "\\";
+                string file_prefix = prefix;
+                string dir_prefix = "";
+
+                if (last_slash != string::npos)
+                {
+                    string relative_dir = prefix.substr(0, last_slash + 1);
+                    file_prefix = prefix.substr(last_slash + 1);
+                    string fake_dir;
+
+                    if (!relative_dir.empty() && (relative_dir[0] == '/' || relative_dir[0] == '\\'))
+                        fake_dir = relative_dir.substr(1);
+                    else if (!current_fake_path.empty())
+                        fake_dir = current_fake_path + "\\" + relative_dir;
+                    else
+                        fake_dir = relative_dir;
+
+                    string real_dir = origin_real_path;
+                    if (!origin_real_path.empty() &&
+                        origin_real_path.back() != '\\' && origin_real_path.back() != '/')
+                        real_dir += "\\";
+                    real_dir += fake_dir;
+
+                    if (SetCurrentDirectory(real_dir.c_str()) == FALSE)
+                    {
+                        candidates.clear();
+                        continue;
+                    }
+
+                    real_dir = getNormalizedCurrentDirectory();
+
+                    if (!isPrefix(real_dir, fixed_real_path))
+                    {
+                        if (isPrefix(fixed_real_path, real_dir))
+                        {
+                            directory = formatFakePathToUnixStyle(convertRealToFakePath(fixed_real_path));
+                            candidates.push_back(directory);
+                            check = false;
+                        }
+                        else
+                        {
+                            candidates.clear();
+                            SetCurrentDirectory(origin_real_path.c_str());
+                            continue;
+                        }
+                    }
+
+                    if (check)
+                        directory = real_dir;
+
+                    dir_prefix = "";
+                    SetCurrentDirectory(origin_real_path.c_str());
+                }
+
+                if (check)
+                {
+                    candidates = list_directory_with_prefix(directory, file_prefix);
+                    if (candidates.empty())
+                        continue;
+
+                    for (auto &c : candidates)
+                        c = dir_prefix + c;
+
+                    for (auto &c : candidates)
+                    {
+                        string raw_path = convertRealToFakePath(directory) + '/' + c;
+                        string formatted;
+                        bool last_was_slash = false;
+                        for (char ch : raw_path)
+                        {
+                            if (ch == '/' || ch == '\\')
+                            {
+                                if (!last_was_slash)
+                                {
+                                    formatted += '/';
+                                    last_was_slash = true;
+                                }
+                            }
+                            else
+                            {
+                                formatted += ch;
+                                last_was_slash = false;
+                            }
+                        }
+                        if (formatted.size() > 1 && formatted.back() == '/')
+                            formatted.pop_back();
+                        c = formatted;
+                    }
+                }
             }
 
             if (candidates.empty())
@@ -432,7 +520,7 @@ string read_command_line()
                 line.erase(token_start_pos, erase_count);
                 line.insert(token_start_pos, completion);
 
-                setTextColor(colorCommand);    // *** Thiết lập màu trước khi in ***
+                setTextColor(colorCommand); // *** Thiết lập màu trước khi in ***
                 cout << completion;
 
                 pos = token_start_pos + (int)completion.size();
@@ -440,12 +528,12 @@ string read_command_line()
             else
             {
                 cout << "\n";
-                setTextColor(colorCommand);    // *** Thiết lập màu trước khi in ***
+                setTextColor(colorCommand); // *** Thiết lập màu trước khi in ***
                 for (const auto &c : candidates)
                     cout << c << "  ";
                 cout << "\n> ";
 
-                setTextColor(colorCommand);    // *** Thiết lập màu trước khi in ***
+                setTextColor(colorCommand); // *** Thiết lập màu trước khi in ***
                 cout << line;
 
                 for (int i = (int)line.size(); i > pos; --i)
@@ -457,7 +545,7 @@ string read_command_line()
             line.insert(pos, 1, (char)ch);
             ++pos;
 
-            setTextColor(colorCommand);      // *** Thiết lập màu trước khi in ***
+            setTextColor(colorCommand); // *** Thiết lập màu trước khi in ***
             cout << line.substr(pos - 1);
             cout << ' ';
             for (size_t i = pos; i <= line.size(); ++i)
