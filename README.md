@@ -83,6 +83,8 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `help`                       | Hiển thị danh sách lệnh                                     |
 | `phím tab`                  | tự động hoàn thành lệnh                                     |
 | `tree [đường_dẫn_tùy_chọn]`  | Hiển thị cây thư mục từ thư mục hiện tại hoặc đường dẫn cho trước |
+| `color [-s,-c,-h]`           | Thay đổi màu shell (-s) hoặc màu lệnh (-c); -h xem hướng dẫn |
+| `name [tên_mới]`             | Thay đổi tên của shell hiển thị ở prompt                    |
 
 ### 🔁 Cấu trúc điều khiển  
 | Lệnh                                      | Mô tả                                                               |

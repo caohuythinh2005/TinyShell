@@ -1,7 +1,13 @@
 #ifndef _SYSTEM_COMMANDS_H_
 #define _SYSTEM_COMMANDS_H_
 
+#include <string> 
+#include <vector> 
+
 #include "utilities/globals.h"
+
+extern WORD colorCommand;
+
 
 void init_system_commands();
 string read_command_line();
