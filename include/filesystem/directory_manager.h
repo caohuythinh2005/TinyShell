@@ -28,6 +28,7 @@ int shell_write(vector<string> args);
 
 int shell_rename(vector<string> args);
 int shell_file_infor(vector<string> args); // chưa có đâu
+int shell_tree(vector<string> args);
 
 
 

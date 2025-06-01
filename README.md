@@ -67,6 +67,7 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `path`                       | Hiển thị biến PATH                                          |
 | `addpath <path>`             | Thêm thư mục vào PATH                                       |
 | `delpath <path>`             | Xóa thư mục khỏi PATH                                       |
+| `where`                      | Hiển thị đường dẫn đầy đủ của file `.bat` hoặc `.exe`       |
 
 ### 🧰 Công cụ và tiện ích khác
 | Lệnh                          | Mô tả                                                       |
@@ -78,6 +79,7 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `cls`                        | Xóa màn hình                                                |
 | `exit`                       | Thoát khỏi shell                                            |
 | `help`                       | Hiển thị danh sách lệnh                                     |
+| `tree [đường_dẫn_tùy_chọn]`  | Hiển thị cây thư mục từ thư mục hiện tại hoặc đường dẫn cho trước |
 
 ### 🔁 Cấu trúc điều khiển  
 | Lệnh                                      | Mô tả                                                               |

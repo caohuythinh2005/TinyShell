@@ -72,6 +72,7 @@ int shell_help(std::vector<std::string> args)
         cout << "| addpathx <path>           | Add new directory to PATH (permanent)              |\n";
         cout << "| delpath <path>            | Remove directory from PATH (session only)          |\n";
         cout << "| delpathx <path>           | Remove directory from PATH (permanent)             |\n";
+        cout << "| where                     | Show full path of a .bat or .exe file              |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Utility and system
@@ -84,6 +85,8 @@ int shell_help(std::vector<std::string> args)
         cout << "| cls                       | Clear the console screen                           |\n";
         cout << "| exit                      | Exit the shell                                     |\n";
         cout << "| help                      | Show this help message                             |\n";
+        cout << "| tab                       | Autocomplete command or filename                   |\n";
+        cout << "| tree [optional path]      | Display directory tree                             |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Editor
