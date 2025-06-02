@@ -28,6 +28,7 @@ int shell_help(std::vector<std::string> args)
 {
     if (args.size() == 1)
     {
+        cout << "\n====================================================================================\n";
         // Navigation
         cout << "\nDirectory Navigation:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
@@ -657,12 +658,18 @@ int shell_time(vector<string> args)
         printf("Bad command....\n");
         return 0;
     }
-    SYSTEMTIME lt = {0};
 
+    SYSTEMTIME lt = {0};
     GetLocalTime(&lt);
 
-    wprintf(L"\nThe local time is: %02d:%02d:%02d\n\n",
-            lt.wHour, lt.wMinute, lt.wSecond);
+    // Tên thứ trong tuần (0 = Chủ Nhật)
+    const wchar_t* weekdays[] = {
+        L"Sunday", L"Monday", L"Tuesday", L"Wednesday", L"Thursday", L"Friday", L"Saturday"
+    };
+
+    wprintf(L"\n=== Current Local Time ===\n");
+    wprintf(L"Date: %04d-%02d-%02d (%s)\n", lt.wYear, lt.wMonth, lt.wDay, weekdays[lt.wDayOfWeek]);
+    wprintf(L"Time: %02d:%02d:%02d\n\n", lt.wHour, lt.wMinute, lt.wSecond);
 
     return 0;
 }
@@ -674,11 +681,17 @@ int shell_date(vector<string> args)
         printf("Bad command....\n");
         return 0;
     }
-    SYSTEMTIME st = {0};
 
+    SYSTEMTIME st = {0};
     GetLocalTime(&st);
 
-    wprintf(L"\nToday is: %d-%02d-%02d\n\n", st.wYear, st.wMonth, st.wDay);
+    // Tên thứ trong tuần (0 = Chủ Nhật)
+    const wchar_t* weekdays[] = {
+        L"Sunday", L"Monday", L"Tuesday", L"Wednesday", L"Thursday", L"Friday", L"Saturday"
+    };
+
+    wprintf(L"\n=== Current Local Date ===\n");
+    wprintf(L"Today is: %04d-%02d-%02d (%s)\n\n", st.wYear, st.wMonth, st.wDay, weekdays[st.wDayOfWeek]);
 
     return 0;
 }
