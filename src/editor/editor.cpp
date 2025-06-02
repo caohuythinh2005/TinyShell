@@ -3,6 +3,7 @@
 #include <cstdlib>  // system("cls")
 #include "filesystem/directory_manager.h"
 #include "execution/system_commands.h"
+#include "utilities/utils.h"
 Editor::Editor(const std::string& fname) : filename(fname) {
     loadFile();
 }
@@ -170,22 +171,58 @@ int shell_editor(std::vector<std::string> args) {
         std::cout << "| wq      | Save the file and quit         |\n";
 
         std::cout << std::endl;
-    } else if (args[1] == "-i") {
+        return 0;
+    } 
+    else if (args[1] == "-i") {
         if (args.size() < 3) {
             std::cout << "Error: No file specified to edit.\n";
             std::cout << "Usage: editor -i <file>\n";
             return 1;
         }
 
-        Editor editor(current_real_path + "\\" + args[2]);
+        std::string input_path = args[2];
+        std::string full_path;
+
+        // Kiểm tra đường dẫn tuyệt đối (bắt đầu bằng /root hoặc \root)
+        if (input_path.size() >= 5 && 
+            (input_path.substr(0,5) == "/root" || input_path.substr(0,5) == "\\root")) 
+        {
+            // Ghép origin_real_path + input_path (giả định origin_real_path đã có dạng "C:\\something")
+            full_path = origin_real_path + input_path;
+
+            // Kiểm tra file có tồn tại
+            if (!fileExists(full_path)) {
+                std::cout << "Error: File does not exist: " << full_path << std::endl;
+                return 1;
+            }
+        } 
+        else {
+            // Đường dẫn tương đối => nối với current_real_path
+            full_path = current_real_path + "\\" + input_path;
+
+            if (!fileExists(full_path)) {
+                std::cout << "Error: File does not exist: " << full_path << std::endl;
+                return 1;
+            }
+        }
+
+        // Đảm bảo file nằm trong origin_real_path (để tránh truy cập ngoài sandbox)
+        if (!isPrefix(full_path, origin_real_path)) {
+            std::cout << "Error: Access denied. File outside root path.\n";
+            return 1;
+        }
+
+        // Khởi tạo editor và chạy
+        Editor editor(full_path);
         editor.run();
 
-        std::vector<std::string> dump;
-        dump.push_back("cls");
+        // Xóa màn hình sau khi thoát editor
+        std::vector<std::string> dump = {"cls"};
         shell_cls(dump);
 
         return 0;
-    } else {
+    } 
+    else {
         std::cout << "Unknown option: " << args[1] << "\n";
         std::cout << "Use 'editor -h' for help.\n";
         return 1;
