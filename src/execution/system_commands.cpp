@@ -28,76 +28,76 @@ int shell_help(std::vector<std::string> args)
 {
     if (args.size() == 1)
     {
-        cout << "\n====================================================================================\n";
+        cout << "\n===============================================================================================================\n";
         // Navigation
         cout << "\nDirectory Navigation:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
-        cout << "| cd [path]                 | Change current directory to [path]                 |\n";
-        cout << "| cd ..                     | Move to the parent directory                       |\n";
-        cout << "| pwd                       | Show the current working directory                 |\n";
-        cout << "| dir                       | List files and folders in the current directory    |\n";
+        cout << "| cd [path]                 | Change current directory to [path]                  |\n";
+        cout << "| cd ..                     | Move to the parent directory                        |\n";
+        cout << "| pwd                       | Show the current working directory                  |\n";
+        cout << "| dir                       | List files and folders in the current directory     |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // File operations
         cout << "\nFile and Folder Operations:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
-        cout << "| mkdir [name]              | Create a new directory                             |\n";
-        cout << "| del [name]                | Delete a file or folder (recursive if folder)      |\n";
-        cout << "| touch [-f] [name]         | Create empty file; overwrite if -f                 |\n";
-        cout << "| cat [name]                | Display contents of a file                         |\n";
-        cout << "| write [-f|-a] [name]      | Write to file; -f overwrite, -a append             |\n";
-        cout << "| rename [old] [new]        | Rename a file or folder                            |\n";
-        cout << "| move [src] [dest]         | Move file or folder                                |\n";
-        cout << "| copy [src] [dest]         | Copy file or folder                                |\n";
+        cout << "| mkdir [name]              | Create a new directory                              |\n";
+        cout << "| del [name]                | Delete a file or folder (recursive if folder)       |\n";
+        cout << "| touch [-f] [name]         | Create empty file; overwrite if -f                  |\n";
+        cout << "| cat [name]                | Display contents of a file                          |\n";
+        cout << "| write [-f|-a] [name]      | Write to file; -f overwrite, -a append              |\n";
+        cout << "| rename [old] [new]        | Rename a file or folder                             |\n";
+        cout << "| move [src] [dest]         | Move file or folder                                 |\n";
+        cout << "| copy [src] [dest]         | Copy file or folder                                 |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Process management
         cout << "\nProcess Management:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
-        cout << "| exec [path] [-b|-c]       | Execute .exe or .bat file. Options -b, -c (.exe)   |\n";
-        cout << "| kill_id [pid]             | Kill managed process by PID                        |\n";
-        cout << "| pause_id [pid]            | Suspend managed process by PID                     |\n";
-        cout << "| resume_id [pid]           | Resume suspended process by PID                    |\n";
-        cout << "| list                      | List processes managed by TinyShell                |\n";
+        cout << "| exec [path] [-b|-c]       | Execute .exe or .bat file. Options -b, -c (.exe)    |\n";
+        cout << "| kill_id [pid]             | Kill managed process by PID                         |\n";
+        cout << "| pause_id [pid]            | Suspend managed process by PID                      |\n";
+        cout << "| resume_id [pid]           | Resume suspended process by PID                     |\n";
+        cout << "| list                      | List processes managed by TinyShell                 |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Environment variables
         cout << "\nEnvironment Variables:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
-        cout << "| set                       | Display all environment variables                  |\n";
-        cout << "| set VAR=value             | Set or update a variable                           |\n";
-        cout << "| set VAR=                  | Delete a variable                                  |\n";
-        cout << "| set /a expression         | Evaluate arithmetic expression (like VAR=1+2)      |\n";
-        cout << "| setx VAR=value            | Persistently set variable                          |\n";
-        cout << "| path                      | Show system PATH variable                          |\n";
-        cout << "| addpath <path>            | Add new directory to PATH (session only)           |\n";
-        cout << "| addpathx <path>           | Add new directory to PATH (permanent)              |\n";
-        cout << "| delpath <path>            | Remove directory from PATH (session only)          |\n";
-        cout << "| delpathx <path>           | Remove directory from PATH (permanent)             |\n";
-        cout << "| where                     | Show full path of a .bat or .exe file              |\n";
+        cout << "| set                       | Display all environment variables                   |\n";
+        cout << "| set VAR=value             | Set or update a variable                            |\n";
+        cout << "| set VAR=                  | Delete a variable                                   |\n";
+        cout << "| set /a expression         | Evaluate arithmetic expression (like VAR=1+2)       |\n";
+        cout << "| setx VAR=value            | Persistently set variable                           |\n";
+        cout << "| path                      | Show system PATH variable                           |\n";
+        cout << "| addpath <path>            | Add new directory to PATH (session only)            |\n";
+        cout << "| addpathx <path>           | Add new directory to PATH (permanent)               |\n";
+        cout << "| delpath <path>            | Remove directory from PATH (session only)           |\n";
+        cout << "| delpathx <path>           | Remove directory from PATH (permanent)              |\n";
+        cout << "| where                     | Show full path of a .bat or .exe file               |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Utility and system
         cout << "\nSystem Utilities:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
-        cout << "| time                      | Show system time                                   |\n";
-        cout << "| date                      | Show system date                                   |\n";
-        cout << "| test [-f|-d] [path]       | Check if file (-f) or directory (-d) exists        |\n";
-        cout << "| cal [num1] [op] [num2]    | Perform calculation (+ - * / %)                    |\n";
-        cout << "| cls                       | Clear the console screen                           |\n";
-        cout << "| exit                      | Exit the shell                                     |\n";
-        cout << "| help                      | Show this help message                             |\n";
-        cout << "| tab                       | Autocomplete command or filename                   |\n";
-        cout << "| tree [optional path]      | Display directory tree                             |\n";
-        cout << "| color [-s|-c|-h] [code]   | Change shell (-s) or command (-c) color; -h : help |\n";
-        cout << "| name [new_name]           | Change shell prompt name                           |\n";
+        cout << "| time                      | Show system time                                    |\n";
+        cout << "| date                      | Show system date                                    |\n";
+        cout << "| test [-f|-d] [path]       | Check if file (-f) or directory (-d) exists         |\n";
+        cout << "| cal [num1] [op] [num2]    | Perform calculation (+ - * / %)                     |\n";
+        cout << "| cls                       | Clear the console screen                            |\n";
+        cout << "| exit                      | Exit the shell                                      |\n";
+        cout << "| help                      | Show this help message                              |\n";
+        cout << "| tab                       | Autocomplete command or filename                    |\n";
+        cout << "| tree [optional path]      | Display directory tree                              |\n";
+        cout << "| color [-s|-c|-h] [code]   | Change shell (-s) or command (-c) color; -h : help  |\n";
+        cout << "| name [new_name]           | Change shell prompt name                            |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Editor
         cout << "\nBuilt-in Text Editor:\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
-        cout << "| editor -i <file>          | Open file in interactive editor                    |\n";
-        cout << "| editor -h                 | Show key bindings for editor                       |\n";
+        cout << "| editor -i <file>          | Open file in interactive editor                     |\n";
+        cout << "| editor -h                 | Show key bindings for editor                        |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Control Structures
@@ -110,7 +110,7 @@ int shell_help(std::vector<std::string> args)
         cout << "| eval <expression>                          | Evaluate logical/arithmetic expression                      |\n";
         cout << "+--------------------------------------------+-------------------------------------------------------------+\n";
 
-        cout << "\n====================================================================================\n";
+        cout << "\n===============================================================================================================\n";
     }
     else
     {
