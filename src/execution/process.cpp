@@ -297,9 +297,9 @@ vector<ProcessInfor> getShellProcessesWithStatus() {
 
 void printProcesses(const vector<ProcessInfor>& processes) {
     // Print table header
-    cout << "+---------+---------------------------+----------+\n";
-    cout << "| PID     | Name                      | Status   |\n";
-    cout << "+---------+---------------------------+----------+\n";
+    cout << "+---------+---------------------------+-----------+\n";
+    cout << "| PID     | Name                      | Status    |\n";
+    cout << "+---------+---------------------------+-----------+\n";
 
     for (const auto& p : processes) {
         // Skip unnecessary processes
@@ -308,7 +308,7 @@ void printProcesses(const vector<ProcessInfor>& processes) {
         }
 
         // Print each process info with fixed width columns
-        printf("| %-7d | %-25s | %-8s |\n",
+        printf("| %-7d | %-25s | %-9s |\n",
             p.pid,
             p.processName.c_str(),
             p.status.c_str()
@@ -316,7 +316,7 @@ void printProcesses(const vector<ProcessInfor>& processes) {
     }
 
     // Print table footer
-    cout << "+---------+---------------------------+----------+\n";
+    cout << "+---------+---------------------------+-----------+\n";
 }
 
 int shell_killProcessById(vector<string> args) {
