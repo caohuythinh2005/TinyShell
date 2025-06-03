@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <stack>
 #include<filesystem/path_manager.h>
+#include <limits> 
 unordered_map<string, string> session_vars;    // Biến tạm thời trong phiên làm việc
 unordered_map<string, string> persistent_vars; // Biến lưu trong sandbox (file)
 string env_filename; // Đường dẫn file biến persistent sandbox
@@ -243,6 +244,25 @@ void evaluate_assignment(const string& expr_raw) {
 
     session_vars[lhs] = to_string(result);
 }
+
+
+
+int shell_in(vector<string> args) {
+    if (args.size() != 2) {
+        cerr << "Usage: in VAR_NAME" << endl;
+        return 0;
+    }
+
+    string var_name = args[1];
+    string value;
+
+    cout << "> ";
+    getline(cin, value);  // Đọc cả dòng nhập vào
+
+    set_variable(var_name, value);
+    return 0;
+}
+
 /*
 Windows that ko ho tro setx /a vi ly do an toan
 tham chi setx x= cung ko ho tro
@@ -254,15 +274,14 @@ int shell_set(vector<string> args) {
     if (args.size() == 1) {
         auto vars = get_all_variables();
         for (const auto& [k, v] : vars) {
-            if(k == "PATH"){
+            if (k == "PATH") {
                 cout << "PATH=";
-                for(auto s : envPaths){
+                for (auto s : envPaths) {
                     cout << formatFakePathToUnixStyle(s) << ";";
                 }
                 cout << "\n";
-            }
-            else{
-                cout << k << "=" << v << endl;                
+            } else {
+                cout << k << "=" << v << endl;
             }
         }
         return 0;
@@ -275,7 +294,10 @@ int shell_set(vector<string> args) {
             if (i > 2) expr += " ";
             expr += args[i];
         }
-        evaluate_assignment(expr);  // Hàm tự xử lý tính toán + gán vào session_vars
+        // Resolve biến kiểu %var% trong expr trước
+        expr = resolve_variable(expr);
+
+        evaluate_assignment(expr);
         return 0;
     }
 
@@ -292,22 +314,29 @@ int shell_set(vector<string> args) {
         return 1;
     }
 
-    string var_name = trim(combined.substr(0, pos));
-    string var_value = trim(combined.substr(pos + 1));
+    string var_name_raw = trim(combined.substr(0, pos));
+    string var_value_raw = trim(combined.substr(pos + 1));
 
-    // Nếu giá trị rỗng, tức là unset (CMD-style)
+    // Phân giải biến trong tên biến
+    string var_name = resolve_variable(var_name_raw);
+
+    // Phân giải biến trong giá trị
+    string var_value = resolve_variable(var_value_raw);
+
+    // Nếu giá trị rỗng, unset biến
     if (var_value.empty()) {
         unset_variable(var_name);
     } else {
         set_variable(var_name, var_value, false);  // false = session variable
     }
+
     if (var_name == "PATH") {
-            envPaths.clear(); // xóa path cũ
-            initPath();       // nạp lại path mới
+        envPaths.clear(); // xóa path cũ
+        initPath();       // nạp lại path mới
     }
+
     return 0;
 }
-
 
 int shell_setx(vector<string> args) {
     if (args.size() > 1 && args[1] == "\\a") {
@@ -358,17 +387,14 @@ int shell_setx(vector<string> args) {
 
 int shell_echo(vector<string> args) {
     if (args.size() < 2) {
-        cout << endl;  // echo không có tham số thì xuống dòng
+        cout << endl;
         return 0;
     }
 
-    string output;
     for (size_t i = 1; i < args.size(); ++i) {
-        if (i > 1) output += " ";
-        output += resolve_variable(args[i]);  // phân giải biến ở đây
+        string resolved = resolve_variable(args[i]);
+        cout << resolved << " ";
     }
-
-    cout << output << endl;
     return 0;
 }
 
@@ -434,29 +460,39 @@ void unset_variable(const string &key) {
     // KHÔNG xóa khỏi persistent_vars ở đây
 }
 
-string resolve_variable(const string &raw) {
-    string result = raw;
-    regex var_pattern("%([^%]+)%");
-    size_t search_pos = 0;
-    smatch match;
-
-    while (search_pos < result.size()) {
-        string tail = result.substr(search_pos);
-        if (regex_search(tail, match, var_pattern)) {
-            string full_match = match[0];
-            string var_name = match[1];
-            string var_value = get_variable(var_name);
-
-            size_t pos = search_pos + match.position(0);
-            result.replace(pos, full_match.length(), var_value);
-
-            search_pos = pos + var_value.length();
-        } else {
+// Hàm resolve biến dạng %...%, đệ quy để giải biến lồng nhau
+string resolve_variable(const string& input) {
+    string output;
+    size_t pos = 0;
+    while (pos < input.size()) {
+        size_t start = input.find('%', pos);
+        if (start == string::npos) {
+            output += input.substr(pos);
             break;
         }
-    }
+        output += input.substr(pos, start - pos);
 
-    return result;
+        int depth = 0;
+        size_t end = start + 1;
+        for (; end < input.size(); ++end) {
+            if (input[end] == '[') depth++;
+            else if (input[end] == ']') depth--;
+            else if (input[end] == '%' && depth == 0) break;
+        }
+
+        if (end == input.size()) {
+            output += input.substr(start);
+            break;
+        }
+
+        string inner = input.substr(start + 1, end - start - 1);
+        string resolved_inner = resolve_variable(inner);
+        string var_value = get_variable(resolved_inner);
+
+        output += var_value;
+        pos = end + 1;
+    }
+    return output;
 }
 
 unordered_map<string, string> get_all_variables() {

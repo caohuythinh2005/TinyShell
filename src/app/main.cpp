@@ -169,7 +169,8 @@ vector<string> builtin_str = {
 	"editor",
 	"tree",
 	"color",
-	"name"
+	"name",
+    "in"
 };
 
 int (*builtin_func[]) (vector<string>) = {
@@ -209,7 +210,8 @@ int (*builtin_func[]) (vector<string>) = {
 	&shell_editor,
 	&shell_tree,
 	&shell_change_color,
-	&shell_changeName
+	&shell_changeName,
+    &shell_in
 };
 
 

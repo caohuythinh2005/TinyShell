@@ -75,6 +75,7 @@ int shell_help(std::vector<std::string> args)
         cout << "| delpath <path>            | Remove directory from PATH (session only)           |\n";
         cout << "| delpathx <path>           | Remove directory from PATH (permanent)              |\n";
         cout << "| where                     | Show full path of a .bat or .exe file               |\n";
+        cout << "| in name                   | Input a variable                                    |\n";
         cout << "+---------------------------+-----------------------------------------------------+\n";
 
         // Utility and system

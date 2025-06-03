@@ -1,3 +1,21 @@
-set x=1
-set y=2
-eval (((1 + 1)*  2) * 3) > 20000
+
+
+for (i=0; i<2; i+=1)
+{
+    for (j=0; j<2; j+=1)
+    {
+        echo Nhap gia tri arr[%i%][%j%]:
+        echo
+        in z
+        set arr[%i%][%j%]=%z%
+    }
+}
+
+for (i=0; i<2; i+=1)
+{
+    for (j=0; j<2; j+=1)
+    {
+        echo %arr[%i%][%j%]%
+    }
+    echo
+}

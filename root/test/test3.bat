@@ -1,5 +1,13 @@
-set i=0
-for (i = 0; i < 3; i+=1) 
+set x=1
+set y=2222
+
+
+while (x < 128 && y < 5555)
 {
-    echo %i%
+    set /a x*=2
+    set /a y*=2
+    echo %x% : %y%
+    echo
 }
+echo end
+echo

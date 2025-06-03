@@ -24,6 +24,8 @@ Mục đích : hỗ tợ lưu trữ kiểu persistent và theo session -> có th
 // void replace_variables(vector<string>& tokens);
 // int precedence(const string& op);
 bool is_op(const string& token);
+
+int shell_in(vector<string> args);
 // vector<string> infix_to_postfix(const vector<string>& tokens);
 // int evaluate_postfix(const vector<string>& postfix);
 void evaluate_assignment(const string& expr);
@@ -50,7 +52,7 @@ void set_variable(const string &key, const string &value, bool persistent = fals
 void unset_variable(const string &key);
 
 // Giải mã chuỗi chứa biến dạng %var%
-string resolve_variable(const string &raw);
+string resolve_variable(const string& input);
 
 // Lấy tất cả biến (session + persistent)
 unordered_map<string, string> get_all_variables();

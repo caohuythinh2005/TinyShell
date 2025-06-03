@@ -70,6 +70,7 @@ Shell được thiết kế để đảm bảo tính an toàn và ổn định c
 | `addpathx <path>`            | Thêm thư mục vào PATH (permanent)                   |
 | `delpathx <path>`            | Xóa thư mục khỏi PATH (permanent)                                    |
 | `where`                      | Hiển thị đường dẫn đầy đủ của file `.bat` hoặc `.exe`       |
+| `in name`                    | Nhập biến       |
 
 ### 🧰 Công cụ và tiện ích khác
 | Lệnh                          | Mô tả                                                       |
