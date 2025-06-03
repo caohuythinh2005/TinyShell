@@ -395,6 +395,7 @@ int shell_echo(vector<string> args) {
         string resolved = resolve_variable(args[i]);
         cout << resolved << " ";
     }
+    cout << endl;
     return 0;
 }
 
