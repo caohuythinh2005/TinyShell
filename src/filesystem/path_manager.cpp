@@ -472,7 +472,7 @@ int shell_runExe(vector<string> args){
                 }
             }
             if (!found) {
-                printf("Executable '%s' not found in current directory or envPaths.\n", formatFakePathToUnixStyle(input));
+                cout << "Executable " << input << " not found in current directory or envPaths." << endl;
                 return BAD_COMMAND;
             }
         }
