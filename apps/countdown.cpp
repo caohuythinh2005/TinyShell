@@ -2,7 +2,7 @@
 #include <windows.h>  // Để sử dụng Sleep
 
 int main() {
-    int countdown = 10;
+    int countdown = 100000;
 
     while (countdown >= 0) {
         std::cout << "Countdown: " << countdown << std::endl;

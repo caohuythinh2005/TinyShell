@@ -1,4 +1,3 @@
-
 rem NHAP
 rem HELLO
 for (i=0; i<2; i+=1)
